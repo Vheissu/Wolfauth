@@ -17,6 +17,8 @@ class WolfAuth_model extends CI_Model {
     {
         parent::__construct();
         
+        $this->load->config('wolf_auth');
+        
         $this->_tables = $this->config->item('tables');
         
     }
@@ -37,6 +39,22 @@ class WolfAuth_model extends CI_Model {
     }
     
     /**
+    * Get user meta
+    * 
+    * @param mixed $key
+    * @param mixed $value
+    */
+    public function get_user_meta($key = '')
+    {
+        //$this->db->join($this->_tables['user_meta'], $this->_tables['user_meta'].'.user_id = '.$this->_tables['users'].'.id');
+        $this->db->where('key', $key);
+        
+        $meta = $this->db->get($this->_tables['user_meta']);
+        
+        return ($meta->num_rows() == 1) ? $meta->row('value') : FALSE;
+    }
+    
+    /**
     * Delete a user from the database
     * 
     * @param mixed $userid
@@ -51,19 +69,14 @@ class WolfAuth_model extends CI_Model {
     }
     
     /**
-    * Generate a secure password
+    * Create a password hash
     * 
     * @param int $password
     * @return string
     */
-    public function generate_password($password = '')
+    public function hash_password($password = '')
     {
         $this->load->helper('security');
-
-        if ($password == '')
-        {
-            $password = rand();
-        }
 
         return do_hash($password);
     }

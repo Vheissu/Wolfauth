@@ -93,6 +93,56 @@ class WolfAuth {
         // Fetch user information
         $user = $this->CI->wolfauth_model->get_user($needle, $this->identity_criteria);
         
+        // If we have a user
+        if ($user)
+        {
+            // If passwords match
+            if ($this->CI->wolfauth_model->hash_password($password) == $user->row('password'))
+            {
+                $role_id = $user->row('role_id');
+                $user_id = $user->row('id');
+                
+                $this->CI->session->set_userdata(array(
+                    'user_id'   => $user_id,
+                    'role_id'   => $role_id,
+                    'email'     => $member->row('email')
+                ));
+                
+                if ($this->CI->input->post('remember_me') == 'yes')
+                {
+                    $this->_set_remember_me($user_id);
+                }
+
+                return $user_id;
+            }
+        }
+        
+        // All hope is lost...
+        return FALSE;
+        
+    }
+    
+    /**
+    * I wonder what this function does?
+    * I think it logs a user out, but I can't
+    * be sure. I've had a few drinks.
+    * 
+    */
+    public function logout()
+    {
+        $user_id = $this->CI->session->userdata('user_id');
+
+        $this->CI->session->sess_destroy();
+
+        $this->CI->load->helper('cookie');
+        delete_cookie('rememberme');
+
+        $user_data = array(
+            'id' => $this->CI->session->userdata('user_id'),
+            'remember_me' => ''
+        );
+
+        $this->CI->wolfauth_model->update_user($user_data);
     }
     
 }
