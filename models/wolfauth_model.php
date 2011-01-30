@@ -141,7 +141,7 @@ class WolfAuth_model extends CI_Model {
     * @param mixed $status
     * @return mixed
     */
-    public function user_status($userid = '', $status = '')
+    public function update_user_status($userid = '', $status = '')
     {
         $data = array(
             'id'     => $userid,
