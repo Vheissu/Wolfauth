@@ -18,6 +18,7 @@ class WolfAuth_model extends CI_Model {
         parent::__construct();
         
         $this->load->config('wolf_auth');
+        $this->lang->load('wolf_auth');
         
         // Get the array of tables from the config file
         $this->_tables = $this->config->item('tables');
