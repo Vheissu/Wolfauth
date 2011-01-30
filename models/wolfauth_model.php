@@ -19,6 +19,7 @@ class WolfAuth_model extends CI_Model {
         
         $this->load->config('wolf_auth');
         
+        // Get the array of tables from the config file
         $this->_tables = $this->config->item('tables');
         
     }
@@ -39,6 +40,36 @@ class WolfAuth_model extends CI_Model {
     }
     
     /**
+    * Get a users details based on their user ID
+    * 
+    * @param mixed $id
+    */
+    public function get_user_by_id($id = '')
+    {
+        return $this->get_user($id, 'id');
+    }
+    
+    /**
+    * Get a users details based on their email address
+    * 
+    * @param mixed $email
+    */
+    public function get_user_by_email($email = '')
+    {
+        return $this->get_user($email, 'email');
+    }
+    
+    /**
+    * Get a users details based on their email address
+    * 
+    * @param mixed $username
+    */
+    public function get_user_by_username($username = '')
+    {
+        return $this->get_user($email, 'username');   
+    }
+    
+    /**
     * Get user meta
     * 
     * @param mixed $key
@@ -46,7 +77,6 @@ class WolfAuth_model extends CI_Model {
     */
     public function get_user_meta($key = '')
     {
-        //$this->db->join($this->_tables['user_meta'], $this->_tables['user_meta'].'.user_id = '.$this->_tables['users'].'.id');
         $this->db->where('key', $key);
         
         $meta = $this->db->get($this->_tables['user_meta']);

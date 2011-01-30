@@ -41,7 +41,10 @@ class WolfAuth {
         $this->identity_criteria = $this->CI->config->item('identity_criteria');
         
         // Set some important IDs
-        $this->role_id = $this->CI->session->userdata('role_id'); 
+        $this->role_id = $this->CI->session->userdata('role_id');
+        
+        // Do you remember meeee?
+        $this->do_you_remember_me(); 
         
     }
     
@@ -73,8 +76,19 @@ class WolfAuth {
         else
         {
             // Fetch the user ID of the specific user supplied to this function
+            $user = $this->CI->wolfauth_model->get_user_by_id($userid);
+            
+            if ($user)
+            {
+                return $user->row('role_id');
+            }
             
         }
+        
+        // Looks like we're doomed
+        // We should never arrive here
+        return FALSE;
+        
     }
     
     /**
@@ -138,11 +152,89 @@ class WolfAuth {
         delete_cookie('rememberme');
 
         $user_data = array(
-            'id' => $this->CI->session->userdata('user_id'),
+            'user_id' => $this->CI->session->userdata('user_id'),
             'remember_me' => ''
         );
 
         $this->CI->wolfauth_model->update_user($user_data);
+    }
+    
+    /**
+    * Sets a remember me cookie
+    * 
+    * @param mixed $userid
+    */
+    private function set_remember_me($userid)
+    {
+        $this->CI->load->library('encrypt');
+
+        $token  = md5(uniqid(rand(), TRUE));
+        $expiry = 60 * 60 * 24 * 7; // One week
+
+        $remember_me = $this->CI->encrypt->encode($userid.':'.$token.':'.(time() + $expiry));
+
+        $cookie = array(
+            'name'      => 'rememberme',
+            'value'     => $remember_me,
+            'expire'    => $expiry
+        );
+
+        set_cookie($cookie);
+        $this->CI->wolfauth_model->update_user(array('id'=>$userid, 'remember_me'=>$remember_me));
+    }
+    
+    /**
+    * Checks if a user is remembered or not
+    * 
+    */
+    private function do_you_remember_me()
+    {
+        $this->CI->load->library('encrypt');
+
+        $cookie_data = get_cookie('rememberme');
+        
+        // The cookie exist?
+        if($cookie_data)
+        {
+            $userid = '';
+            $token = '';
+            $timeout = '';
+
+            $cookie_data = $this->CI->encrypt->decode($cookie_data);
+            
+            if (strpos($cookie_data, ':') !== FALSE)
+            {
+                $cookie_data = explode(':', $cookie_data);
+                
+                if (count($cookie_data) == 3)
+                {
+                    list($userid, $token, $timeout) = $cookie_data;
+                }
+            }
+
+            if ((int) $timeout < time())
+            {
+                return FALSE;
+            }
+            
+            $data = $this->CI->wolfauth_model->get_user_by_id($userid);
+
+            if ($data)
+            {
+                $this->CI->session->set_userdata(array(
+                    'user_id'     => $user_id,
+                    'role_id'    => $data->row('role_id')
+                ));
+
+                $this->set_remember_me($user_id);
+
+                return TRUE;
+            }
+
+            delete_cookie('rememberme');
+        }
+
+        return FALSE;
     }
     
 }
