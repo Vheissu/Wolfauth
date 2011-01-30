@@ -135,6 +135,46 @@ class WolfAuth_model extends CI_Model {
     }
     
     /**
+    * Update a users status from active, inactive or banned.
+    * 
+    * @param mixed $userid
+    * @param mixed $status
+    * @return mixed
+    */
+    public function user_status($userid = '', $status = '')
+    {
+        $data = array(
+            'id'     => $userid,
+            'status' => $status
+        );
+        
+        return $this->update_user($data);
+    }
+    
+    /**
+    * Check an activation code sent to confirm a users email
+    * 
+    * @param mixed $id
+    * @param mixed $authkey
+    */
+    public function activation_check($userid = '', $authkey = '')
+    {
+        $this->db->where('id', $userid);
+        $this->db->where('activation_code', $authkey);
+
+        $user = $this->db->get($this->_tables['users']);
+
+        if ($user->num_rows() == 1)
+        {
+            return $user;
+        }
+        else
+        {
+            return FALSE;
+        }
+    }
+    
+    /**
     * Fetch all users from the database
     * Limit and offsets can be supplied
     * 
