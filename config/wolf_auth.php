@@ -1,6 +1,15 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
+* @name WolfAuth
+* @category Config
+* @package WolfAuth
+* @author Dwayne Charrington
+* @copyright 2011
+* @link http://ilikekillnerds.com
+*/
+
+/**
 * Define the tables that WolfAuth needs for database shiz
 * 
 * 'users' is the user table
@@ -25,3 +34,10 @@ $config['admin_email'] = "admin@website.com";
 * 
 */
 $config['admin_roles'] = array(6,7);
+
+/**
+* All guest users will be assigned this ID
+* 
+* @var mixed
+*/
+$config['guest_role'] = 0;
