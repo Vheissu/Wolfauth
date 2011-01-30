@@ -24,6 +24,15 @@ $config['tables'] = array(
 );
 
 /**
+* How are we going to validate this user at login?
+* Default criteria is username, but you can also use
+* email as well.
+* 
+* @var mixed
+*/
+$config['identity_criteria'] = 'username';
+
+/**
 * The email address of the website administrator
 * 
 */

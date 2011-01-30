@@ -11,56 +11,61 @@
 
 class WolfAuth_model extends CI_Model {
     
+    private $_tables;
+    
     public function __construct()
     {
         parent::__construct();
+        
+        $this->_tables = $this->config->item('tables');
+        
     }
     
     /**
-    * Gets information about a particular user
-    * Criteria can be any value in the user meta
-    * or users table.
+    * Get a user based on identity criteria
     * 
-    * @param mixed $criteria
+    * @param mixed $needle
+    * @param mixed $haystack
+    */
+    public function get_user($needle = '', $haystack = '')
+    {
+        $this->db->where($haystack, $needle);
+
+        $user = $this->db->get($this->_tables['users']);
+        
+        return ($user->num_rows() == 1) ? $user : FALSE;
+    }
+    
+    /**
+    * Delete a user from the database
+    * 
     * @param mixed $userid
     */
-    public function get_userinfo($criteria, $userid)
+    public function delete_user($userid = '')
     {
-        switch ($criteria)
-        {
-            case 'all':
-            break;
-            
-            case 'username':
-            break;
-            
-            case 'password':
-            break;
-            
-            case 'email':
-            break;
-            
-            case 'user_id':
-            break;
-            
-            case 'role_id':
-            break;
-            
-        }
+        $this->db->where('id', $userid);
+
+        $this->db->delete($this->_tables['users']);
+
+        return ($this->db->affected_rows() > 0) ? TRUE : FALSE;
     }
     
     /**
-    * Logs a user in based on particular criteria
-    * usually an email address or username.
+    * Generate a secure password
     * 
-    * Default criteria is 'username'
-    * 
-    * @param mixed $criteria
-    * @param mixed $password
+    * @param int $password
+    * @return string
     */
-    public function login($criteria, $password)
+    public function generate_password($password = '')
     {
-        
+        $this->load->helper('security');
+
+        if ($password == '')
+        {
+            $password = rand();
+        }
+
+        return do_hash($password);
     }
     
 }

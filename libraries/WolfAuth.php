@@ -15,6 +15,7 @@ class WolfAuth {
     
     protected $guest_role;
     protected $admin_roles;
+    protected $identity_criteria;
     
     protected $user_id;
     protected $role_id;
@@ -35,11 +36,12 @@ class WolfAuth {
         $this->CI->load->helper('cookie');
         
         // Set some default role stuff
-        $this->guest_role  = $this->CI->config->item('guest_role');
-        $this->admin_roles = $this->CI->config->item('admin_roles');
+        $this->guest_role        = $this->CI->config->item('guest_role');
+        $this->admin_roles       = $this->CI->config->item('admin_roles');
+        $this->identity_criteria = $this->CI->config->item('identity_criteria');
         
         // Set some important IDs
-        $this->role_id = $this->CI->session->userdata('role_id');
+        $this->role_id = $this->CI->session->userdata('role_id'); 
         
     }
     
@@ -51,7 +53,6 @@ class WolfAuth {
     */
     public function get_role($userid = 0)
     {
-        
         // No ID supplied to this function?
         // Get the role of the current user
         // regardless of being logged in or
@@ -72,8 +73,25 @@ class WolfAuth {
         else
         {
             // Fetch the user ID of the specific user supplied to this function
-            $this->CI->wolfauth_model->get_userinfo('role', $userid);
+            
         }
+    }
+    
+    /**
+    * Log a user in to the site
+    * 
+    * @param mixed $criteria
+    * @param mixed $password
+    */
+    public function login($needle = '', $password = '')
+    {
+        if ( $needle == '' OR $password = '' )
+        {
+            return FALSE;
+        }
+        
+        // Fetch user information
+        $user = $this->CI->wolfauth_model->get_user($needle, $this->identity_criteria);
         
     }
     
