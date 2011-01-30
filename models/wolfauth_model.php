@@ -91,7 +91,7 @@ class WolfAuth_model extends CI_Model {
     * 
     * @param mixed $member_data
     */
-    public function insert_user($user_data = array())
+    public function add_user($user_data = array())
     {
         if (isset($user_data['password']))
         {
