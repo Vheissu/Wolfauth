@@ -112,7 +112,23 @@ class WolfAuth {
         // Looks like we're doomed
         // We should never have arrive here
         return FALSE;
+    }
+    
+    public function get_user()
+    {
         
+    }
+    
+    /**
+    * Activate a usser based on the provided auth key for
+    * activating a user as defined in the users table.
+    * 
+    * @param mixed $needle
+    * @param mixed $authkey
+    */
+    public function activate_user($needle = '', $authkey = '')
+    {
+        $this->CI->wolfauth_model;
     }
     
     /**
@@ -190,6 +206,7 @@ class WolfAuth {
         // Default redirect
         if (!$redirect)
         {
+            $this->CI->load->helper('url');
             $redirect = base_url();
         }
         
