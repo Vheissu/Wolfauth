@@ -99,6 +99,28 @@ class WolfAuth_model extends CI_Model {
     }
     
     /**
+    * Fetch all users from the database
+    * Limit and offsets can be supplied
+    * 
+    * @param mixed $limit
+    * @param mixed $offset
+    */
+    public function get_users($limit = '', $offset = 0)
+    {
+        if ($limit != '')
+        {
+            $this->db->limit($limit, $offset);
+        }
+        
+        $this->db->select('users.*, user_meta.*, roles.name AS role_name, roles.description AS role_description');
+        
+        $this->db->join($this->_tables['user_meta'], $this->_tables['user_meta'].'.user_id = '.$this->_tables['users'].'.id');
+        $this->db->join($this->_tables['roles'], $this->_tables['roles'].'.actual_role_id = '.$this->_tables['users'].'.role_id');
+        
+        return $this->db->get($this->_tables['users']);
+    }
+    
+    /**
     * Create a password hash
     * 
     * @param int $password
