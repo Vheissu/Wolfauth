@@ -85,6 +85,23 @@ class WolfAuth_model extends CI_Model {
     }
     
     /**
+    * Inserts a new user into the database
+    * This function expects the incoming data to match the field
+    * names defined in the users table.
+    * 
+    * @param mixed $member_data
+    */
+    public function insert_user($user_data = array())
+    {
+        if (isset($user_data['password']))
+        {
+            $user_data['password'] = $this->hash_password($user_data['password']);
+        }
+
+        return ($this->db->insert($this->_tables['users'], $user_data)) ? $this->db->insert_id() : FALSE;
+    }
+    
+    /**
     * Delete a user from the database
     * 
     * @param mixed $userid
@@ -118,6 +135,15 @@ class WolfAuth_model extends CI_Model {
         $this->db->join($this->_tables['roles'], $this->_tables['roles'].'.actual_role_id = '.$this->_tables['users'].'.role_id');
         
         return $this->db->get($this->_tables['users']);
+    }
+    
+    /**
+    * Count all users in the database
+    * 
+    */
+    public function count_users()
+    {
+        return $this->db->count_all($this->_tables['users']);
     }
     
     /**
