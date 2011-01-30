@@ -49,6 +49,29 @@ class WolfAuth {
     }
     
     /**
+    * Is the currently logged in user or a particular an admin?
+    * Uses the array of admin ID's in the wolf_auth config file.
+	*/
+    public function is_admin($userid = 0)
+    {
+    	$role_id = $this->get_role($userid);
+        
+        return (in_array($role_id, $this->admin_roles)) ? TRUE : FALSE;
+    }
+    
+    /**
+    * Does the user have basic logged in user rights?
+    * 
+    * @param mixed $userid
+    */
+    public function is_user($userid = 0)
+    {
+        $role_id = $this->get_role($userid);
+        
+        return ($role_id > 0) ? TRUE : FALSE;
+    }
+    
+    /**
     * Fetch the access role of a particular user
     * or from the currently logged in user.
     * 
@@ -78,6 +101,7 @@ class WolfAuth {
             // Fetch the user ID of the specific user supplied to this function
             $user = $this->CI->wolfauth_model->get_user_by_id($userid);
             
+            // if we found the user
             if ($user)
             {
                 return $user->row('role_id');
@@ -86,7 +110,7 @@ class WolfAuth {
         }
         
         // Looks like we're doomed
-        // We should never arrive here
+        // We should never have arrive here
         return FALSE;
         
     }

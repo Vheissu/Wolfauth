@@ -9,6 +9,7 @@
 * @link http://ilikekillnerds.com
 */
 
+
 /**
 * Define the tables that WolfAuth needs for database shiz
 * 
@@ -22,6 +23,14 @@ $config['tables'] = array(
     'user_meta' => 'user_meta',
     'roles'     => 'roles',
 );
+
+/**
+* When generating a random password this is the
+* length the generated password will be.
+* 
+* @var mixed
+*/
+$config['password_length'] = 8;
 
 /**
 * How are we going to validate this user at login?

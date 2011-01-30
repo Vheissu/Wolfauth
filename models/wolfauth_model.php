@@ -219,4 +219,18 @@ class WolfAuth_model extends CI_Model {
         return do_hash($password);
     }
     
+    /**
+    * Generates a random password based on the length defined
+    * in the WolfAuth config file.
+    * 
+    * This function returns an object with the values hashed
+    * and unhashed.
+    * 
+    * @param mixed $length
+    */
+    public function generate_password($length = '')
+    {
+        $length = $this->config->item('password_length');
+    }
+    
 }
