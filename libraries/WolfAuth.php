@@ -116,16 +116,24 @@ class WolfAuth {
     }
     
     /**
-    * Log a user in to the site
+    * Log a user in to the site. Also allows you to redirect
+    * somewhere if the user is successfully logged in.
     * 
     * @param mixed $criteria
     * @param mixed $password
+    * @param bool  $redirect
     */
     public function login($needle = '', $password = '')
     {
         if ( $needle == '' OR $password = '' )
         {
             return FALSE;
+        }
+        
+        // Looks like we are already logged in
+        if ( $this->CI->session->userdata('user_id') > 0 OR $this->CI->session->userdata('user_role') > 0 )
+        {
+            return $this->CI->session->userdata('user_id');
         }
         
         // Fetch user information
@@ -137,14 +145,10 @@ class WolfAuth {
             // If passwords match
             if ($this->CI->wolfauth_model->hash_password($password) == $user->row('password'))
             {
-                $role_id = $user->row('role_id');
                 $user_id = $user->row('id');
                 
-                $this->CI->session->set_userdata(array(
-                    'user_id'   => $user_id,
-                    'role_id'   => $role_id,
-                    'email'     => $member->row('email')
-                ));
+                // Creates a logged in session
+                $this->force_login($needle);
                 
                 if ($this->CI->input->post('remember_me') == 'yes')
                 {
@@ -166,21 +170,60 @@ class WolfAuth {
     * be sure. I've had a few drinks.
     * 
     */
-    public function logout()
+    public function logout($redirect = '')
     {
         $user_id = $this->CI->session->userdata('user_id');
 
         $this->CI->session->sess_destroy();
 
         $this->CI->load->helper('cookie');
-        delete_cookie('rememberme');
+        delete_cookie('wolfauth');
 
         $user_data = array(
-            'user_id' => $this->CI->session->userdata('user_id'),
+            'id' => $this->CI->session->userdata('user_id'),
             'remember_me' => ''
         );
-
+        
+        // Remove remember me data, yo.
         $this->CI->wolfauth_model->update_user($user_data);
+        
+        // Default redirect
+        if (!$redirect)
+        {
+            $redirect = base_url();
+        }
+        
+        // Redirect the user to oblivion
+        redirect($redirect); 
+    }
+    
+    /**
+    * Forces a user to be logged in via the criteria set in the config file.
+    * Can log in a user without needing a password or anything of that kind!
+    * 
+    * @param mixed $needle
+    */
+    public function force_login($needle = '')
+    {
+        if ( $needle == '' )
+        {
+            return FALSE;
+        }
+        
+        // Get the user to make sure they exist
+        $user = $this->CI->wolfauth_model->get_user($needle, $this->identity_criteria);
+        
+        if ( $user )
+        {
+            $this->CI->session->set_userdata(array(
+                'user_id'    => $user->row('id'),
+                'username'   => $user->row('username'),
+                'role_id'    => $user->row('role_id'),
+                'email'      => $user->row('email')
+            ));
+        }
+        
+        return FALSE;
     }
     
     /**
@@ -190,15 +233,16 @@ class WolfAuth {
     */
     private function set_remember_me($userid)
     {
+        $this->CI->load->helper('cookie');
         $this->CI->load->library('encrypt');
 
         $token  = md5(uniqid(rand(), TRUE));
         $expiry = 60 * 60 * 24 * 7; // One week
 
-        $remember_me = $this->CI->encrypt->encode($userid.':'.$token.':'.(time() + $expiry));
+        $remember_me = $this->CI->encrypt->encode(serialize(array($userid, $token, $expiry)));
 
         $cookie = array(
-            'name'      => 'rememberme',
+            'name'      => 'wolfauth',
             'value'     => $remember_me,
             'expire'    => $expiry
         );
@@ -213,51 +257,55 @@ class WolfAuth {
     */
     private function do_you_remember_me()
     {
+        $this->CI->load->helper('cookie');
         $this->CI->load->library('encrypt');
 
-        $cookie_data = get_cookie('rememberme');
+        $cookie_data = get_cookie('wolfauth');
         
-        // The cookie exist?
+        // Cookie Monster: Me want cookie. Me want to know, cookie exist?
         if($cookie_data)
         {
+            // Set up some default empty variables
             $userid = '';
             $token = '';
             $timeout = '';
-
-            $cookie_data = $this->CI->encrypt->decode($cookie_data);
             
-            if (strpos($cookie_data, ':') !== FALSE)
-            {
-                $cookie_data = explode(':', $cookie_data);
-                
+            // Unencrypt and unserialize the cookie
+            $cookie_data = $this->CI->encrypt->encode(unserialize($cookie_data));
+            
+            // If we have cookie data
+            if (!empty($cookie_data))
+            {   
+                // Make sure we have 3 values in our cookie array
                 if (count($cookie_data) == 3)
                 {
-                    list($userid, $token, $timeout) = $cookie_data;
+                    // Create variables from array values
+                    list($userid, $token, $expiry) = $cookie_data;
                 }
             }
-
-            if ((int) $timeout < time())
+            
+            // Cookie Monster: Me not eat EXPIRED COOKIEEEE!
+            if ((int) $expiry < time())
             {
                 return FALSE;
             }
             
+            // Make sure the user exists by fetching info by their ID
             $data = $this->CI->wolfauth_model->get_user_by_id($userid);
-
+            
+            // If the user obviously exists
             if ($data)
             {
-                $this->CI->session->set_userdata(array(
-                    'user_id'     => $user_id,
-                    'role_id'    => $data->row('role_id')
-                ));
-
-                $this->set_remember_me($user_id);
+                $this->force_login($data->username);
+                $this->set_remember_me($userid);
 
                 return TRUE;
             }
 
-            delete_cookie('rememberme');
+            delete_cookie('wolfauth');
         }
-
+        
+        // Cookie Monster: ME NOT FIND COOKIE! ME WANT COOOKIEEE!!!
         return FALSE;
     }
     
