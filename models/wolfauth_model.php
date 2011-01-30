@@ -102,6 +102,25 @@ class WolfAuth_model extends CI_Model {
     }
     
     /**
+    * Updates a user in the database and returns true or false
+    * depending on whether or not the update was successful.
+    * 
+    * @param string $user_data
+    * @return mixed
+    */
+    public function update_user($user_data = array())
+    {
+        $this->db->where('id', $user_data['id']);
+
+        if (isset($user_data['password']))
+        {
+            $user_data['password'] = $this->hash_password($user_data['password']);
+        }
+
+        return (!$this->db->update($this->_tables['users'], $user_data)) ? FALSE : TRUE;
+    }
+    
+    /**
     * Delete a user from the database
     * 
     * @param mixed $userid
