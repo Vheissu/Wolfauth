@@ -11,14 +11,11 @@
 
 class WolfAuth {
     
-    private $CI;
+    protected $CI;
     
     protected $guest_role;
     protected $admin_roles;
     protected $identity_criteria;
-    
-    protected $user_id;
-    protected $role_id;
     
     /**
     * Constructor function
@@ -39,9 +36,6 @@ class WolfAuth {
         $this->guest_role        = $this->CI->config->item('guest_role');
         $this->admin_roles       = $this->CI->config->item('admin_roles');
         $this->identity_criteria = $this->CI->config->item('identity_criteria');
-        
-        // Set some important IDs
-        $this->role_id = $this->CI->session->userdata('role_id');
         
         // Do you remember meeee?
         $this->do_you_remember_me(); 
@@ -86,14 +80,14 @@ class WolfAuth {
         if ( $userid == 0 )
         {
             // If we don't have a user ID set, then return the guest role ID
-            if ( !$this->role_id >= 0 )
+            if ( !$this->CI->session->userdata('user_role') >= 0 )
             {
                 return $this->guest_role;
             }
             // We have a logged in role to return!
             else
             {
-                return $this->role_id; 
+                return $this->CI->session->userdata('user_role'); 
             }   
         }
         else
@@ -114,9 +108,33 @@ class WolfAuth {
         return FALSE;
     }
     
-    public function get_user()
+    /**
+    * Fetches a user by ID
+    * 
+    * @param mixed $userid
+    */
+    public function get_user_by_id($userid = 0)
     {
+        // Fetch the user ID of the specific user supplied to this function
+        $user = $this->CI->wolfauth_model->get_user_by_id($userid);
+
+        // If we found the user
+        if ($user)
+        {
+            return $user->result();
+        }
         
+        return FALSE;
+    }
+    
+    /**
+    * Get this user will get the currently logged in user
+    * 
+    */
+    public function get_this_user()
+    {
+        $userid = $this->CI->session->userdata('user_id');
+        $user = $this->CI->wolfauth_model->get_user_by_id($userid);
     }
     
     /**

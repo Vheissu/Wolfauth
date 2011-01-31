@@ -11,7 +11,7 @@
 
 class WolfAuth_model extends CI_Model {
     
-    private $_tables;
+    protected $_tables;
     
     public function __construct()
     {
