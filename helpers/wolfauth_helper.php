@@ -42,5 +42,5 @@ function login($needle = '', $password = '')
     $CI = &get_instance();
     
     $CI->load->library('wolfauth');
-    $CI->wolfauth->login($needle, $password); 
+    return $CI->wolfauth->login($needle, $password); 
 }

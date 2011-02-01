@@ -167,7 +167,7 @@ class WolfAuth {
         // Looks like we are already logged in
         if ( $this->CI->session->userdata('user_id') > 0 OR $this->CI->session->userdata('user_role') > 0 )
         {
-            return $this->CI->session->userdata('user_id');
+            return TRUE;
         }
         
         // Fetch user information
@@ -189,7 +189,7 @@ class WolfAuth {
                     $this->_set_remember_me($user_id);
                 }
 
-                return $user_id;
+                return TRUE;
             }
         }
         
