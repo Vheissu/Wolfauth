@@ -11,6 +11,7 @@
     <input type="submit" value="Login">
 </fieldset>
 
+<?php echo validation_errors(); ?>
 <?php echo wolfauth_errors(); ?>
 
 <?php echo form_close(); ?>

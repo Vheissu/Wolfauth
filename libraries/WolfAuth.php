@@ -166,6 +166,7 @@ class WolfAuth {
     {
         if ( $needle == '' OR $password = '' )
         {
+            $this->error_array[] = "You must enter both required login credentials to login";
             return FALSE;
         }
         
@@ -200,6 +201,8 @@ class WolfAuth {
             else
             {
                 $this->error_array[] = "You could not be logged in using those supplied credentials, please try again.";
+                
+                return FALSE;
             }
         }
         
