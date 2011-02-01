@@ -33,11 +33,16 @@ class WolfAuth_model extends CI_Model {
     */
     public function get_user($needle = '', $haystack = '')
     {
+        
+        $this->db->select('users.*, roles.name AS role_name, roles.description AS role_description');
         $this->db->where($haystack, $needle);
+        
+        // Join the user roles 
+        $this->db->join($this->_tables['roles'], $this->_tables['roles'].'.actual_role_id = '.$this->_tables['users'].'.role_id');
 
         $user = $this->db->get($this->_tables['users']);
         
-        return ($user->num_rows() == 1) ? $user : FALSE;
+        return ($user->num_rows() == 1) ? $user->row() : FALSE;
     }
     
     /**
@@ -67,7 +72,7 @@ class WolfAuth_model extends CI_Model {
     */
     public function get_user_by_username($username = '')
     {
-        return $this->get_user($email, 'username');   
+        return $this->get_user($username, 'username');   
     }
     
     /**
@@ -164,15 +169,8 @@ class WolfAuth_model extends CI_Model {
         $this->db->where('activation_code', $authkey);
 
         $user = $this->db->get($this->_tables['users']);
-
-        if ($user->num_rows() == 1)
-        {
-            return $user;
-        }
-        else
-        {
-            return FALSE;
-        }
+        
+        return ($user->num_rows() == 1) ? TRUE : FALSE ;
     }
     
     /**

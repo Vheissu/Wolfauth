@@ -55,6 +55,8 @@ class WolfAuth {
     
     /**
     * Does the user have basic logged in user rights?
+    * Because a role of 0 means not logged in, anything
+    * above 1 means a user is a user regardless of role.
     * 
     * @param mixed $userid
     */
@@ -63,6 +65,15 @@ class WolfAuth {
         $role_id = $this->get_role($userid);
         
         return ($role_id > 0) ? TRUE : FALSE;
+    }
+    
+    /**
+    * Is a user activated or not?
+    * 
+    */
+    public function is_activated($userid = 0)
+    {
+        
     }
     
     /**
@@ -98,13 +109,13 @@ class WolfAuth {
             // if we found the user
             if ($user)
             {
-                return $user->row('role_id');
+                return $user->role_id;
             }
             
         }
         
         // Looks like we're doomed
-        // We should never have arrive here
+        // We should never have arrived here
         return FALSE;
     }
     
@@ -115,26 +126,18 @@ class WolfAuth {
     */
     public function get_user_by_id($userid = 0)
     {
-        // Fetch the user ID of the specific user supplied to this function
-        $user = $this->CI->wolfauth_model->get_user_by_id($userid);
-
-        // If we found the user
-        if ($user)
-        {
-            return $user->result();
-        }
-        
-        return FALSE;
+        $user = $this->CI->wolfauth_model->get_user_by_id($userid);   
+        return ($user) ? $user : FALSE;
     }
     
     /**
     * Get this user will get the currently logged in user
+    * and then return an object of user data
     * 
     */
     public function get_this_user()
-    {
-        $userid = $this->CI->session->userdata('user_id');
-        $user = $this->CI->wolfauth_model->get_user_by_id($userid);
+    {        
+        return $this->get_user_by_id($this->CI->session->userdata('user_id'));
     }
     
     /**
@@ -146,7 +149,7 @@ class WolfAuth {
     */
     public function activate_user($needle = '', $authkey = '')
     {
-        $this->CI->wolfauth_model;
+        //$this->CI->wolfauth_model;
     }
     
     /**
@@ -177,9 +180,10 @@ class WolfAuth {
         if ($user)
         {
             // If passwords match
-            if ($this->CI->wolfauth_model->hash_password($password) == $user->row('password'))
+            if ($this->CI->wolfauth_model->hash_password($password) == $user->password)
             {
-                $user_id = $user->row('id');
+                // Get the user ID from the database
+                $user_id = $user->id;
                 
                 // Creates a logged in session
                 $this->force_login($needle);
@@ -214,7 +218,7 @@ class WolfAuth {
         delete_cookie('wolfauth');
 
         $user_data = array(
-            'id' => $this->CI->session->userdata('user_id'),
+            'id' => $user_id,
             'remember_me' => ''
         );
         
@@ -251,10 +255,10 @@ class WolfAuth {
         if ( $user )
         {
             $this->CI->session->set_userdata(array(
-                'user_id'    => $user->row('id'),
-                'username'   => $user->row('username'),
-                'role_id'    => $user->row('role_id'),
-                'email'      => $user->row('email')
+                'user_id'    => $user->id,
+                'username'   => $user->username,
+                'role_id'    => $user->role_id,
+                'email'      => $user->email
             ));
         }
         
