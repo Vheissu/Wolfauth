@@ -1,4 +1,4 @@
-<?php form_open('user/login', array('id' => 'login_form')); ?>
+<?php echo form_open('user/login', array('id' => 'login_form')); ?>
 
 <fieldset>
     <legend>Login</legend>
@@ -11,4 +11,6 @@
     <input type="submit" value="Login">
 </fieldset>
 
-<?php form_close(); ?>
+<?php echo wolfauth_errors(); ?>
+
+<?php echo form_close(); ?>

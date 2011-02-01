@@ -17,6 +17,8 @@ class WolfAuth {
     protected $admin_roles;
     protected $identity_criteria;
     
+    protected $error_array = array();
+    
     /**
     * Constructor function
     * 
@@ -195,7 +197,13 @@ class WolfAuth {
 
                 return TRUE;
             }
+            else
+            {
+                $this->error_array[] = "You could not be logged in using those supplied credentials, please try again.";
+            }
         }
+        
+        $this->error_array[] = "Sorry, that user does not appear to exist.";
         
         // All hope is lost...
         return FALSE;
@@ -263,6 +271,41 @@ class WolfAuth {
         }
         
         return FALSE;
+    }
+    
+    /**
+    * Gets errors from errors array and wraps them in delimiters
+    * Parts of this function are using bits of code from the 
+    * Codeigniter form_validation library function error_string.
+    * 
+    */
+    public function get_errors($prefix = '', $suffix = '')
+    {
+        if (count($this->error_array) === 0)
+        {
+            return '';
+        }
+        
+        if ($prefix == '')
+        {
+            $prefix = $this->CI->config->item('error_prefix', 'wolfauth');
+        }
+        
+        if ($suffix == '')
+        {
+            $suffix = $this->CI->config->item('error_suffix', 'wolfauth');
+        }
+        
+        $str = '';
+        foreach ($this->error_array as $val)
+        {
+            if ($val != '')
+            {
+                $str .= $prefix.$val.$suffix."\n";
+            }
+        }
+
+        return $str;
     }
     
     /**

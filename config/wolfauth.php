@@ -61,6 +61,24 @@ $config['admin_roles'] = array(6,7);
 $config['guest_role'] = 0;
 
 /**
+* Error settings
+*/
+
+/**
+* What is placed before the error message?
+* 
+* @var mixed
+*/
+$config['error_prefix'] = "<p class='wolfauth_error'>";
+
+/**
+* What is placed after the error message (at the end)?
+* 
+* @var mixed
+*/
+$config['error_suffix'] = "</p>";
+
+/**
 * Email settings
 */
 
