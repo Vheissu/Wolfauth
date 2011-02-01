@@ -344,4 +344,43 @@ class WolfAuth {
         return FALSE;
     }
     
+    /**
+    * Sends an email
+    * 
+    * @param mixed $to
+    * @param mixed $subject
+    * @param mixed $body
+    */
+    private function _send_email($to, $subject, $body)
+    {
+        // Load the email library
+        $this->CI->load->library('email');
+        
+        // Email behind the scenes settings like character sets and mailtypes
+        $config['mailtype']  = $this->CI->config->item('email_format', 'wolfauth');
+        $config['charset']   = $this->CI->config->item('email_charset', 'wolfauth');
+        $config['wordwrap']  = $this->CI->config->item('email_wordwrap', 'wolfauth');
+        $config['useragent'] = $this->CI->config->item('email_useragent', 'wolfauth');
+        
+        // Set up our email settings
+        $this->CI->email->initialize($config);
+        
+        $from_address  = $this->CI->config->item('email_from_address','wolfauth');
+        $from_name     = $this->CI->config->item('email_from_name','wolfauth');
+        
+        // Set the email parameters     
+        $this->CI->email->from( $from_address, $from_name);
+        $this->CI->email->to($to);
+        $this->CI->email->subject($subject);
+        $this->CI->email->message($body);
+        
+        // Some helpful debugging methods
+        log_message('debug','Sending email with subject: '.$subject.' to :'.$to);
+        log_message('debug','Email body contents:'.$body);
+        
+        // Return the result
+        return $this->CI->email->send();     
+       
+    }
+    
 }

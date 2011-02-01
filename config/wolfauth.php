@@ -59,3 +59,54 @@ $config['admin_roles'] = array(6,7);
 * @var mixed
 */
 $config['guest_role'] = 0;
+
+/**
+* Email settings
+*/
+
+/**
+* Usually this would be the admin email,
+* but there are cases where you would want
+* to use a designated email address to be
+* sent from.
+* 
+* @var mixed
+*/
+$config['email_from_address'] = "no-reply@websiteapp.com";
+
+/**
+* When emails are sent what is the name the receiver will
+* see in their inbox?
+* 
+* @var mixed
+*/
+$config['email_from_name'] = "Dwayne from Websiteapp.com";
+
+/**
+* The format of this email
+* 
+* @var mixed
+*/
+$config['email_format'] = "html";
+
+/**
+* Email character set usually fine left as utf-8
+* 
+* @var mixed
+*/
+$config['email_charset'] = "utf-8";
+
+/**
+* Do you want the email contents to wrap?
+* 
+* @var mixed
+*/
+$config['email_wordwrap'] = FALSE;
+
+/**
+* In the email headers this usetagent will be displayed.
+* It's best to make this the name of your site or application.
+* 
+* @var mixed
+*/
+$config['email_useragent'] = "WolfAuth";
