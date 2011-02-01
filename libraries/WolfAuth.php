@@ -25,7 +25,7 @@ class WolfAuth {
     {
         $this->CI =& get_instance();
         
-        $this->CI->database();
+        $this->CI->load->database();
         $this->CI->load->config('wolfauth', TRUE);
         $this->CI->load->library('session');
         $this->CI->load->library('email');
