@@ -18,7 +18,7 @@ class WolfAuth_model extends CI_Model {
         parent::__construct();
         
         $this->load->config('wolfauth', TRUE);
-        $this->lang->load('wolf_auth');
+        $this->lang->load('wolfauth');
         
         // Get the array of tables from the config file
         $this->_tables = $this->config->item('tables', 'wolfauth');
@@ -228,7 +228,12 @@ class WolfAuth_model extends CI_Model {
     */
     public function generate_password($length = '')
     {
-        $length = $this->config->item('password_length');
+        $this->load->helper('string');
+        
+        $length = ($length != '') ? $length : $this->config->item('password_length', 'wolfauth');
+        
+        return random_string('alnum', $length);
+        
     }
     
 }

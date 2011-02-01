@@ -37,4 +37,9 @@ class User extends CI_Controller {
         
     }
     
+    public function generate_password($length = '')
+    {
+        echo $this->wolfauth->generate_password($length);
+    }
+    
 }   

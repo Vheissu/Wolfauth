@@ -29,6 +29,7 @@ class WolfAuth {
         
         $this->CI->load->database();
         $this->CI->load->config('wolfauth', TRUE);
+        $this->CI->lang->load('wolfauth');
         $this->CI->load->library('session');
         $this->CI->load->library('email');
         $this->CI->load->model('wolfauth_model');
@@ -164,9 +165,14 @@ class WolfAuth {
     */
     public function login($needle = '', $password = '')
     {
+        
+        // Make sure no one fools us with whitespace
+        $needle   = trim($needle);
+        $password = trim($password);
+        
         if ( $needle == '' OR $password = '' )
         {
-            $this->error_array[] = "You must enter both required login credentials to login";
+            $this->error_array[] = $this->CI->lang->line('missing_login_credentials');
             return FALSE;
         }
         
@@ -200,13 +206,13 @@ class WolfAuth {
             }
             else
             {
-                $this->error_array[] = "You could not be logged in using those supplied credentials, please try again.";
+                $this->error_array[] = $this->CI->lang->line('account_not_found');
                 
                 return FALSE;
             }
         }
         
-        $this->error_array[] = "Sorry, that user does not appear to exist.";
+        $this->error_array[] = $this->CI->lang->line('account_not_found');
         
         // All hope is lost...
         return FALSE;
@@ -274,6 +280,15 @@ class WolfAuth {
         }
         
         return FALSE;
+    }
+    
+    /**
+    * Generates a random password
+    * 
+    */
+    public function generate_password($length = '')
+    {
+        return $this->CI->wolfauth_model->generate_password($length);
     }
     
     /**
