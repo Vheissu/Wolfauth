@@ -28,6 +28,26 @@ function get_role($userid = 0)
 }
 
 /**
+* If there is post data then there was a post request
+* This simple helper is a conditional check and is the same
+* as going:
+*  
+* if (!empty($_POST)) 
+* { 
+*   return TRUE; 
+* } 
+* else 
+* { 
+*   return FALSE; 
+* }
+* 
+*/
+function is_posted()
+{
+    return (!empty($_POST)) ? TRUE : FALSE;
+}
+
+/**
 * Log a user into the site by supplying
 * the needle and password. The needle is
 * the value being sent from your login form

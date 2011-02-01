@@ -22,16 +22,14 @@ class User extends CI_Controller {
         $username = $this->input->post('username');
         $password = $this->input->post('password');
         
-        // Library approach
-        if ( $this->wolfauth->login($username, $password) )
-        {
-            // We are logged in
-        }
-        
         // Or using the login helper which is the same as above, only cleaner
         if ( login($username, $password) )
         {
             // We are logged in baby
+        }
+        else
+        {
+            $this->load->view('wolfauth/login_form');
         }
         
     }
