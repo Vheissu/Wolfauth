@@ -99,7 +99,7 @@ function &get_wolfauth_class()
     {
         return $return;
     }
-
+    
     $object = $CI->load->_ci_classes['wolfauth'];
 
     if ( ! isset($CI->$object) OR ! is_object($CI->$object) )
