@@ -26,16 +26,16 @@ class WolfAuth {
         $this->CI =& get_instance();
         
         $this->CI->database();
-        $this->CI->load->config('wolf_auth');
+        $this->CI->load->config('wolfauth', TRUE);
         $this->CI->load->library('session');
         $this->CI->load->library('email');
         $this->CI->load->model('wolfauth_model');
         $this->CI->load->helper('cookie');
         
         // Set some default role stuff
-        $this->guest_role        = $this->CI->config->item('guest_role');
-        $this->admin_roles       = $this->CI->config->item('admin_roles');
-        $this->identity_criteria = $this->CI->config->item('identity_criteria');
+        $this->guest_role        = $this->CI->config->item('guest_role', 'wolfauth');
+        $this->admin_roles       = $this->CI->config->item('admin_roles', 'wolfauth');
+        $this->identity_criteria = $this->CI->config->item('identity_criteria', 'wolfauth');
         
         // Do you remember meeee?
         $this->do_you_remember_me(); 
