@@ -80,6 +80,15 @@ class WolfAuth {
     }
     
     /**
+    * Is a user currently signed in?
+    * 
+    */
+    public function is_logged_in()
+    {
+        return $this->CI->session->userdata('account_id') ? TRUE : FALSE;
+    }
+    
+    /**
     * Fetch the access role of a particular user
     * or from the currently logged in user.
     * 
