@@ -178,12 +178,7 @@ class WolfAuth {
     * @param bool  $redirect
     */
     public function login($needle = '', $password = '')
-    {
-        
-        // Make sure no one fools us with whitespace
-        $needle   = trim($needle);
-        $password = trim($password);
-        
+    {   
         if ( $needle == '' OR $password = '' )
         {
             $this->error_array[] = $this->CI->lang->line('missing_login_credentials');
@@ -205,10 +200,7 @@ class WolfAuth {
             // If passwords match
             if ($this->CI->wolfauth_model->hash_password($password) == $user->password)
             {
-                // Get the user ID from the database
                 $user_id = $user->id;
-                
-                // Creates a logged in session
                 $this->force_login($needle);
                 
                 if ($this->CI->input->post('remember_me') == 'yes')
@@ -297,15 +289,6 @@ class WolfAuth {
     }
     
     /**
-    * Generates a random password
-    * 
-    */
-    public function generate_password($length = '')
-    {
-        return $this->CI->wolfauth_model->generate_password($length);
-    }
-    
-    /**
     * Gets errors from errors array and wraps them in delimiters
     * Parts of this function are using bits of code from the 
     * Codeigniter form_validation library function error_string.
@@ -360,9 +343,15 @@ class WolfAuth {
             'value'     => $remember_me,
             'expire'    => $expiry
         );
+        
+        // For DB insertion
+        $cookie_db_data = array(
+            'id' => $userid, 
+            'remember_me'=>$remember_me
+        );
 
         set_cookie($cookie);
-        $this->CI->wolfauth_model->update_user(array('id'=>$userid, 'remember_me'=>$remember_me));
+        $this->CI->wolfauth_model->update_user($cookie_db_data);
     }
     
     /**
