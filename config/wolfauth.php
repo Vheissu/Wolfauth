@@ -98,7 +98,7 @@ $config['email_from_address'] = "no-reply@websiteapp.com";
 * 
 * @var mixed
 */
-$config['email_from_name'] = "Dwayne from Websiteapp.com";
+$config['email_from_name'] = "Wolf from Websiteapp.com";
 
 /**
 * The format of this email

@@ -20,7 +20,6 @@ class User extends CI_Controller {
     
     public function login()
     {
-        
         // Posted variables
         $username = $this->input->post('username');
         $password = $this->input->post('password');

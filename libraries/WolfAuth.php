@@ -27,6 +27,12 @@ class WolfAuth {
     {
         $this->CI =& get_instance();
         
+        /**
+        * We load all of this in-case the end user doesn't autoload
+        * anything.
+        * 
+        * @var WolfAuth
+        */
         $this->CI->load->database();
         $this->CI->load->config('wolfauth', TRUE);
         $this->CI->lang->load('wolfauth');
@@ -35,12 +41,16 @@ class WolfAuth {
         $this->CI->load->model('wolfauth_model');
         $this->CI->load->helper('cookie');
         
-        // Set some default role stuff
+        // Set the default guest role which by default is '0'
         $this->guest_role        = $this->CI->config->item('guest_role', 'wolfauth');
+        
+        // Set the default admin role(s) which by default are '6' and '7'
         $this->admin_roles       = $this->CI->config->item('admin_roles', 'wolfauth');
+        
+        // Set the default identity criteria (default is username)
         $this->identity_criteria = $this->CI->config->item('identity_criteria', 'wolfauth');
         
-        // Do you remember meeee?
+        // Check if we remember this user and if we do, log them in
         $this->do_you_remember_me(); 
         
     }
@@ -51,15 +61,18 @@ class WolfAuth {
 	*/
     public function is_admin($userid = 0)
     {
+        // Get the current user role ID
     	$role_id = $this->get_role($userid);
         
+        // Conditional to return TRUE or FALSE if the user has an admin ID
         return (in_array($role_id, $this->admin_roles)) ? TRUE : FALSE;
     }
     
     /**
-    * Does the user have basic logged in user rights?
-    * Because a role of 0 means not logged in, anything
-    * above 1 means a user is a user regardless of role.
+    * Is the current user a user or are they merely a guest?
+    * A value of '0' means that they are not logged in and are
+    * treated as guests. A value of 1 or higher means that they
+    * are users regardless of priveleges.
     * 
     * @param mixed $userid
     */
@@ -71,8 +84,10 @@ class WolfAuth {
     }
     
     /**
-    * Is a user activated or not?
+    * If email or manual activation is required, this function will check
+    * if the current user has been activated or not.
     * 
+    * @param mixed $userid
     */
     public function is_activated($userid = 0)
     {
@@ -80,45 +95,35 @@ class WolfAuth {
     }
     
     /**
-    * Is a user currently signed in?
+    * Is there a logged in user
     * 
     */
     public function is_logged_in()
     {
-        return $this->CI->session->userdata('account_id') ? TRUE : FALSE;
+        return $this->CI->session->userdata('user_id') ? TRUE : FALSE;
     }
     
     /**
-    * Fetch the access role of a particular user
-    * or from the currently logged in user.
+    * Fetches the user role for the currently logged in user
+    * if no userid is supplied, else if a user ID is supplied
+    * that particular user's role ID will be returned.
     * 
     * @param mixed $userid
     */
     public function get_role($userid = 0)
     {
-        // No ID supplied to this function?
-        // Get the role of the current user
-        // regardless of being logged in or
-        // not.
+        // Get the currently logged in users role ID 
         if ( $userid == 0 )
         {
-            // If we don't have a user ID set, then return the guest role ID
-            if ( !$this->CI->session->userdata('user_role') >= 0 )
-            {
-                return $this->guest_role;
-            }
-            // We have a logged in role to return!
-            else
-            {
-                return $this->CI->session->userdata('user_role'); 
-            }   
+            // Return the guest role if no valid user or return the user ID if a valid user is logged in 
+            return ($this->CI->session->userdata('user_role') >= 0) ? $this->CI->session->userdata('user_role') : $this->guest_role;  
         }
         else
         {
             // Fetch the user ID of the specific user supplied to this function
             $user = $this->CI->wolfauth_model->get_user_by_id($userid);
             
-            // if we found the user
+            // If we found the user
             if ($user)
             {
                 return $user->role_id;
