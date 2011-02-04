@@ -3,13 +3,13 @@
   class WolfAuth_Acl {
       
     var $perms = array();
-    var $userID;
-    var $userRoles = array();
+    var $user_id;
+    var $user_roles = array();
     var $ci;
     
     function __construct($config=array()) 
     {
-        $this->ci = &get_instance();
+        $this->ci = CI_BASE::get_instance();
 
         $this->userID = floatval($config['userID']);
         $this->userRoles = $this->getUserRoles();
