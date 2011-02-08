@@ -34,6 +34,7 @@ class WolfAuth_model extends CI_Model {
     public function get_user($needle = '', $haystack = '')
     {
         $this->db->select('users.*, '. $this->_tables['roles'] .'.name AS role_name, '. $this->_tables['roles'] .'.description AS role_description');
+        
         $this->db->where($haystack, $needle);
         
         // Join the user roles 
@@ -50,7 +51,7 @@ class WolfAuth_model extends CI_Model {
     * @param mixed $id
     */
     public function get_user_by_id($id = '')
-    {
+    {    
         return $this->get_user($id, 'id');
     }
     
@@ -123,6 +124,32 @@ class WolfAuth_model extends CI_Model {
         }
 
         return (!$this->db->update($this->_tables['users'], $user_data)) ? FALSE : TRUE;
+    }
+    
+    /**
+    * Change a user password
+    * 
+    * @param mixed $old_password
+    * @param mixed $new_password
+    */
+    public function update_password($old_password = '', $new_password = '')
+    {
+        // Make sure we have an old and new password
+        if ($old_password = '' OR $new_password = '')
+        {
+            return FALSE;
+        }
+        
+        if ( $this->get($old_password, 'password') )
+        {
+            $this->db->where('password', $old_password);
+            $this->db->set('password', $new_password);
+            $this->db->update('users');
+        }
+        else
+        {
+            return FALSE;
+        }
     }
     
     /**
