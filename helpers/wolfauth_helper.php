@@ -10,13 +10,11 @@
 */
 
 /**
-* Get a user role for a particular user
-* or for the currently logged in user.
+* Get a user role for a particular user or for the currently logged in user.
 * 
-* Calling this function without a user ID
-* will return the currently logged in role ID
-* or the default role Id for logged out users if
-* no user is logged in.
+* Calling this function without a user ID will return the currently logged 
+* in role ID or the default role Id for logged out users if no user is 
+* logged in.
 * 
 */
 function get_role($userid = 0)
@@ -28,9 +26,8 @@ function get_role($userid = 0)
 }
 
 /**
-* If there is post data then there was a post request
-* This simple helper is a conditional check and is the same
-* as going:
+* If there is post data then there was a post request. This simple helper is 
+* a conditional check and is the same as going:
 *  
 * if (!empty($_POST)) 
 * { 
@@ -48,11 +45,52 @@ function is_posted()
 }
 
 /**
-* Log a user into the site by supplying
-* the needle and password. The needle is
-* the value being sent from your login form
-* by default it is a username, but you can
-* change this in the wolfauth_config.php file
+* Check if a user is a standard user. Calling this function by itself
+* without arguments will check the current user.
+* 
+* @param mixed $userid
+*/
+function is_user($userid = 0)
+{
+    $CI = &get_instance();
+    
+    $CI->load->library('wolfauth');
+    $CI->wolfauth->is_user($userid); 
+}
+
+/**
+* Check if a user is an administrator. Calling this function by itself
+* without arguments will check the current user.
+* 
+* @param mixed $userid
+*/
+function is_admin($userid = 0)
+{
+    $CI = &get_instance();
+    
+    $CI->load->library('wolfauth');
+    $CI->wolfauth->is_admin($userid); 
+}
+
+/**
+* Check if a user is a guest. Calling this function by itself
+* without arguments will check the current user.
+* 
+* @param mixed $userid
+*/
+function is_guest($userid = 0)
+{
+    $CI = &get_instance();
+    
+    $CI->load->library('wolfauth');
+    $CI->wolfauth->is_guest($userid); 
+}
+
+/**
+* Log a user into the site by supplying the needle and password. 
+* The needle is the value being sent from your login form by 
+* default it is a username, but you can change this in the 
+* wolfauth_config.php file
 * 
 * @param mixed $needle
 * @param mixed $password
@@ -66,9 +104,9 @@ function login($needle = '', $password = '')
 }
 
 /**
-* WolfAuth errors helper function which will
-* retrieve any errors in the WolfAuth function
-* and then display them when this function is called.
+* WolfAuth errors helper function which will retrieve any errors in 
+* the WolfAuth function and then display them when this function is 
+* called.
 * 
 * @param mixed $prefix
 * @param mixed $suffix
@@ -84,9 +122,8 @@ function wolfauth_errors($prefix = '', $suffix = '')
 }
 
 /**
-* Return the WolfAuth library class by reference
-* so we can access the errors array variable
-* populated inside of the library.
+* Return the WolfAuth library class by reference so we can access the 
+* errors array variable populated inside of the library.
 * 
 */
 function &get_wolfauth_class()

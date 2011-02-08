@@ -17,6 +17,7 @@ class WolfAuth {
     protected $admin_roles;
     protected $identity_criteria;
     
+    // An array of errors
     protected $error_array = array();
     
     /**
@@ -81,6 +82,19 @@ class WolfAuth {
         $role_id = $this->get_role($userid);
         
         return ($role_id > 0) ? TRUE : FALSE;
+    }
+    
+    /**
+    * Check if the current user is a guest
+    * A guest user will always have a role ID of 1
+    * 
+    * @param mixed $userid
+    */
+    public function is_guest($userid = 0)
+    {
+        $role_id = $this->get_role($userid);
+        
+        return ($role_id == 0) ? TRUE : FALSE;
     }
     
     /**
