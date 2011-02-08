@@ -132,18 +132,22 @@ class WolfAuth_model extends CI_Model {
     * @param mixed $old_password
     * @param mixed $new_password
     */
-    public function update_password($old_password = '', $new_password = '')
+    public function update_password($username = '', $old_password = '', $new_password = '')
     {
         // Make sure we have an old and new password
-        if ($old_password = '' OR $new_password = '')
+        if ($username = '' OR $old_password = '' OR $new_password = '')
         {
             return FALSE;
         }
         
-        if ( $this->get($old_password, 'password') )
+        // If the user exists
+        if ( $this->get_user_by_username($username) )
         {
+            $this->db->where('username', $username);
             $this->db->where('password', $old_password);
+            
             $this->db->set('password', $new_password);
+            
             $this->db->update('users');
         }
         else
