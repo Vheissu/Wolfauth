@@ -16,6 +16,8 @@ class WolfAuth {
     protected $guest_role;
     protected $admin_roles;
     protected $identity_criteria;
+
+    protected $user_id;
     
     // An array of errors
     protected $error_array = array();
@@ -69,6 +71,9 @@ class WolfAuth {
         {
             $this->CI->session->set_userdata('user_role', $this->guest_role);
         }
+        
+        $this->user_id = $this->CI->session->userdata('user_id');
+
     }
     
     /**
@@ -211,6 +216,37 @@ class WolfAuth {
         {
             show_error($this->CI->lang->line('access_denied'));
         }
+    }
+
+    /**
+    * Restrict a particular function or controller to particular usernames
+    *
+    * @param mixed $allowed_usernames
+    * @param mixed $redirect_to 
+    */
+    public function restrict_usernames($allowed_usernames = array(), $redirect_to = '')
+    {
+        $redirect_to = ($redirect_to == '') ? $this->CI->config->item('base_url') : $redirect_to;
+        $user = $this->get_user_by_id($this->user_id);
+
+        // Make sure usernames have been supplied for restriction
+        if ( !empty($allowed_usernames) )
+        {
+            if (in_array($user->username, $allowed_usernames))
+            {
+                return TRUE;
+            }
+            else
+            {
+                redirect($redirct_to);
+            }
+        }
+        else
+        {
+            show_error($this->CI->lang->line('access_denied'));
+        }
+
+
     }
     
     /**

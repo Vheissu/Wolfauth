@@ -28,7 +28,8 @@ function get_role($userid = 0)
 /**
 * Retrict access to a particular controller or page to people with certain role ID's
 * 
-* @param mixed $roles
+* @param mixed $allowed_roles
+* @param mixed $redirect_to
 * @return bool
 */
 function restrict($allowed_roles = array(), $redirect_to = '')
@@ -37,6 +38,21 @@ function restrict($allowed_roles = array(), $redirect_to = '')
     $CI->load->library('wolfauth');
     
     return $CI->wolfauth->restrict($allowed_roles, $redirect_to);
+}
+
+/**
+* Retrict access to a particular controller or page to people with particular usernames
+* 
+* @param mixed $allowed_usernames
+* @param mixed $redirect_to
+* @return bool
+*/
+function restrict_usernames($allowed_usernames = array(), $redirect_to = '')
+{
+    $CI = &get_instance();
+    $CI->load->library('wolfauth');
+    
+    return $CI->wolfauth->restrict_usernames($allowed_usernames, $redirect_to);
 }
 
 /**
