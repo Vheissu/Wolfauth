@@ -33,7 +33,7 @@ class WolfAuth_model extends CI_Model {
     */
     public function get_user($needle = '', $haystack = '')
     {
-        $this->db->select('users.*, roles.name AS role_name, roles.description AS role_description');
+        $this->db->select('users.*, '. $this->_tables['roles'] .'.name AS role_name, '. $this->_tables['roles'] .'.description AS role_description, ' .$this->_tables['roles']. '.actual_role_id AS role_id ');
         $this->db->where($haystack, $needle);
         
         // Join the user roles 

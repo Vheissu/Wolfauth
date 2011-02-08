@@ -60,6 +60,7 @@ CREATE TABLE `users` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `role_id` bigint(20) unsigned NOT NULL DEFAULT '1',
   `username` varchar(80) NOT NULL,
+  `password` varchar(120) NOT NULL,
   `email` varchar(80) NOT NULL,
   `super_admin` enum('no','yes') NOT NULL DEFAULT 'no',
   `activation_code` varchar(120) DEFAULT NULL,
@@ -70,4 +71,4 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO users VALUES ('1', '5', 'admin', 'admin@website.com', 'yes', null, 'active');
+INSERT INTO users VALUES ('1', '5', 'admin', 'password', 'admin@website.com', 'yes', null, 'active');
