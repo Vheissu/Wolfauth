@@ -22,7 +22,7 @@ function get_role($userid = 0)
     $CI = &get_instance();
     
     $CI->load->library('wolfauth');
-    $CI->wolfauth->get_role($userid); 
+    return $CI->wolfauth->get_role($userid); 
 }
 
 /**
@@ -69,7 +69,7 @@ function is_user($userid = 0)
     $CI = &get_instance();
     
     $CI->load->library('wolfauth');
-    $CI->wolfauth->is_user($userid); 
+    return $CI->wolfauth->is_user($userid); 
 }
 
 /**
@@ -83,7 +83,7 @@ function is_admin($userid = 0)
     $CI = &get_instance();
     
     $CI->load->library('wolfauth');
-    $CI->wolfauth->is_admin($userid); 
+    return $CI->wolfauth->is_admin($userid); 
 }
 
 /**
@@ -97,7 +97,7 @@ function is_guest($userid = 0)
     $CI = &get_instance();
     
     $CI->load->library('wolfauth');
-    $CI->wolfauth->is_guest($userid); 
+    return $CI->wolfauth->is_guest($userid); 
 }
 
 /**

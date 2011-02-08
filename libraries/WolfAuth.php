@@ -346,12 +346,15 @@ class WolfAuth {
         
         if ( $user )
         {
+            
             $this->CI->session->set_userdata(array(
                 'user_id'    => $user->id,
                 'username'   => $user->username,
                 'role_id'    => $user->role_id,
                 'email'      => $user->email
             ));
+            
+            return TRUE;
         }
         
         return FALSE;
