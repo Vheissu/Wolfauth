@@ -22,7 +22,7 @@ $config['tables'] =
 	array(
 
     	'users'     => 'users',
-    	'user_meta' => 'user_meta',
+    	'user_meta' => 'usermeta',
     	'roles'     => 'roles',
 
 	);

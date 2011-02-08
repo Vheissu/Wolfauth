@@ -65,6 +65,7 @@ CREATE TABLE `users` (
   `super_admin` enum('no','yes') NOT NULL DEFAULT 'no',
   `activation_code` varchar(120) DEFAULT NULL,
   `remember_me` longtext(0) DEFAULT NULL,
+  `last_login` int(10) unsigned DEFAULT NULL,
   `status` enum('banned','inactive','active') NOT NULL,
   PRIMARY KEY (`id`,`role_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
