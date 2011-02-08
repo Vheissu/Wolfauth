@@ -24,7 +24,7 @@ class User extends CI_Controller {
         $username = $this->input->post('username');
         $password = $this->input->post('password');
         
-        // Or using the login helper which is the same as above, only cleaner
+        // Login using the helper function
         if ( login($username, $password) )
         {
             // We are logged in baby

@@ -191,7 +191,7 @@ class WolfAuth {
     * @param mixed $password
     * @param bool  $redirect
     */
-    public function login($needle = '', $password = '')
+    public function login($needle = '', $password = '', $redirect = '')
     {   
         if ( $needle == '' OR $password = '' )
         {
@@ -202,6 +202,12 @@ class WolfAuth {
         // Looks like we are already logged in
         if ( $this->CI->session->userdata('user_id') > 0 OR $this->CI->session->userdata('user_role') > 0 )
         {
+            
+            if ($redirect != '')
+            {
+                redirect($redirect);
+            }
+            
             return TRUE;
         }
         
@@ -221,8 +227,16 @@ class WolfAuth {
                 {
                     $this->_set_remember_me($user_id);
                 }
-
-                return TRUE;
+                
+                // If we are redirecting after logging in
+                if ($redirect != '')
+                {
+                    redirect($redirect);
+                }
+                else
+                {
+                    return TRUE;
+                }
             }
             else
             {

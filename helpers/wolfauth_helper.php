@@ -95,12 +95,12 @@ function is_guest($userid = 0)
 * @param mixed $needle
 * @param mixed $password
 */
-function login($needle = '', $password = '')
+function login($needle = '', $password = '', $redirect = '')
 {
     $CI = &get_instance();
     
     $CI->load->library('wolfauth');
-    return $CI->wolfauth->login($needle, $password); 
+    return $CI->wolfauth->login($needle, $password, $redirect); 
 }
 
 /**
