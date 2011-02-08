@@ -197,7 +197,7 @@ class WolfAuth {
         }
         else
         {
-            show_error("Sorry, you are not allowed to access this page.");
+            show_error($this->CI->lang->line('access_denied'));
         }
     }
     
