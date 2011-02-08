@@ -392,7 +392,7 @@ class WolfAuth {
         $this->CI->load->library('encrypt');
 
         $token  = md5(uniqid(rand(), TRUE));
-        $expiry = 60 * 60 * 24 * 7; // One week
+        $expiry = $this->CI->config->item('cookie_expiry', 'wolfauth');
 
         $remember_me = $this->CI->encrypt->encode(serialize(array($userid, $token, $expiry)));
 
@@ -424,7 +424,7 @@ class WolfAuth {
         $cookie_data = get_cookie('wolfauth');
         
         // Cookie Monster: Me want cookie. Me want to know, cookie exist?
-        if($cookie_data)
+        if ( $cookie_data )
         {
             // Set up some default empty variables
             $userid = '';
@@ -435,19 +435,20 @@ class WolfAuth {
             $cookie_data = $this->CI->encrypt->encode(unserialize($cookie_data));
             
             // If we have cookie data
-            if (!empty($cookie_data))
+            if ( !empty($cookie_data) )
             {   
                 // Make sure we have 3 values in our cookie array
-                if (count($cookie_data) == 3)
+                if ( count($cookie_data) == 3 )
                 {
                     // Create variables from array values
                     list($userid, $token, $expiry) = $cookie_data;
                 }
             }
             
-            // Cookie Monster: Me not eat EXPIRED COOKIEEEE!
-            if ((int) $expiry < time())
+            // Cookie Monster: Me not eat, EXPIRED COOKIEEEE!
+            if ( (int) $expiry < time() )
             {
+                delete_cookie('wolfauth');
                 return FALSE;
             }
             
@@ -455,7 +456,7 @@ class WolfAuth {
             $data = $this->CI->wolfauth_model->get_user_by_id($userid);
             
             // If the user obviously exists
-            if ($data)
+            if ( $data )
             {
                 $this->force_login($data->username);
                 $this->set_remember_me($userid);
@@ -463,7 +464,6 @@ class WolfAuth {
                 return TRUE;
             }
 
-            delete_cookie('wolfauth');
         }
         
         // Cookie Monster: ME NOT FIND COOKIE! ME WANT COOOKIEEE!!!
@@ -495,7 +495,7 @@ class WolfAuth {
         $from_name     = $this->CI->config->item('email_from_name','wolfauth');
         
         // Set the email parameters     
-        $this->CI->email->from( $from_address, $from_name);
+        $this->CI->email->from($from_address, $from_name);
         $this->CI->email->to($to);
         $this->CI->email->subject($subject);
         $this->CI->email->message($body);

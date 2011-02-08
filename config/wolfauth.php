@@ -60,6 +60,8 @@ $config['admin_roles'] = array(6,7);
 */
 $config['guest_role'] = 0;
 
+$config['cookie_expiry'] = "60 * 60 * 24 * 7"; // One week expiry
+
 /**
 * Error settings
 */

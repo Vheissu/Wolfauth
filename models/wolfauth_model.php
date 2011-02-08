@@ -66,7 +66,7 @@ class WolfAuth_model extends CI_Model {
     }
     
     /**
-    * Get a users details based on their email address
+    * Get a users details based on their username
     * 
     * @param mixed $username
     */
@@ -91,9 +91,9 @@ class WolfAuth_model extends CI_Model {
     }
     
     /**
-    * Inserts a new user into the database
-    * This function expects the incoming data to match the field
-    * names defined in the users table.
+    * Inserts a new user into the database. This function expects 
+    * the incoming data to match the field names defined in the 
+    * users table.
     * 
     * @param mixed $member_data
     */
@@ -123,7 +123,7 @@ class WolfAuth_model extends CI_Model {
             $user_data['password'] = $this->hash_password($user_data['password']);
         }
 
-        return (!$this->db->update($this->_tables['users'], $user_data)) ? FALSE : TRUE;
+        return ($this->db->update($this->_tables['users'], $user_data)) ? TRUE : FALSE;
     }
     
     /**
@@ -141,14 +141,12 @@ class WolfAuth_model extends CI_Model {
         }
         
         // If the user exists
-        if ( $this->get_user_by_username($username) )
+        if ( $user = $this->get_user_by_username($username) )
         {
-            $this->db->where('username', $username);
-            $this->db->where('password', $old_password);
-            
-            $this->db->set('password', $new_password);
-            
-            $this->db->update('users');
+            $arr['id']       = $user->id;
+            $arr['password'] = $this->hash_password($new_password);
+
+            $this->update_user($arr);
         }
         else
         {
@@ -171,23 +169,6 @@ class WolfAuth_model extends CI_Model {
     }
     
     /**
-    * Update a users status from active, inactive or banned.
-    * 
-    * @param mixed $userid
-    * @param mixed $status
-    * @return mixed
-    */
-    public function update_user_status($userid = '', $status = '')
-    {
-        $data = array(
-            'id'     => $userid,
-            'status' => $status
-        );
-        
-        return $this->update_user($data);
-    }
-    
-    /**
     * Check an activation code sent to confirm a users email
     * 
     * @param mixed $id
@@ -195,12 +176,20 @@ class WolfAuth_model extends CI_Model {
     */
     public function activation_check($userid = '', $authkey = '')
     {
-        $this->db->where('id', $userid);
-        $this->db->where('activation_code', $authkey);
+        $user = $this->db->where('id', $userid)->where('activation_code', $authkey)->get($this->_tables['users']);
 
-        $user = $this->db->get($this->_tables['users']);
-        
-        return ($user->num_rows() == 1) ? TRUE : FALSE ;
+        if ( $user->num_rows() == 1 )
+        {
+            $arr['activation_code'] = '';
+            $arr['id'] = $user->id;
+            $arr['status'] = 'active';
+
+            return $this->update_user($arr);
+        }
+        else
+        {
+            return FALSE;
+        }
     }
     
     /**
@@ -217,7 +206,12 @@ class WolfAuth_model extends CI_Model {
             $this->db->limit($limit, $offset);
         }
         
-        $this->db->select('users.*, user_meta.*, roles.name AS role_name, roles.description AS role_description');
+        $this->db->select('
+        
+            '. $this->_tables['users'] .'.*, 
+            '. $this->_tables['user_meta'] .'.*, 
+            '. $this->_tables['roles'] .'.name AS role_name, 
+            '. $this->_tables['roles'] .'.description AS role_description');
         
         $this->db->join($this->_tables['user_meta'], $this->_tables['user_meta'].'.user_id = '.$this->_tables['users'].'.id');
         $this->db->join($this->_tables['roles'], $this->_tables['roles'].'.actual_role_id = '.$this->_tables['users'].'.role_id');

@@ -64,6 +64,7 @@ CREATE TABLE `users` (
   `email` varchar(80) NOT NULL,
   `super_admin` enum('no','yes') NOT NULL DEFAULT 'no',
   `activation_code` varchar(120) DEFAULT NULL,
+  `remember_me` longtext(0) DEFAULT NULL,
   `status` enum('banned','inactive','active') NOT NULL,
   PRIMARY KEY (`id`,`role_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
@@ -71,4 +72,4 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO users VALUES ('1', '5', 'admin', 'password', 'admin@website.com', 'yes', null, 'active');
+INSERT INTO users VALUES ('1', '5', 'admin', 'password', 'admin@website.com', 'yes', null, null, 'active');
