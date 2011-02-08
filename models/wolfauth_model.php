@@ -209,7 +209,7 @@ class WolfAuth_model extends CI_Model {
     * @param int $password
     * @return string
     */
-    public function hash_password($password = '')
+    protected function hash_password($password = '')
     {
         $this->load->helper('security');
 
