@@ -56,14 +56,14 @@ $config['admin_email'] = "admin@website.com";
 * An array of IDs that have admin priveleges
 * 
 */
-$config['admin_roles'] = array(6,7);
+$config['admin_roles'] = array(4,5);
 
 /**
 * All guest users will be assigned this ID
 * 
 * @var mixed
 */
-$config['guest_role'] = 0;
+$config['guest_role'] = "0";
 
 $config['cookie_expiry'] = "60 * 60 * 24 * 7"; // One week expiry
 

@@ -42,18 +42,32 @@ class WolfAuth {
         $this->CI->load->model('wolfauth_model');
         $this->CI->load->helper('cookie');
         
+        $this->set_defaults();
+        
+        // Check if we remember this user and if we do, log them in
+        $this->do_you_remember_me(); 
+    }
+    
+    /**
+    * Set up some default values for WolfAuth like session data and user roles
+    * 
+    */
+    protected function set_defaults()
+    {
         // Set the default guest role which by default is '0'
         $this->guest_role        = $this->CI->config->item('guest_role', 'wolfauth');
         
-        // Set the default admin role(s) which by default are '6' and '7'
+        // Set the default admin role(s) which by default are '4' and '5'
         $this->admin_roles       = $this->CI->config->item('admin_roles', 'wolfauth');
         
         // Set the default identity criteria (default is username)
         $this->identity_criteria = $this->CI->config->item('identity_criteria', 'wolfauth');
         
-        // Check if we remember this user and if we do, log them in
-        $this->do_you_remember_me(); 
-        
+        // Set default user role
+        if ( !$this->CI->session->userdata('user_role') >= 1 )
+        {
+            $this->CI->session->set_userdata('user_role', $this->guest_role);
+        }
     }
     
     /**
@@ -130,10 +144,11 @@ class WolfAuth {
         if ( $userid == 0 )
         {
             // Return the guest role if no valid user or return the user ID if a valid user is logged in 
-            return ($this->CI->session->userdata('user_role') >= 0) ? $this->CI->session->userdata('user_role') : $this->guest_role;  
+            return ($this->CI->session->userdata('user_role') >= 0) ? $this->CI->session->userdata('user_role') : $this->guest_role;
         }
         else
         {
+            
             // Fetch the user ID of the specific user supplied to this function
             $user = $this->CI->wolfauth_model->get_user_by_id($userid);
             
