@@ -16,32 +16,32 @@ All examples are to be inside of controllers, NOT models and NOT libraries or vi
 
 ## Simple login example with login redirection
 
-$this->load->library('wolfauth');
-$this->load->helper('wolfauth');
+    $this->load->library('wolfauth');
+    $this->load->helper('wolfauth');
 
-$redirect_url = base_url();
+    $redirect_url = base_url();
 
-//If login was successful we will be redirected
-$login = login($username, $password, $redirect = $redirect_url);
+    //If login was successful we will be redirected
+    $login = login($username, $password, $redirect = $redirect_url);
 
-if ( !$login )
-{
-	// Login failed
-}
+    if ( !$login )
+    {
+	    // Login failed
+    }
 
 ## Simple login example without login redirection
 
-$this->load->library('wolfauth');
-$this->load->helper('wolfauth');
+    $this->load->library('wolfauth');
+    $this->load->helper('wolfauth');
 
-//If login was successful we will be redirected
-$login = login($username, $password);
+    //If login was successful we will be redirected
+    $login = login($username, $password);
 
-if ( $login )
-{
-	// Login successful
-}
-else
-{
-	// Login failed
-}
+    if ( $login )
+    {
+	    // Login successful
+    }
+    else
+    {
+	    // Login failed
+    }
