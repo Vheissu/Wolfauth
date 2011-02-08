@@ -22,7 +22,7 @@ All examples are to be inside of controllers, NOT models and NOT libraries or vi
     $redirect_url = base_url();
 
     //If login was successful we will be redirected
-    $login = login($username, $password, $redirect = $redirect_url);
+    $login = login($username, $password, $redirect_url);
 
     if ( !$login )
     {
