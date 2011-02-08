@@ -66,6 +66,7 @@ class WolfAuth {
         // Set the default identity criteria (default is username)
         $this->identity_criteria = $this->CI->config->item('identity_criteria', 'wolfauth');
         
+        // Store the current user ID in this class for easier reference
         $this->user_id = $this->CI->session->userdata('user_id');
 
     }
@@ -122,7 +123,7 @@ class WolfAuth {
     */
     public function is_logged_in()
     {
-        return $this->CI->session->userdata('user_id') ? TRUE : FALSE;
+        return $this->user_id ? TRUE : FALSE;
     }
     
     /**
@@ -179,7 +180,7 @@ class WolfAuth {
     */
     public function get_this_user()
     {        
-        return $this->get_user_by_id($this->CI->session->userdata('user_id'));
+        return $this->get_user_by_id($this->user_id);
     }
     
     /**
@@ -283,7 +284,7 @@ class WolfAuth {
         }
         
         // Looks like we are already logged in
-        if ( $this->CI->session->userdata('user_id') > 0 OR $this->CI->session->userdata('user_role') > 0 )
+        if ( $this->user_id > 0 OR $this->CI->session->userdata('user_role') > 0 )
         {
             
             if ($redirect != '')
@@ -344,15 +345,13 @@ class WolfAuth {
     */
     public function logout($redirect = '')
     {
-        $user_id = $this->CI->session->userdata('user_id');
-
         $this->CI->session->sess_destroy();
 
         $this->CI->load->helper('cookie');
         delete_cookie('wolfauth');
 
         $user_data = array(
-            'id' => $user_id,
+            'id' => $this->user_id,
             'remember_me' => ''
         );
         
