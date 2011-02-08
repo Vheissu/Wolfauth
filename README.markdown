@@ -1,4 +1,4 @@
-h1.WolfAuth for Codeigniter 2.0+
+# WolfAuth for Codeigniter 2.0+
 
 WolfAuth is a role based authentication library for Codeigniter versions 2.0 and up. It's not overly complex, but will allow you to restrict access to things based on role ID's, login users, add users, edit users, delete users and lots of other stuff you would expect in an auth library.
 
