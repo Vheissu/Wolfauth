@@ -170,6 +170,7 @@ class WolfAuth_model extends CI_Model {
     
     /**
     * Check an activation code sent to confirm a users email
+    * If found, then activate the user.
     * 
     * @param mixed $id
     * @param mixed $authkey
@@ -207,7 +208,7 @@ class WolfAuth_model extends CI_Model {
         }
         
         $this->db->select('
-        
+
             '. $this->_tables['users'] .'.*, 
             '. $this->_tables['user_meta'] .'.*, 
             '. $this->_tables['roles'] .'.name AS role_name, 

@@ -202,15 +202,26 @@ class WolfAuth {
     }
     
     /**
-    * Activate a usser based on the provided auth key for
+    * Activate a user based on the provided auth key for
     * activating a user as defined in the users table.
     * 
-    * @param mixed $needle
+    * @param mixed $userid
     * @param mixed $authkey
     */
-    public function activate_user($needle = '', $authkey = '')
+    public function activate_user($userid = '', $authkey = '')
     {
-        //$this->CI->wolfauth_model;
+        $action = $this->CI->wolfauth_model->activate_user($userid, $authkey);
+
+        // If the user was activated
+        if ($action)
+        {
+            // Are we sending an email after activating?
+            if ( $this->CI->config->item('send_email_after_activation') )
+            {
+                
+            }
+        }
+
     }
     
     /**
@@ -405,7 +416,7 @@ class WolfAuth {
         // For DB insertion
         $cookie_db_data = array(
             'id' => $userid, 
-            'remember_me'=>$remember_me
+            'remember_me' => $remember_me
         );
 
         set_cookie($cookie);

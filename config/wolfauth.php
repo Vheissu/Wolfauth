@@ -18,11 +18,16 @@
 * 'roles' is the site roles table
 * 
 */
-$config['tables'] = array(
-    'users'     => 'users',
-    'user_meta' => 'user_meta',
-    'roles'     => 'roles',
-);
+$config['tables'] = 
+	array(
+
+    	'users'     => 'users',
+    	'user_meta' => 'user_meta',
+    	'roles'     => 'roles',
+
+	);
+
+$config['send_email_after_activation'] = TRUE;
 
 /**
 * When generating a random password this is the
