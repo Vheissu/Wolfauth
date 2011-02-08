@@ -12,4 +12,36 @@ Why not? Can you honestly say there is a great range of updated auth libraries f
 
 The library has a user controller for showing off the functionality, but here are some more precise examples.
 
-(coming shortly)
+All examples are to be inside of controllers, NOT models and NOT libraries or views.
+
+## Simple login example with login redirection
+
+$this->load->library('wolfauth');
+$this->load->helper('wolfauth');
+
+$redirect_url = base_url();
+
+//If login was successful we will be redirected
+$login = login($username, $password, $redirect = $redirect_url);
+
+if ( !$login )
+{
+	// Login failed
+}
+
+## Simple login example without login redirection
+
+$this->load->library('wolfauth');
+$this->load->helper('wolfauth');
+
+//If login was successful we will be redirected
+$login = login($username, $password);
+
+if ( $login )
+{
+	// Login successful
+}
+else
+{
+	// Login failed
+}
