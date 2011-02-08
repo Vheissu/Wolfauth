@@ -61,6 +61,13 @@ $config['admin_roles'] = array(6,7);
 $config['guest_role'] = 0;
 
 /**
+* put your comment there...
+* 
+* @var mixed
+*/
+$config['restricted_redirect_url'] = base_url();
+
+/**
 * Error settings
 */
 

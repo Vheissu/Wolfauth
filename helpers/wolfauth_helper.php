@@ -26,6 +26,20 @@ function get_role($userid = 0)
 }
 
 /**
+* Retrict access to a particular controller or page to people with certain role ID's
+* 
+* @param mixed $roles
+* @return bool
+*/
+function restrict($roles = array())
+{
+    $CI = &get_instance();
+    $CI->config->load('wolfauth', 'wolfauth');
+    $role_id = get_role();
+    return (in_array($role_id, $roles)) ? TRUE : redirect($CI->config->item('restricted_redirect_url', 'wolfauth'));
+}
+
+/**
 * If there is post data then there was a post request. This simple helper is 
 * a conditional check and is the same as going:
 *  
