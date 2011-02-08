@@ -66,12 +66,6 @@ class WolfAuth {
         // Set the default identity criteria (default is username)
         $this->identity_criteria = $this->CI->config->item('identity_criteria', 'wolfauth');
         
-        // Set default user role
-        if ( !$this->CI->session->userdata('user_role') >= 1 )
-        {
-            $this->CI->session->set_userdata('user_role', $this->guest_role);
-        }
-        
         $this->user_id = $this->CI->session->userdata('user_id');
 
     }
