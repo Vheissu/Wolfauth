@@ -36,7 +36,7 @@ function restrict($allowed_roles = array(), $redirect_to = '')
     $CI = &get_instance();
     $CI->load->library('wolfauth');
     
-    return $CI->wolfauth->restrict($roles, $redirect_to);
+    return $CI->wolfauth->restrict($allowed_roles, $redirect_to);
 }
 
 /**

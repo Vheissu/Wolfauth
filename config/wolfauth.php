@@ -65,11 +65,17 @@ $config['admin_roles'] = array(4,5);
 */
 $config['guest_role'] = "0";
 
+/**
+* How long remembet me cookies last for?
+* The default is one week.
+*
+* @var mixed
+*/
 $config['cookie_expiry'] = "60 * 60 * 24 * 7"; // One week expiry
 
-/**
-* Error settings
-*/
+// =========================
+// Error Settings
+// =========================
 
 /**
 * What is placed before the error message?
@@ -85,9 +91,9 @@ $config['error_prefix'] = "<p class='wolfauth_error'>";
 */
 $config['error_suffix'] = "</p>";
 
-/**
-* Email settings
-*/
+// =========================
+// Email Settings
+// =========================
 
 /**
 * Usually this would be the admin email,

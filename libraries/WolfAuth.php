@@ -42,6 +42,7 @@ class WolfAuth {
         $this->CI->load->model('wolfauth_model');
         $this->CI->load->helper('cookie');
         
+        // Sets some defaults for roles, etc.
         $this->set_defaults();
         
         // Check if we remember this user and if we do, log them in
@@ -75,12 +76,9 @@ class WolfAuth {
     * Uses the array of admin ID's in the wolf_auth config file.
 	*/
     public function is_admin($userid = 0)
-    {
-        // Get the current user role ID
-    	$role_id = $this->get_role($userid);
-        
+    {   
         // Conditional to return TRUE or FALSE if the user has an admin ID
-        return (in_array($role_id, $this->admin_roles)) ? TRUE : FALSE;
+        return (in_array($this->get_role($userid), $this->admin_roles)) ? TRUE : FALSE;
     }
     
     /**
@@ -93,9 +91,8 @@ class WolfAuth {
     */
     public function is_user($userid = 0)
     {
-        $role_id = $this->get_role($userid);
-        
-        return ($role_id > 0) ? TRUE : FALSE;
+        // If user role is greater thsn 0, return true        
+        return ($this->get_role($userid) > 0) ? TRUE : FALSE;
     }
     
     /**
@@ -105,10 +102,8 @@ class WolfAuth {
     * @param mixed $userid
     */
     public function is_guest($userid = 0)
-    {
-        $role_id = $this->get_role($userid);
-        
-        return ($role_id == 0) ? TRUE : FALSE;
+    {        
+        return ($this->get_role($userid) == 0) ? TRUE : FALSE;
     }
     
     /**
@@ -148,7 +143,6 @@ class WolfAuth {
         }
         else
         {
-            
             // Fetch the user ID of the specific user supplied to this function
             $user = $this->CI->wolfauth_model->get_user_by_id($userid);
             
@@ -157,7 +151,10 @@ class WolfAuth {
             {
                 return $user->role_id;
             }
-            
+            else
+            {
+                return FALSE;
+            }   
         }
         
         // Looks like we're doomed
@@ -194,7 +191,7 @@ class WolfAuth {
     */
     public function restrict($allowed_roles = array(), $redirect_to = '')
     {
-        $redirect_to = ($redirect_to == "") ? $this->CI->config->item('base_url') : $redirect_to;
+        $redirect_to = ($redirect_to == '') ? $this->CI->config->item('base_url') : $redirect_to;
         $role_id     = $this->get_role();
         
         // If we have allowed roles defined

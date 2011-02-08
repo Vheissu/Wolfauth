@@ -26,26 +26,6 @@ class WolfAuth_model extends CI_Model {
     }
     
     /**
-    * Get a user based on identity criteria
-    * 
-    * @param mixed $needle
-    * @param mixed $haystack
-    */
-    public function get_user($needle = '', $haystack = '')
-    {
-        $this->db->select(''. $this->_tables['users'] .'.*, '. $this->_tables['roles'] .'.name AS role_name, '. $this->_tables['roles'] .'.description AS role_description');
-        
-        $this->db->where($haystack, $needle);
-        
-        // Join the user roles 
-        $this->db->join($this->_tables['roles'], $this->_tables['roles'].'.actual_role_id = '.$this->_tables['users'].'.role_id');
-
-        $user = $this->db->get($this->_tables['users']);
-        
-        return ($user->num_rows() == 1) ? $user->row() : FALSE;
-    }
-    
-    /**
     * Get a users details based on their user ID
     * 
     * @param mixed $id
@@ -233,6 +213,7 @@ class WolfAuth_model extends CI_Model {
     * Create a password hash
     * 
     * @param int $password
+    * @access private
     * @return string
     */
     protected function hash_password($password = '')
@@ -259,6 +240,26 @@ class WolfAuth_model extends CI_Model {
         
         return random_string('alnum', $length);
         
+    }
+    
+    /**
+    * Get a user based on identity criteria
+    * 
+    * @param mixed $needle
+    * @param mixed $haystack
+    */
+    public function get_user($needle = '', $haystack = '')
+    {
+        $this->db->select(''. $this->_tables['users'] .'.*, '. $this->_tables['roles'] .'.name AS role_name, '. $this->_tables['roles'] .'.description AS role_description');
+        
+        $this->db->where($haystack, $needle);
+        
+        // Join the user roles 
+        $this->db->join($this->_tables['roles'], $this->_tables['roles'].'.actual_role_id = '.$this->_tables['users'].'.role_id');
+
+        $user = $this->db->get($this->_tables['users']);
+        
+        return ($user->num_rows() == 1) ? $user->row() : FALSE;
     }
     
 }
