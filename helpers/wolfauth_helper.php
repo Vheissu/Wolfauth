@@ -31,12 +31,12 @@ function get_role($userid = 0)
 * @param mixed $roles
 * @return bool
 */
-function restrict($roles = array())
+function restrict($allowed_roles = array(), $redirect_to = '')
 {
     $CI = &get_instance();
-    $CI->config->load('wolfauth', 'wolfauth');
-    $role_id = get_role();
-    return (in_array($role_id, $roles)) ? TRUE : redirect($CI->config->item('restricted_redirect_url', 'wolfauth'));
+    $CI->load->library('wolfauth');
+    
+    return $CI->wolfauth->restrict($roles, $redirect_to);
 }
 
 /**

@@ -172,6 +172,36 @@ class WolfAuth {
     }
     
     /**
+    * Restrict a particular function or controller to particular user ID's
+    * 
+    * @param mixed $allowed_roles
+    * @param mixed $redirect_to
+    */
+    public function restrict($allowed_roles = array(), $redirect_to = '')
+    {
+        $redirect_to = ($redirect_to == "") ? $this->CI->config->item('base_url') : $redirect_to;
+        $role_id     = $this->get_role();
+        
+        // If we have allowed roles defined
+        if (!empty($allowed_roles))
+        {
+            // If the role is in the allowed roles list
+            if (in_array($role_id, $allowed_roles))
+            {
+                return TRUE;   
+            }
+            else
+            {
+                redirect($redirect_to);
+            }   
+        }
+        else
+        {
+            show_error("Sorry, you are not allowed to access this page.");
+        }
+    }
+    
+    /**
     * Activate a usser based on the provided auth key for
     * activating a user as defined in the users table.
     * 
