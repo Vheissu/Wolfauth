@@ -6,4 +6,10 @@ This library isn't really tested, so if you find any bugs please log and issue a
 
 ## Why another authentication library for Codeigniter?
 
-Why not? Can you honestly say there is a great range of updated auth libraries for Codeigniter around that work flawlessly with Codeigniter 2.0 and up? One of the crucial pieces of Codeigniter is missing, Auth. The Reactor developers understand the need, but have yet to implement anything.
+Why not? Can you honestly say there is a great range of updated auth libraries for Codeigniter around that work flawlessly with Codeigniter 2.0 and up? One of the crucial pieces of Codeigniter is missing, Auth. The Reactor developers understand the need, but have yet to implement anything. I would like to also point out WolfAuth is NOT ACL. ACL is completely different to auth and does not let you authenticate users. ACL is probably overkill for most Codeigniter applications and those that need it can just use Zend ACL. Having said that, I am planning on including a hybrid type ACL in WolfAuth sometime down the track.
+
+## Using The Library
+
+The library has a user controller for showing off the functionality, but here are some more precise examples.
+
+(coming shortly)
