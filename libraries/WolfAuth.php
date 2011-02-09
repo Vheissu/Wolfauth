@@ -235,6 +235,10 @@ class WolfAuth {
                 $this->message_array[] = $this->CI->lang->line('account_activated');
             }
         }
+        else
+        {
+            $this->error_array[] = $this->CI->lang->line('account_activation_error');
+        }
 
     }
     
@@ -295,7 +299,7 @@ class WolfAuth {
             }
             else
             {
-                $this->error_array[] = $this->CI->lang->line('account_not_found');
+                $this->error_array[] = $this->CI->lang->line('password_incorrect');
                 
                 return FALSE;
             }
@@ -378,7 +382,7 @@ class WolfAuth {
     */
     public function username_exists($username)
     {
-        return $this->wolfauth_model->get_user_by_username($username);
+        return $this->wolfauth_model->get_user_by_username($username) ? TRUE : FALSE;
     }
     
     /**
@@ -417,7 +421,7 @@ class WolfAuth {
     }
     
     /**
-    * Gets errors from errors array and wraps them in delimiters
+    * Gets message(s) from messages array and wraps them in delimiters
     * Parts of this function are using bits of code from the 
     * Codeigniter form_validation library function error_string.
     * 
