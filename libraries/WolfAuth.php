@@ -211,6 +211,7 @@ class WolfAuth {
     */
     public function activate_user($userid = '', $authkey = '')
     {
+        // Activate the user
         $action = $this->CI->wolfauth_model->activate_user($userid, $authkey);
 
         // If the user was activated
@@ -219,7 +220,8 @@ class WolfAuth {
             // Are we sending an email after activating?
             if ( $this->CI->config->item('send_email_after_activation') )
             {
-                
+                $user = $this->get_user_by_id($userid);
+                $this->_send_email($user->email, "Your account has been activated!", "Your account has been successfully activated.");
             }
         }
 
@@ -296,9 +298,8 @@ class WolfAuth {
     }
     
     /**
-    * I wonder what this function does?
-    * I think it logs a user out, but I can't
-    * be sure. I've had a few drinks.
+    * I wonder what this function does? I think it logs a user out, but I 
+    * can't be sure. I've had a few drinks.
     * 
     */
     public function logout($redirect = '')
@@ -345,7 +346,6 @@ class WolfAuth {
         
         if ( $user )
         {
-            
             $this->CI->session->set_userdata(array(
                 'user_id'    => $user->id,
                 'username'   => $user->username,
