@@ -42,6 +42,7 @@ class WolfAuth {
         $this->CI->load->database();
         $this->CI->load->config('wolfauth', TRUE);
         $this->CI->lang->load('wolfauth');
+        $this->CI->lang->load('wolfauth_email');
         $this->CI->load->library('session');
         $this->CI->load->library('email');
         $this->CI->load->model('wolfauth_model');
@@ -224,7 +225,10 @@ class WolfAuth {
             if ( $this->CI->config->item('send_email_after_activation') )
             {
                 $user = $this->get_user_by_id($userid);
-                $this->_send_email($user->email, "Your account has been activated!", "Your account has been successfully activated.");
+                
+                $body = $this->load->view('wolfauth/emails/account_activated', '', TRUE);
+                
+                $this->_send_email($user->email, $this->CI->lang->line('user_activated_subject'), $body);
             }
             else
             {
