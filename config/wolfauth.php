@@ -27,7 +27,35 @@ $config['tables'] =
 
 	);
 
+/**
+* Send an email to a user after they activate their account
+* 
+* @var mixed
+*/
 $config['send_email_after_activation'] = TRUE;
+
+/**
+* Require activation of user accounts?
+* Default: true
+* 
+* @var mixed
+*/
+$config['require_activation'] = TRUE;
+
+/**
+* Activation Method
+* How is the user to be activated?
+* Supported values: auto and manual.
+* Default: auto
+* 
+* Auto means that an email is sent to the user
+* asking them to activate their account and manual
+* means that a site administrator must activate
+* the account.
+* 
+* @var mixed
+*/
+$config['activation_method'] = "email";
 
 /**
 * When generating a random password this is the
