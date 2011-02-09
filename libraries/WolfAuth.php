@@ -22,6 +22,9 @@ class WolfAuth {
     // An array of errors
     protected $error_array = array();
     
+    // An array of messages
+    protected $message_array = array();
+    
     /**
     * Constructor function
     * 
@@ -222,6 +225,10 @@ class WolfAuth {
             {
                 $user = $this->get_user_by_id($userid);
                 $this->_send_email($user->email, "Your account has been activated!", "Your account has been successfully activated.");
+            }
+            else
+            {
+                $this->message_array[] = $this->CI->lang->line('account_activated');
             }
         }
 
