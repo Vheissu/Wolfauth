@@ -44,18 +44,19 @@ $config['require_activation'] = TRUE;
 
 /**
 * Activation Method
-* How is the user to be activated?
+* How is the user to be activated? 
+* 
 * Supported values: auto and manual.
 * Default: auto
 * 
-* Auto means that an email is sent to the user
-* asking them to activate their account and manual
+* AUTO means that an email is sent to the user
+* asking them to activate their account and MANUAL
 * means that a site administrator must activate
 * the account.
 * 
 * @var mixed
 */
-$config['activation_method'] = "email";
+$config['activation_method'] = "AUTO";
 
 /**
 * When generating a random password this is the
