@@ -103,20 +103,6 @@ function is_admin($userid = 0)
 }
 
 /**
-* Check if a user is a guest. Calling this function by itself
-* without arguments will check the current user.
-* 
-* @param mixed $userid
-*/
-function is_guest($userid = 0)
-{
-    $CI = &get_instance();
-    
-    $CI->load->library('wolfauth');
-    return $CI->wolfauth->is_guest($userid); 
-}
-
-/**
 * Log a user into the site by supplying the needle and password. 
 * The needle is the value being sent from your login form by 
 * default it is a username, but you can change this in the 
