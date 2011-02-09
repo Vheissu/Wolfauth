@@ -96,17 +96,6 @@ class WolfAuth {
     }
     
     /**
-    * Check if the current user is a guest
-    * A guest user will always have a role ID of 1
-    * 
-    * @param mixed $userid
-    */
-    public function is_guest($userid = 0)
-    {        
-        return ($this->get_role($userid) == 0) ? TRUE : FALSE;
-    }
-    
-    /**
     * If email or manual activation is required, this function will check
     * if the current user has been activated or not.
     * 
@@ -240,8 +229,6 @@ class WolfAuth {
         {
             show_error($this->CI->lang->line('access_denied'));
         }
-
-
     }
     
     /**
