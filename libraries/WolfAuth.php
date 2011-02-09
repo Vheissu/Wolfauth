@@ -580,7 +580,23 @@ class WolfAuth {
         
         // Return the result
         return $this->CI->email->send();     
-       
+    }
+    
+    /**
+    * Parses pseudo variables inside of strings and replaces
+    * them with their proper values as defined in the wolfauth_pseudo
+    * config file.
+    * 
+    */
+    public function parse_pseudo_variables($string)
+    {
+        $this->CI->load->config('pseudo_vars');
+        
+        $str = '';
+        if ( $this->CI->config->item($string) )
+        {
+            //
+        }
     }
     
 }
