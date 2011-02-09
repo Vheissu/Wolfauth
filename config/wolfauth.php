@@ -92,6 +92,24 @@ $config['error_prefix'] = "<p class='wolfauth_error'>";
 $config['error_suffix'] = "</p>";
 
 // =========================
+// Message Settings
+// =========================
+
+/**
+* What is placed before the message?
+* 
+* @var mixed
+*/
+$config['message_prefix'] = "<p class='wolfauth_message'>";
+
+/**
+* What is placed at the end of the message?
+* 
+* @var mixed
+*/
+$config['message_suffic'] = "</p>";
+
+// =========================
 // Email Settings
 // =========================
 

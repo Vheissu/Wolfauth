@@ -417,6 +417,41 @@ class WolfAuth {
     }
     
     /**
+    * Gets errors from errors array and wraps them in delimiters
+    * Parts of this function are using bits of code from the 
+    * Codeigniter form_validation library function error_string.
+    * 
+    */
+    public function get_messages($prefix = '', $suffix = '')
+    {
+        if (count($this->messages_array) === 0)
+        {
+            return '';
+        }
+        
+        if ($prefix == '')
+        {
+            $prefix = $this->CI->config->item('message_prefix', 'wolfauth');
+        }
+        
+        if ($suffix == '')
+        {
+            $suffix = $this->CI->config->item('message_suffix', 'wolfauth');
+        }
+        
+        $str = '';
+        foreach ($this->messages_array as $val)
+        {
+            if ($val != '')
+            {
+                $str .= $prefix.$val.$suffix."\n";
+            }
+        }
+
+        return $str;
+    }
+    
+    /**
     * Sets a remember me cookie
     * 
     * @param mixed $userid
