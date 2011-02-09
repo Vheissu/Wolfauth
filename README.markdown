@@ -45,3 +45,25 @@ All examples are to be inside of controllers, NOT models and NOT libraries or vi
     {
 	    // Login failed
     }
+    
+## Restrict access to a controller function by Role ID
+
+    $this->load->library('wolfauth');
+    $this->load->helper('wolfauth');
+
+    public function dashboard()
+    {
+        // Restrict the dashboard function to users with a role of 4 or 5.
+        restrict(array(4,5);
+    }
+    
+## Restrict access to a controller function by Username
+
+    $this->load->library('wolfauth');
+    $this->load->helper('wolfauth');
+
+    public function dashboard()
+    {
+        // Restrict the dashboard function to users with a username of superadmin or admin.
+        restrict_usernames(array('superadmin', 'admin');
+    }

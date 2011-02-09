@@ -155,7 +155,7 @@ class WolfAuth_model extends CI_Model {
     * @param mixed $id
     * @param mixed $authkey
     */
-    public function activation_check($userid = '', $authkey = '')
+    public function validate_user($userid = '', $authkey = '')
     {
         $user = $this->db->where('id', $userid)->where('activation_code', $authkey)->get($this->_tables['users']);
 
