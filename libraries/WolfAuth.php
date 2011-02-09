@@ -360,6 +360,17 @@ class WolfAuth {
     }
     
     /**
+    * Check if a username already exists in the database and if it does
+    * return true.
+    * 
+    * @param mixed $username
+    */
+    public function username_exists($username)
+    {
+        return $this->wolfauth_model->get_user_by_username($username);
+    }
+    
+    /**
     * Gets errors from errors array and wraps them in delimiters
     * Parts of this function are using bits of code from the 
     * Codeigniter form_validation library function error_string.
