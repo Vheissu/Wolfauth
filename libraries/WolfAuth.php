@@ -96,17 +96,6 @@ class WolfAuth {
     }
     
     /**
-    * If email or manual activation is required, this function will check
-    * if the current user has been activated or not.
-    * 
-    * @param mixed $userid
-    */
-    public function is_activated($userid = 0)
-    {
-        
-    }
-    
-    /**
     * Is there a logged in user
     * 
     */
