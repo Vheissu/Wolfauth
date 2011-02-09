@@ -32,12 +32,12 @@ function get_role($userid = 0)
 * @param mixed $redirect_to
 * @return bool
 */
-function restrict($allowed_roles = array(), $redirect_to = '')
+function restrict($needles = array(), $redirect_to = '')
 {
     $CI = &get_instance();
     $CI->load->library('wolfauth');
     
-    return $CI->wolfauth->restrict($allowed_roles, $redirect_to);
+    return $CI->wolfauth->restrict($needles, 'roleid', $redirect_to);
 }
 
 /**
@@ -47,12 +47,12 @@ function restrict($allowed_roles = array(), $redirect_to = '')
 * @param mixed $redirect_to
 * @return bool
 */
-function restrict_usernames($allowed_usernames = array(), $redirect_to = '')
+function restrict_usernames($needles = array(), $redirect_to = '')
 {
     $CI = &get_instance();
     $CI->load->library('wolfauth');
     
-    return $CI->wolfauth->restrict_usernames($allowed_usernames, $redirect_to);
+    return $CI->wolfauth->restrict($needles, 'username', $redirect_to);
 }
 
 /**

@@ -152,7 +152,7 @@ class WolfAuth {
     }
     
     /**
-    * Fetches a user by ID
+    * Fetches a user by their user ID
     * 
     * @param mixed $userid
     */
@@ -164,7 +164,7 @@ class WolfAuth {
     
     /**
     * Get this user will get the currently logged in user
-    * and then return an object of user data
+    * and then return an object of user data for them.
     * 
     */
     public function get_this_user()
@@ -178,16 +178,27 @@ class WolfAuth {
     * @param mixed $allowed_roles
     * @param mixed $redirect_to
     */
-    public function restrict($allowed_roles = array(), $redirect_to = '')
+    public function restrict($needles = array(), $restrict = "roleid", $redirect_to = '')
     {
         $redirect_to = ($redirect_to == '') ? $this->CI->config->item('base_url') : $redirect_to;
-        $role_id     = $this->get_role();
+        
+        // If we are restricting to role ID's
+        if ( $restrict == "roleid" )
+        {
+            $criteria = $this->get_role();   
+        }
+        // Are we restricting to usernames
+        elseif ( $restrict == 'username' )
+        {
+            $user = $this->get_this_user();
+            $criteria = $user->username;    
+        }
         
         // If we have allowed roles defined
-        if (!empty($allowed_roles))
+        if (!empty($needles))
         {
             // If the role is in the allowed roles list
-            if (in_array($role_id, $allowed_roles))
+            if (in_array($criteria, $needles))
             {
                 return TRUE;   
             }
@@ -195,35 +206,6 @@ class WolfAuth {
             {
                 redirect($redirect_to);
             }   
-        }
-        else
-        {
-            show_error($this->CI->lang->line('access_denied'));
-        }
-    }
-
-    /**
-    * Restrict a particular function or controller to particular usernames
-    *
-    * @param mixed $allowed_usernames
-    * @param mixed $redirect_to 
-    */
-    public function restrict_usernames($allowed_usernames = array(), $redirect_to = '')
-    {
-        $redirect_to = ($redirect_to == '') ? $this->CI->config->item('base_url') : $redirect_to;
-        $user = $this->get_user_by_id($this->user_id);
-
-        // Make sure usernames have been supplied for restriction
-        if ( !empty($allowed_usernames) )
-        {
-            if (in_array($user->username, $allowed_usernames))
-            {
-                return TRUE;
-            }
-            else
-            {
-                redirect($redirct_to);
-            }
         }
         else
         {
