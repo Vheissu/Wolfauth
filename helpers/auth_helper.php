@@ -139,6 +139,19 @@ function login($needle = '', $password = '', $redirect = '')
     return $CI->auth_model->login($needle, $password, $redirect); 
 }
 
+/**
+* Forcefully log a user in without a password. Good for testing.
+* 
+* @param mixed $needle
+*/
+function force_login($needle = '')
+{
+    $CI = &get_instance();
+    
+    $CI->load->model('auth_model');
+    return $CI->auth_model->force_login($needle); 
+}
+
 function logout($redirect = '')
 {
     $CI = &get_instance();
