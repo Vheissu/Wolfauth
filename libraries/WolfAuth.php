@@ -585,12 +585,34 @@ class WolfAuth {
     /**
     * Parses a pseudo variable and returns its true value.
     *
-    * @param mixed $template
-    * @param mixed $data
+    * Pseduo variables are found in the pseudo variable
+    * config file.
+    *
+    * @param mixed $key
+    * @param mixed $string
     */
-    public function parse_pseduo_string($template, $data)
+    function parse_pseudo_variables($keys = array(), $string)
     {
+        if (is_array($keys))
+        {
+            $config_values = array();
 
+            // For every key get it's value
+            foreach($keys as $key)
+            {
+                // Get the config item value!
+                $config_values[$keys] = $this->CI->config->item($key);
+            }
+
+            $string = '';
+
+            foreach($config_values AS $key => $value)
+            {
+                $string = str_replace($key, $value, $string);
+            }
+        }
+
+        return $string;
     }
 
 }
