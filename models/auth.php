@@ -42,6 +42,13 @@ class Auth extends CI_Model {
         $this->load->library('session');
         $this->load->library('email');
 
+        /**
+        * Set some default values like guest roles and admin roles.
+        * Most of the following is defined in the auth.php file
+        * in the config folder.
+        * 
+        * @var Auth
+        */
         $this->guest_role        = $this->config->item('guest_role', 'auth');
         $this->admin_roles       = $this->config->item('admin_roles', 'auth');
         $this->identity_criteria = $this->config->item('identity_criteria', 'auth');
