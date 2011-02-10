@@ -9,6 +9,8 @@
 * @link http://ilikekillnerds.com
 */
 
+@include_once "pseudo_vars.php";
+
 
 /**
 * Define the tables that WolfAuth needs for database shiz
@@ -26,6 +28,8 @@ $config['tables'] =
     	'roles'     => 'roles',
 
 	);
+	
+$config['site_name'] = "WolfAuth";
 
 /**
 * Send an email to a user after they activate their account

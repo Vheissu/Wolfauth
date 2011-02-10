@@ -591,32 +591,9 @@ class WolfAuth {
     * @param mixed $key
     * @param mixed $string
     */
-    function parse_pseudo_variables($keys = array(), $string)
+    function parse_pseudo_variables($string ='')
     {
-        if (is_array($keys))
-        {
-            $config_values = array();
-
-            // For every key get it's value
-            foreach($keys as $key)
-            {
-                // Get the config item value!
-                $config_values[$keys] = $this->CI->config->item($key);
-            }
-
-            $return_string = '';
-
-            foreach($config_values AS $key => $value)
-            {
-                $return_string = str_replace($key, $value, $string);
-            }
-        }
-        else
-        {
-            $return_string = str_replace($key, $this->CI->item($key), $string);
-        }
-
-        return $return_string;
+        // Need to revisit this.
     }
 
 }
