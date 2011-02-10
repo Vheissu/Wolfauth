@@ -103,6 +103,26 @@ function is_admin($userid = 0)
 }
 
 /**
+* Is there someone currently logged in?
+* 
+*/
+function is_logged_in()
+{
+    $CI = &get_instance();
+    
+    $CI->load->model('auth_model');
+    return $CI->auth_model->is_logged_in(); 
+}
+
+function username_exists($username = '')
+{
+    $CI = &get_instance();
+    
+    $CI->load->model('auth_model');
+    return $CI->auth_model->username_exists($username);  
+}
+
+/**
 * Log a user into the site by supplying the needle and password. 
 * The needle is the value being sent from your login form by 
 * default it is a username, but you can change this in the 
@@ -117,6 +137,124 @@ function login($needle = '', $password = '', $redirect = '')
     
     $CI->load->model('auth_model');
     return $CI->auth_model->login($needle, $password, $redirect); 
+}
+
+function logout($redirect = '')
+{
+    $CI = &get_instance();
+    
+    $CI->load->model('auth_model');
+    return $CI->auth_model->logout($redirect); 
+}
+
+// User info retrieving functions
+
+function get_this_user()
+{
+    $CI = &get_instance();
+    
+    $CI->load->model('auth_model');
+    return $CI->auth_model->get_this_user(); 
+}
+
+function get_user_by_id($userid = 0)
+{
+    $CI = &get_instance();
+    
+    $CI->load->model('auth_model');
+    return $CI->auth_model->get_user_by_id($userid);   
+}
+
+function get_user_by_email($email = '')
+{
+    $CI = &get_instance();
+    
+    $CI->load->model('auth_model');
+    return $CI->auth_model->get_user_by_email($email); 
+}
+
+function get_user_by_username($username = '')
+{
+    $CI = &get_instance();
+    
+    $CI->load->model('auth_model');
+    return $CI->auth_model->get_user_by_username($username); 
+}
+
+function get_user_meta($key = '')
+{
+    $CI = &get_instance();
+    
+    $CI->load->model('auth_model');
+    return $CI->auth_model->get_user_meta($key);
+}
+
+function get_users($limit = '', $offset = 0)
+{
+    $CI = &get_instance();
+    
+    $CI->load->model('auth_model');
+    return $CI->auth_model->get_users($limit, $offset);
+}
+
+function count_users()
+{
+    $CI = &get_instance();
+    
+    $CI->load->model('auth_model');
+    return $CI->auth_model->count_users();
+}
+
+// Updating helper functions
+
+function add_user($user_data = array())
+{
+    $CI = &get_instance();
+    
+    $CI->load->model('auth_model');
+    return $CI->auth_model->add_user($user_data);
+}
+
+function update_user($user_data = array())
+{
+    $CI = &get_instance();
+    
+    $CI->load->model('auth_model');
+    return $CI->auth_model->update_user($user_data);
+}
+
+function update_password($username = '', $old_password = '', $new_password = '')
+{
+    $CI = &get_instance();
+    
+    $CI->load->model('auth_model');
+    return $CI->auth_model->update_password($username, $old_password, $new_password);
+}
+
+function activate_user($userid = '', $authkey = '')
+{
+    $CI = &get_instance();
+    
+    $CI->load->model('auth_model');
+    return $CI->auth_model->activate_user($userid, $authkey);
+}
+
+// Deletion / Removal helper functions
+
+function delete_user($userid = '')
+{
+    $CI = &get_instance();
+    
+    $CI->load->model('auth_model');
+    return $CI->auth_model->delete_user($userid);
+}
+
+function generate_password($length = '')
+{
+    $CI = &get_instance();
+    
+    $CI->load->model('auth_model');
+    return $CI->auth_model->generate_password($length);
 }
 
 /**

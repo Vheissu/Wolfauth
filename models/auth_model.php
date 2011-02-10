@@ -256,9 +256,9 @@ class Auth_model extends CI_Model {
     * 
     * @param mixed $id
     */
-    public function get_user_by_id($id = '')
+    public function get_user_by_id($userid = '')
     {    
-        return $this->get_user($id, 'id');
+        return $this->get_user($userid, 'id');
     }
     
     /**
