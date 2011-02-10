@@ -297,6 +297,29 @@ class Auth extends CI_Model {
     }
     
     /**
+    * Get all user meta for a specific user or if no
+    * userid is supplied, for the current user.
+    * 
+    */
+    public function get_all_user_meta($userid = 0)
+    {
+        if ($userid == 0)
+        {
+            $userid = $this->user_id;
+        }
+        
+        // Get all user meta for the current user
+        $result = $this->db->select('key, value')->where('user_id', $userid)->get($this->_tables['user_meta'])->result_array();
+        
+        $metas = '';
+        foreach ($result AS $key => $val)
+        {
+        }
+        
+        //die(print_r($metas));
+    }
+    
+    /**
     * Gets info about the currently logged in user
     * 
     * If a user is logged in, a data object is returned.

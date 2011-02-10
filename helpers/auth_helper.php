@@ -56,18 +56,7 @@ function restrict_usernames($needles = '', $redirect_to = '')
 }
 
 /**
-* If there is post data then there was a post request. This simple helper is 
-* a conditional check and is the same as going:
-*  
-* if (!empty($_POST)) 
-* { 
-*   return TRUE; 
-* } 
-* else 
-* { 
-*   return FALSE; 
-* }
-* 
+* Will determine if we have any POST data
 */
 function is_posted()
 {
@@ -114,6 +103,11 @@ function is_logged_in()
     return $CI->auth->is_logged_in(); 
 }
 
+/**
+* Check if a username exists in the database
+* 
+* @param mixed $username
+*/
 function username_exists($username = '')
 {
     $CI = &get_instance();
@@ -152,6 +146,12 @@ function force_login($needle = '')
     return $CI->auth->force_login($needle); 
 }
 
+/**
+* I'm not sure what this function does. Oh, that's right
+* it logs users out. Derrrr, me smart.
+* 
+* @param mixed $redirect
+*/
 function logout($redirect = '')
 {
     $CI = &get_instance();
@@ -162,6 +162,11 @@ function logout($redirect = '')
 
 // User info retrieving functions
 
+/**
+* Returns an object of information about the current user.
+* @return object
+* 
+*/
 function get_this_user()
 {
     $CI = &get_instance();
@@ -170,6 +175,11 @@ function get_this_user()
     return $CI->auth->get_this_user(); 
 }
 
+/**
+* Get user data via an ID.
+* 
+* @param mixed $userid
+*/
 function get_user_by_id($userid = 0)
 {
     $CI = &get_instance();
@@ -178,6 +188,11 @@ function get_user_by_id($userid = 0)
     return $CI->auth->get_user_by_id($userid);   
 }
 
+/**
+* Get user data via an email address
+* 
+* @param mixed $email
+*/
 function get_user_by_email($email = '')
 {
     $CI = &get_instance();
@@ -186,6 +201,11 @@ function get_user_by_email($email = '')
     return $CI->auth->get_user_by_email($email); 
 }
 
+/**
+* Get a user via username
+* 
+* @param mixed $username
+*/
 function get_user_by_username($username = '')
 {
     $CI = &get_instance();
@@ -194,6 +214,11 @@ function get_user_by_username($username = '')
     return $CI->auth->get_user_by_username($username); 
 }
 
+/**
+* Gets specific meta data from the database
+* 
+* @param mixed $key
+*/
 function get_user_meta($key = '')
 {
     $CI = &get_instance();
@@ -202,6 +227,27 @@ function get_user_meta($key = '')
     return $CI->auth->get_user_meta($key);
 }
 
+/**
+* Get all user meta data from the database for
+* a particular user or the currently logged in
+* user.
+* 
+* @param mixed $userid
+*/
+function get_all_user_meta($userid = 0)
+{
+    $CI = &get_instance();
+    
+    $CI->load->model('auth');
+    return $CI->auth->get_all_user_meta($userid);
+}
+
+/**
+* Get all users from the database
+* 
+* @param mixed $limit
+* @param mixed $offset
+*/
 function get_users($limit = '', $offset = 0)
 {
     $CI = &get_instance();
