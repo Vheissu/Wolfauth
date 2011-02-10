@@ -91,6 +91,7 @@ class Auth extends CI_Model {
             return TRUE;
         }
 
+        // Find the user
         $user = $this->get_user($needle, $this->identity_criteria);
 
         if ($user)
@@ -137,6 +138,7 @@ class Auth extends CI_Model {
     */
     public function force_login($needle = '')
     {
+        // Make sure we have a username/email
         if ($needle == '')
         {
             return FALSE;
@@ -177,7 +179,6 @@ class Auth extends CI_Model {
             'remember_me' => ''
         );
 
-        // Remove remember me data, yo.
         $this->update_user($user_data);
         
         $redirect = ($redirect == '') ? base_url() : $redirect; 
