@@ -21,8 +21,8 @@ function get_role($userid = 0)
 {
     $CI = &get_instance();
     
-    $CI->load->library('wolfauth');
-    return $CI->wolfauth->get_role($userid); 
+    $CI->load->model('auth_model');
+    return $CI->auth_model->get_role($userid); 
 }
 
 /**
@@ -32,12 +32,12 @@ function get_role($userid = 0)
 * @param mixed $redirect_to
 * @return bool
 */
-function restrict($needles = array(), $redirect_to = '')
+function restrict($needles = '', $redirect_to = '')
 {
     $CI = &get_instance();
-    $CI->load->library('wolfauth');
+    $CI->load->model('auth_model');
     
-    return $CI->wolfauth->restrict($needles, 'roleid', $redirect_to);
+    return $CI->auth_model->restrict($needles, 'roleid', $redirect_to);
 }
 
 /**
@@ -47,12 +47,12 @@ function restrict($needles = array(), $redirect_to = '')
 * @param mixed $redirect_to
 * @return bool
 */
-function restrict_usernames($needles = array(), $redirect_to = '')
+function restrict_usernames($needles = '', $redirect_to = '')
 {
     $CI = &get_instance();
-    $CI->load->library('wolfauth');
+    $CI->load->model('auth_model');
     
-    return $CI->wolfauth->restrict($needles, 'username', $redirect_to);
+    return $CI->auth_model->restrict($needles, 'username', $redirect_to);
 }
 
 /**
@@ -84,8 +84,8 @@ function is_user($userid = 0)
 {
     $CI = &get_instance();
     
-    $CI->load->library('wolfauth');
-    return $CI->wolfauth->is_user($userid); 
+    $CI->load->model('auth_model');
+    return $CI->auth_model->is_user($userid); 
 }
 
 /**
@@ -98,8 +98,8 @@ function is_admin($userid = 0)
 {
     $CI = &get_instance();
     
-    $CI->load->library('wolfauth');
-    return $CI->wolfauth->is_admin($userid); 
+    $CI->load->model('auth_model');
+    return $CI->auth_model->is_admin($userid); 
 }
 
 /**
@@ -115,8 +115,8 @@ function login($needle = '', $password = '', $redirect = '')
 {
     $CI = &get_instance();
     
-    $CI->load->library('wolfauth');
-    return $CI->wolfauth->login($needle, $password, $redirect); 
+    $CI->load->model('auth_model');
+    return $CI->auth_model->login($needle, $password, $redirect); 
 }
 
 /**
