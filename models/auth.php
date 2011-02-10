@@ -42,26 +42,16 @@ class Auth extends CI_Model {
         $this->load->library('session');
         $this->load->library('email');
 
-        // Sets some defaults for roles, etc.
-        $this->set_defaults();
+        $this->guest_role        = $this->config->item('guest_role', 'auth');
+        $this->admin_roles       = $this->config->item('admin_roles', 'auth');
+        $this->identity_criteria = $this->config->item('identity_criteria', 'auth');
+        $this->user_id           = $this->session->userdata('user_id');
 
         // Check if we remember this user and if we do, log them in
         $this->do_you_remember_me();
         
         // Get the array of tables from the config file
         $this->_tables = $this->config->item('tables', 'auth');
-    }
-    
-    /**
-    * Sets some default values to be used by this class
-    * 
-    */
-    protected function set_defaults()
-    {
-        $this->guest_role        = $this->config->item('guest_role', 'auth');
-        $this->admin_roles       = $this->config->item('admin_roles', 'auth');
-        $this->identity_criteria = $this->config->item('identity_criteria', 'auth');
-        $this->user_id           = $this->session->userdata('user_id');
     }
     
     /**
