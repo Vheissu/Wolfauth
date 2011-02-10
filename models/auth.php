@@ -785,16 +785,16 @@ class Auth extends CI_Model {
         $this->load->library('email');
 
         // Email behind the scenes settings like character sets and mailtypes
-        $config['mailtype']  = $this->config->item('email_format', 'wolfauth');
-        $config['charset']   = $this->config->item('email_charset', 'wolfauth');
-        $config['wordwrap']  = $this->config->item('email_wordwrap', 'wolfauth');
-        $config['useragent'] = $this->config->item('email_useragent', 'wolfauth');
+        $config['mailtype']  = $this->config->item('email_format', 'auth');
+        $config['charset']   = $this->config->item('email_charset', 'auth');
+        $config['wordwrap']  = $this->config->item('email_wordwrap', 'auth');
+        $config['useragent'] = $this->config->item('email_useragent', 'auth');
 
         // Set up our email settings
         $this->email->initialize($config);
 
-        $from_address  = $this->config->item('email_from_address','wolfauth');
-        $from_name     = $this->config->item('email_from_name','wolfauth');
+        $from_address  = $this->config->item('email_from_address','auth');
+        $from_name     = $this->config->item('email_from_name','auth');
 
         // Set the email parameters
         $this->email->from($from_address, $from_name);
