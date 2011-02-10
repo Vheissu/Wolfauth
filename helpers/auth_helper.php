@@ -127,9 +127,9 @@ function login($needle = '', $password = '', $redirect = '')
 * @param mixed $prefix
 * @param mixed $suffix
 */
-function wolfauth_errors($prefix = '', $suffix = '')
+function auth_errors($prefix = '', $suffix = '')
 {
-    if (FALSE === ($WA = &get_wolfauth_class()))
+    if (FALSE === ($WA = &get_auth_class()))
     {
         return '';
     }
@@ -142,18 +142,18 @@ function wolfauth_errors($prefix = '', $suffix = '')
 * errors array variable populated inside of the library.
 * 
 */
-function &get_wolfauth_class()
+function &get_auth_class()
 {
     $CI =& get_instance();
 
     $return = FALSE;
 
-    if ( ! isset($CI->load->_ci_classes) OR  ! isset($CI->load->_ci_classes['wolfauth']))
+    if ( ! isset($CI->load->_ci_classes) OR  ! isset($CI->load->_ci_classes['auth_model']))
     {
         return $return;
     }
     
-    $object = $CI->load->_ci_classes['wolfauth'];
+    $object = $CI->load->_ci_classes['auth_model'];
 
     if ( ! isset($CI->$object) OR ! is_object($CI->$object) )
     {
