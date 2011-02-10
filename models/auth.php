@@ -9,7 +9,7 @@
 * @link http://ilikekillnerds.com
 */
 
-class Auth_model extends CI_Model {
+class Auth extends CI_Model {
     
     protected $_tables;
     

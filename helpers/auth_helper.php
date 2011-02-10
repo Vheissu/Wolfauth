@@ -21,8 +21,8 @@ function get_role($userid = 0)
 {
     $CI = &get_instance();
     
-    $CI->load->model('auth_model');
-    return $CI->auth_model->get_role($userid); 
+    $CI->load->model('auth');
+    return $CI->auth->get_role($userid); 
 }
 
 /**
@@ -35,9 +35,9 @@ function get_role($userid = 0)
 function restrict($needles = '', $redirect_to = '')
 {
     $CI = &get_instance();
-    $CI->load->model('auth_model');
+    $CI->load->model('auth');
     
-    return $CI->auth_model->restrict($needles, 'roleid', $redirect_to);
+    return $CI->auth->restrict($needles, 'roleid', $redirect_to);
 }
 
 /**
@@ -50,9 +50,9 @@ function restrict($needles = '', $redirect_to = '')
 function restrict_usernames($needles = '', $redirect_to = '')
 {
     $CI = &get_instance();
-    $CI->load->model('auth_model');
+    $CI->load->model('auth');
     
-    return $CI->auth_model->restrict($needles, 'username', $redirect_to);
+    return $CI->auth->restrict($needles, 'username', $redirect_to);
 }
 
 /**
@@ -84,8 +84,8 @@ function is_user($userid = 0)
 {
     $CI = &get_instance();
     
-    $CI->load->model('auth_model');
-    return $CI->auth_model->is_user($userid); 
+    $CI->load->model('auth');
+    return $CI->auth->is_user($userid); 
 }
 
 /**
@@ -98,8 +98,8 @@ function is_admin($userid = 0)
 {
     $CI = &get_instance();
     
-    $CI->load->model('auth_model');
-    return $CI->auth_model->is_admin($userid); 
+    $CI->load->model('auth');
+    return $CI->auth->is_admin($userid); 
 }
 
 /**
@@ -110,16 +110,16 @@ function is_logged_in()
 {
     $CI = &get_instance();
     
-    $CI->load->model('auth_model');
-    return $CI->auth_model->is_logged_in(); 
+    $CI->load->model('auth');
+    return $CI->auth->is_logged_in(); 
 }
 
 function username_exists($username = '')
 {
     $CI = &get_instance();
     
-    $CI->load->model('auth_model');
-    return $CI->auth_model->username_exists($username);  
+    $CI->load->model('auth');
+    return $CI->auth->username_exists($username);  
 }
 
 /**
@@ -135,8 +135,8 @@ function login($needle = '', $password = '', $redirect = '')
 {
     $CI = &get_instance();
     
-    $CI->load->model('auth_model');
-    return $CI->auth_model->login($needle, $password, $redirect); 
+    $CI->load->model('auth');
+    return $CI->auth->login($needle, $password, $redirect); 
 }
 
 /**
@@ -148,16 +148,16 @@ function force_login($needle = '')
 {
     $CI = &get_instance();
     
-    $CI->load->model('auth_model');
-    return $CI->auth_model->force_login($needle); 
+    $CI->load->model('auth');
+    return $CI->auth->force_login($needle); 
 }
 
 function logout($redirect = '')
 {
     $CI = &get_instance();
     
-    $CI->load->model('auth_model');
-    return $CI->auth_model->logout($redirect); 
+    $CI->load->model('auth');
+    return $CI->auth->logout($redirect); 
 }
 
 // User info retrieving functions
@@ -166,56 +166,56 @@ function get_this_user()
 {
     $CI = &get_instance();
     
-    $CI->load->model('auth_model');
-    return $CI->auth_model->get_this_user(); 
+    $CI->load->model('auth');
+    return $CI->auth->get_this_user(); 
 }
 
 function get_user_by_id($userid = 0)
 {
     $CI = &get_instance();
     
-    $CI->load->model('auth_model');
-    return $CI->auth_model->get_user_by_id($userid);   
+    $CI->load->model('auth');
+    return $CI->auth->get_user_by_id($userid);   
 }
 
 function get_user_by_email($email = '')
 {
     $CI = &get_instance();
     
-    $CI->load->model('auth_model');
-    return $CI->auth_model->get_user_by_email($email); 
+    $CI->load->model('auth');
+    return $CI->auth->get_user_by_email($email); 
 }
 
 function get_user_by_username($username = '')
 {
     $CI = &get_instance();
     
-    $CI->load->model('auth_model');
-    return $CI->auth_model->get_user_by_username($username); 
+    $CI->load->model('auth');
+    return $CI->auth->get_user_by_username($username); 
 }
 
 function get_user_meta($key = '')
 {
     $CI = &get_instance();
     
-    $CI->load->model('auth_model');
-    return $CI->auth_model->get_user_meta($key);
+    $CI->load->model('auth');
+    return $CI->auth->get_user_meta($key);
 }
 
 function get_users($limit = '', $offset = 0)
 {
     $CI = &get_instance();
     
-    $CI->load->model('auth_model');
-    return $CI->auth_model->get_users($limit, $offset);
+    $CI->load->model('auth');
+    return $CI->auth->get_users($limit, $offset);
 }
 
 function count_users()
 {
     $CI = &get_instance();
     
-    $CI->load->model('auth_model');
-    return $CI->auth_model->count_users();
+    $CI->load->model('auth');
+    return $CI->auth->count_users();
 }
 
 // Updating helper functions
@@ -224,32 +224,32 @@ function add_user($user_data = array())
 {
     $CI = &get_instance();
     
-    $CI->load->model('auth_model');
-    return $CI->auth_model->add_user($user_data);
+    $CI->load->model('auth');
+    return $CI->auth->add_user($user_data);
 }
 
 function update_user($user_data = array())
 {
     $CI = &get_instance();
     
-    $CI->load->model('auth_model');
-    return $CI->auth_model->update_user($user_data);
+    $CI->load->model('auth');
+    return $CI->auth->update_user($user_data);
 }
 
 function update_password($username = '', $old_password = '', $new_password = '')
 {
     $CI = &get_instance();
     
-    $CI->load->model('auth_model');
-    return $CI->auth_model->update_password($username, $old_password, $new_password);
+    $CI->load->model('auth');
+    return $CI->auth->update_password($username, $old_password, $new_password);
 }
 
 function activate_user($userid = '', $authkey = '')
 {
     $CI = &get_instance();
     
-    $CI->load->model('auth_model');
-    return $CI->auth_model->activate_user($userid, $authkey);
+    $CI->load->model('auth');
+    return $CI->auth->activate_user($userid, $authkey);
 }
 
 // Deletion / Removal helper functions
@@ -258,16 +258,16 @@ function delete_user($userid = '')
 {
     $CI = &get_instance();
     
-    $CI->load->model('auth_model');
-    return $CI->auth_model->delete_user($userid);
+    $CI->load->model('auth');
+    return $CI->auth->delete_user($userid);
 }
 
 function generate_password($length = '')
 {
     $CI = &get_instance();
     
-    $CI->load->model('auth_model');
-    return $CI->auth_model->generate_password($length);
+    $CI->load->model('auth');
+    return $CI->auth->generate_password($length);
 }
 
 /**
@@ -299,12 +299,12 @@ function &get_auth_class()
 
     $return = FALSE;
 
-    if ( ! isset($CI->load->_ci_classes) OR  ! isset($CI->load->_ci_classes['auth_model']))
+    if ( ! isset($CI->load->_ci_classes) OR  ! isset($CI->load->_ci_classes['auth']))
     {
         return $return;
     }
     
-    $object = $CI->load->_ci_classes['auth_model'];
+    $object = $CI->load->_ci_classes['auth'];
 
     if ( ! isset($CI->$object) OR ! is_object($CI->$object) )
     {
