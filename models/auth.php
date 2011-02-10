@@ -30,8 +30,6 @@ class Auth extends CI_Model {
         /**
         * We load all of this in-case the end user doesn't autoload
         * anything.
-        *
-        * @var auth
         */
         $this->load->database();
         $this->load->config('auth', TRUE);
@@ -46,18 +44,22 @@ class Auth extends CI_Model {
         * Set some default values like guest roles and admin roles.
         * Most of the following is defined in the auth.php file
         * in the config folder.
-        * 
-        * @var Auth
         */
         $this->guest_role        = $this->config->item('guest_role', 'auth');
         $this->admin_roles       = $this->config->item('admin_roles', 'auth');
         $this->identity_criteria = $this->config->item('identity_criteria', 'auth');
         $this->user_id           = $this->session->userdata('user_id');
 
-        // Check if we remember this user and if we do, log them in
+        /**
+        * Has this user already been here before and wanted to be remembered?
+        * If the user is remember, log them in.
+        */
         $this->do_you_remember_me();
         
-        // Get the array of tables from the config file
+        /**
+        * Set up tables defined in the auth.php config file for accessing
+        * database information.
+        */
         $this->_tables = $this->config->item('tables', 'auth');
     }
     
@@ -71,7 +73,8 @@ class Auth extends CI_Model {
     */
     public function login($needle = '', $password = '', $redirect = '')
     {
-        // We need a needle and password
+        
+        // Make sure we have a username/email and password.
         if ( $needle == '' OR $password = '' )
         {
             $this->error_array[] = $this->lang->line('missing_login_credentials');
