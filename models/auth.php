@@ -665,12 +665,12 @@ class Auth extends CI_Model {
 
         if ($prefix == '')
         {
-            $prefix = $this->config->item('message_prefix', 'wolfauth');
+            $prefix = $this->config->item('message_prefix', 'auth');
         }
 
         if ($suffix == '')
         {
-            $suffix = $this->config->item('message_suffix', 'wolfauth');
+            $suffix = $this->config->item('message_suffix', 'auth');
         }
 
         $str = '';
