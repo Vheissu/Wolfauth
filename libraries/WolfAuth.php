@@ -604,15 +604,19 @@ class WolfAuth {
                 $config_values[$keys] = $this->CI->config->item($key);
             }
 
-            $string = '';
+            $return_string = '';
 
             foreach($config_values AS $key => $value)
             {
-                $string = str_replace($key, $value, $string);
+                $return_string = str_replace($key, $value, $string);
             }
         }
+        else
+        {
+            $return_string = str_replace($key, $this->CI->item($key), $string);
+        }
 
-        return $string;
+        return $return_string;
     }
 
 }
