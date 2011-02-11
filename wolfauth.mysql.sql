@@ -43,8 +43,8 @@ DROP TABLE IF EXISTS `usermeta`;
 CREATE TABLE `usermeta` (
   `id` bigint(10) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) unsigned NOT NULL,
-  `key` varchar(120) NOT NULL,
-  `value` longtext NOT NULL,
+  `meta_key` varchar(120) NOT NULL,
+  `meta_value` longtext NOT NULL,
   PRIMARY KEY (`id`,`user_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 

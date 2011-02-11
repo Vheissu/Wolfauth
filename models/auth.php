@@ -311,7 +311,7 @@ class Auth extends CI_Model {
         
         $arrays = array();
   
-        $metas = $this->db->select('key, value')->where('user_id', $userid)->get($this->_tables['user_meta'])->result_array();
+        $metas = $this->db->select('meta_key, meta_value')->where('user_id', $userid)->get($this->_tables['user_meta'])->result_array();
   
         foreach ( $metas as $id => $meta ) 
         {
