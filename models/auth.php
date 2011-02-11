@@ -309,15 +309,16 @@ class Auth extends CI_Model {
             $userid = $this->user_id;
         }
         
-        // Get all user meta for the current user
-        $result = $this->db->select('key, value')->where('user_id', $userid)->get($this->_tables['user_meta'])->result_array();
-        
-        $metas = '';
-        foreach ($result AS $key => $val)
+        $arrays = array();
+  
+        $metas = $this->db->select('key, value')->where('user_id', $userid)->get($this->_tables['user_meta'])->result_array();
+  
+        foreach ( $metas as $id => $meta ) 
         {
+            $arrays[$meta['key']] = $meta['value'];
         }
-        
-        //die(print_r($metas));
+
+        return $arrays;
     }
     
     /**
