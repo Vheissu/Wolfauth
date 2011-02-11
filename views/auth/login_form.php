@@ -12,6 +12,6 @@
 </fieldset>
 
 <?php echo validation_errors(); ?>
-<?php echo wolfauth_errors(); ?>
+<?php echo auth_errors(); ?>
 
 <?php echo form_close(); ?>
