@@ -362,7 +362,8 @@ class Auth extends CI_Model {
             if (is_array($needles))
             {
                 // If the role is in the allowed roles list
-                if (in_array($criteria, $needles))
+                // Or if the current user is an admin, they can do anything
+                if (in_array($criteria, $needles) OR in_array($this->get_role(), $this->admin_roles))
                 {
                     return TRUE;
                 }
