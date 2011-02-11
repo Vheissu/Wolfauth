@@ -190,6 +190,3 @@ $config['email_wordwrap'] = FALSE;
 * @var mixed
 */
 $config['email_useragent'] = "WolfAuth";
-
-// HACK HACK HACK, don't touch please
-@include_once "pseudo_vars.php";
