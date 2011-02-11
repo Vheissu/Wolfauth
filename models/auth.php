@@ -399,12 +399,33 @@ class Auth extends CI_Model {
     */
     public function add_user($user_data = array())
     {
-        if (isset($user_data['password']))
+        if ($_POST)
         {
-            $user_data['password'] = $this->hash_password($user_data['password']);
-        }
+            // Hash the password
+            if (isset($user_data['password']))
+            {
+                $user_data['password'] = $this->hash_password($user_data['password']);
+            }
 
-        return ($this->db->insert($this->_tables['users'], $user_data)) ? $this->db->insert_id() : FALSE;
+            // Insert the user
+            $insert = $this->db->insert($this->_tables['users'], $user_data);
+
+            // If user successfully inserted
+            if ($insert)
+            {
+                $this->message_array[] = $this->lang->line('user_register_success');
+                return $this->db->insert_id();
+            }
+            else
+            {
+                $this->error_array[] = $this->lang->line('user_register_failure');
+                return FALSE;
+            }
+        }
+        else
+        {
+            return FALSE;
+        }
     }
 
     /**
