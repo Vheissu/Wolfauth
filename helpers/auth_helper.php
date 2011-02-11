@@ -274,6 +274,14 @@ function add_user($user_data = array())
     return $CI->auth->add_user($user_data);
 }
 
+function add_user_meta($meta_key = '', $meta_value = '', $userid = 0)
+{
+    $CI =& get_instance();
+    
+    $CI->load->model('auth');
+    return $CI->auth->add_user_meta($meta_key, $meta_value, $userid = 0);
+}
+
 function update_user($user_data = array())
 {
     $CI =& get_instance();

@@ -427,6 +427,45 @@ class Auth extends CI_Model {
             return FALSE;
         }
     }
+    
+    /**
+    * Adds user meta information to the user_meta table in the database
+    * 
+    * @param mixed $meta_key
+    * @param mixed $meta_value
+    */
+    public function add_user_meta($meta_key = '', $meta_value = '', $userid = '')
+    {
+        if ($meta_key == '' OR $meta_value = '')
+        {
+            return FALSE;
+        }
+        
+        if ($userid == '')
+        {
+            $userid = $this->user_id;
+        }
+        
+        // Prep the data for insertion
+        $data = array(
+            'user_id' => $userid,
+            'meta_key' => $meta_key,
+            'meta_value' => $meta_value
+        );
+        
+        $insert = $this->db->insert($this->_tables['user_meta'], $data);
+        
+        if ($insert)
+        {
+            $this->message_array[] = $this->lang->line('user_meta_update_success');
+            return $this->db->insert_id();
+        }
+        else
+        {
+            $this->error_array[] = $this->lang->line('user_meta_update_failure');
+            return FALSE;
+        }
+    }
 
     /**
     * Updates a user in the database and returns true or false
