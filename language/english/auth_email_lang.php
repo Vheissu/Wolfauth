@@ -1,4 +1,9 @@
 <?php
 
-$lang['user_activation_subject'] = "Please confirm your at {site_name} account";
-$lang['user_activated_subject']  = "Your {site_name} account has been successfully activated";
+/**
+* Email subjects text
+*
+* @var mixed
+*/
+$lang['user_confirm_subject']    = "Please confirm your account at %s";
+$lang['user_activated_subject']  = "Your %s account has been successfully activated";

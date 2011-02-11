@@ -10,9 +10,9 @@
 */
 
 class Auth extends CI_Model {
-    
+
     protected $_tables;
-    
+
     protected $guest_role;
     protected $admin_roles;
     protected $identity_criteria;
@@ -22,11 +22,11 @@ class Auth extends CI_Model {
     protected $error_array = array();
 
     protected $message_array = array();
-    
+
     public function __construct()
     {
         parent::__construct();
-        
+
         /**
         * We load all of this in-case the end user doesn't autoload
         * anything.
@@ -55,14 +55,14 @@ class Auth extends CI_Model {
         * If the user is remember, log them in.
         */
         $this->do_you_remember_me();
-        
+
         /**
         * Set up tables defined in the auth.php config file for accessing
         * database information.
         */
         $this->_tables = $this->config->item('tables', 'auth');
     }
-    
+
     /**
     * Log a user in to the site. Also allows you to redirect
     * somewhere if the user is successfully logged in.
@@ -73,14 +73,14 @@ class Auth extends CI_Model {
     */
     public function login($needle = '', $password = '', $redirect = '')
     {
-        
+
         // Make sure we have a username/email and password.
         if ( $needle == '' OR $password = '' )
         {
             $this->error_array[] = $this->lang->line('missing_login_credentials');
             return FALSE;
         }
-        
+
         // We are already logged in
         if ( $this->user_id > 0 OR $this->session->userdata('user_role') > $this->guest_role )
         {
@@ -161,7 +161,7 @@ class Auth extends CI_Model {
 
         return FALSE;
     }
-    
+
     /**
     * I wonder what this function does? I think it logs a user out, but I
     * can't be sure. I've had a few drinks.
@@ -180,16 +180,16 @@ class Auth extends CI_Model {
         );
 
         $this->update_user($user_data);
-        
-        $redirect = ($redirect == '') ? base_url() : $redirect; 
+
+        $redirect = ($redirect == '') ? base_url() : $redirect;
 
         // Redirect the user to oblivion
         redirect($redirect);
     }
-    
+
     /**
     * Determines if the current user or a specific user is an administrator
-    * 
+    *
     * @param mixed $userid
     * @return bool
     */
@@ -198,10 +198,10 @@ class Auth extends CI_Model {
         // Conditional to return TRUE or FALSE if the user has an admin ID
         return (in_array($this->get_role($userid), $this->admin_roles)) ? TRUE : FALSE;
     }
-    
+
     /**
     * Determines if the current user or a specific user is just a standard user.
-    * 
+    *
     * @param mixed $userid
     */
     public function is_user($userid = 0)
@@ -209,30 +209,30 @@ class Auth extends CI_Model {
         // If user role is greater thsn 0, return true
         return ($this->get_role($userid) > $this->guest_role) ? TRUE : FALSE;
     }
-    
+
     /**
     * Returns true or false if a user is logged in
-    * 
+    *
     */
     public function is_logged_in()
     {
         return $this->user_id ? TRUE : FALSE;
     }
-    
+
     /**
     * Does a username alrady exist in the database?
-    * 
+    *
     * @param mixed $username
     */
     public function username_exists($username = '')
     {
         return $this->get_user_by_username($username) ? TRUE : FALSE;
     }
-    
+
     /**
     * Returns the user role ID of the currently logged in user
     * or the role ID of a specfic user
-    * 
+    *
     * @param mixed $userid
     * @returns current role ID if user logged in or role ID of
     *          specific user.
@@ -246,61 +246,61 @@ class Auth extends CI_Model {
         else
         {
             $user = $this->get_user_by_id($userid);
-            
+
             return $user ? $user->role_id : FALSE;
         }
         return FALSE;
     }
-    
+
     /**
     * Get a users details based on their user ID
-    * 
+    *
     * @param mixed $id
     */
     public function get_user_by_id($userid = '')
-    {    
+    {
         return $this->get_user($userid, 'id');
     }
-    
+
     /**
     * Get a users details based on their email address
-    * 
+    *
     * @param mixed $email
     */
     public function get_user_by_email($email = '')
     {
         return $this->get_user($email, 'email');
     }
-    
+
     /**
     * Get a users details based on their username
-    * 
+    *
     * @param mixed $username
     */
     public function get_user_by_username($username = '')
     {
-        return $this->get_user($username, 'username');   
+        return $this->get_user($username, 'username');
     }
-    
+
     /**
     * Get user meta
-    * 
+    *
     * @param mixed $key
     * @param mixed $value
     */
     public function get_user_meta($key = '')
     {
         $this->db->where('key', $key);
-        
+
         $meta = $this->db->get($this->_tables['user_meta']);
-        
+
         return ($meta->num_rows() == 1) ? $meta->row('value') : FALSE;
     }
-    
+
     /**
     * Get all user meta for a specific user or if no
     * userid is supplied, for the current user.
-    * 
+    *
     */
     public function get_all_user_meta($userid = 0)
     {
@@ -308,31 +308,31 @@ class Auth extends CI_Model {
         {
             $userid = $this->user_id;
         }
-        
+
         $arrays = array();
-  
+
         $metas = $this->db->select('meta_key, meta_value')->where('user_id', $userid)->get($this->_tables['user_meta'])->result_array();
-  
-        foreach ( $metas as $id => $meta ) 
+
+        foreach ( $metas as $id => $meta )
         {
             $arrays[$meta['meta_key']] = $meta['meta_value'];
         }
 
         return $arrays;
     }
-    
+
     /**
     * Gets info about the currently logged in user
-    * 
+    *
     * If a user is logged in, a data object is returned.
     * If no user is logged in, FALSE is returned.
-    * 
+    *
     */
     public function get_this_user()
     {
         return $this->get_user_by_id($this->user_id);
     }
-    
+
     /**
     * Restrict a particular function or controller to particular user ID's
     *
@@ -369,7 +369,7 @@ class Auth extends CI_Model {
                 else
                 {
                     redirect($redirect_to);
-                }   
+                }
             }
             // If only a single value is provided
             else
@@ -389,12 +389,12 @@ class Auth extends CI_Model {
             show_error($this->lang->line('access_denied'));
         }
     }
-    
+
     /**
-    * Inserts a new user into the database. This function expects 
-    * the incoming data to match the field names defined in the 
+    * Inserts a new user into the database. This function expects
+    * the incoming data to match the field names defined in the
     * users table.
-    * 
+    *
     * @param mixed $member_data
     */
     public function add_user($user_data = array())
@@ -406,11 +406,11 @@ class Auth extends CI_Model {
 
         return ($this->db->insert($this->_tables['users'], $user_data)) ? $this->db->insert_id() : FALSE;
     }
-    
+
     /**
     * Updates a user in the database and returns true or false
     * depending on whether or not the update was successful.
-    * 
+    *
     * @param string $user_data
     * @return mixed
     */
@@ -425,10 +425,10 @@ class Auth extends CI_Model {
 
         return ($this->db->update($this->_tables['users'], $user_data)) ? TRUE : FALSE;
     }
-    
+
     /**
     * Change a user password
-    * 
+    *
     * @param mixed $old_password
     * @param mixed $new_password
     */
@@ -439,7 +439,7 @@ class Auth extends CI_Model {
         {
             return FALSE;
         }
-        
+
         // If the user exists
         if ( $user = $this->get_user_by_username($username) )
         {
@@ -447,7 +447,7 @@ class Auth extends CI_Model {
             $arr['password'] = $this->hash_password($new_password);
 
             $this->update_user($arr);
-            
+
             return TRUE;
         }
         else
@@ -455,10 +455,10 @@ class Auth extends CI_Model {
             return FALSE;
         }
     }
-    
+
     /**
     * Delete a user from the database
-    * 
+    *
     * @param mixed $userid
     */
     public function delete_user($userid = '')
@@ -469,24 +469,25 @@ class Auth extends CI_Model {
 
         return ($this->db->affected_rows() > 0) ? TRUE : FALSE;
     }
-    
+
     /**
     * Check an activation code sent to confirm a users email
     * If found, then activate the user.
-    * 
+    *
     * @param mixed $id
     * @param mixed $authkey
     */
     public function activate_user($userid = '', $authkey = '')
     {
-        
+
         if ($userid == '' OR $authkey == '')
         {
             return FALSE;
         }
-        
+
         // Fetch the user based on the activation code supplied
-        $user = $this->db->where('id', $userid)->where('activation_code', $authkey)->get($this->_tables['users']);
+        $user     = $this->db->where('id', $userid)->where('activation_code', $authkey)->get($this->_tables['users']);
+        $usermeta = $this->get_all_user_meta($user->id);
 
         // If the user was found
         if ($user->num_rows() == 1)
@@ -495,10 +496,10 @@ class Auth extends CI_Model {
             $arr['activation_code'] = '';
             $arr['id'] = $user->id;
             $arr['status'] = 'active';
-            
+
             // Update the user
             $update =  $this->update_user($arr);
-            
+
             // If user successfully updated
             if ($update)
             {
@@ -507,9 +508,15 @@ class Auth extends CI_Model {
                 {
                     $body = $this->load->view('auth/emails/account_activated', '', TRUE);
 
+                    // Replace some shiz in the email templates
+                    $body = str_replace('{site_name}', $this->config->item('{site_name}'), $body);
+                    $body = str_replace('{first_name}', $usermeta['first_name'], $body);
+                    $body = str_replace('{last_name}', $usermeta['last_name'], $body);
+                    $body = str_replace('{site_url}', base_url(), $body);
+
                     $this->_send_email($user->email, $this->lang->line('user_activated_subject'), $body);
                 }
-                
+
                 // Store the success message
                 $this->message_array[] = $this->lang->line('account_activated');
                 return TRUE;
@@ -517,7 +524,7 @@ class Auth extends CI_Model {
             else
             {
                 return FALSE;
-            }            
+            }
         }
         else
         {
@@ -525,11 +532,11 @@ class Auth extends CI_Model {
             return FALSE;
         }
     }
-    
+
     /**
     * Fetch all users from the database
     * Limit and offsets can be supplied
-    * 
+    *
     * @param mixed $limit
     * @param mixed $offset
     */
@@ -539,32 +546,32 @@ class Auth extends CI_Model {
         {
             $this->db->limit($limit, $offset);
         }
-        
+
         $this->db->select('
 
-            '. $this->_tables['users'] .'.*, 
-            '. $this->_tables['user_meta'] .'.*, 
-            '. $this->_tables['roles'] .'.name AS role_name, 
+            '. $this->_tables['users'] .'.*,
+            '. $this->_tables['user_meta'] .'.*,
+            '. $this->_tables['roles'] .'.name AS role_name,
             '. $this->_tables['roles'] .'.description AS role_description');
-        
+
         $this->db->join($this->_tables['user_meta'], $this->_tables['user_meta'].'.user_id = '.$this->_tables['users'].'.id');
         $this->db->join($this->_tables['roles'], $this->_tables['roles'].'.actual_role_id = '.$this->_tables['users'].'.role_id');
-        
+
         return $this->db->get($this->_tables['users']);
     }
-    
+
     /**
     * Count all users in the database
-    * 
+    *
     */
     public function count_users()
     {
         return $this->db->count_all($this->_tables['users']);
     }
-    
+
     /**
     * Create a password hash
-    * 
+    *
     * @param int $password
     * @access private
     * @return string
@@ -575,47 +582,47 @@ class Auth extends CI_Model {
 
         return do_hash($password);
     }
-    
+
     /**
     * Generates a random password based on the length defined
     * in the auth config file.
-    * 
+    *
     * This function returns an object with the values hashed
     * and unhashed.
-    * 
+    *
     * @param mixed $length
     */
     public function generate_password($length = '')
     {
         $this->load->helper('string');
-        
+
         $length = ($length != '') ? $length : $this->config->item('password_length', 'auth');
-        
+
         return random_string('alnum', $length);
-        
+
     }
-    
+
     /**
     * Get a user based on identity criteria. This is the heart of the auth
     * library. Nearly every function relies on this function.
-    * 
+    *
     * @param mixed $needle
     * @param mixed $haystack
     */
     public function get_user($needle = '', $haystack = '')
     {
         $this->db->select(''. $this->_tables['users'] .'.*, '. $this->_tables['roles'] .'.name AS role_name, '. $this->_tables['roles'] .'.description AS role_description');
-        
+
         $this->db->where($this->_tables['users'].".".$haystack, $needle);
-        
-        // Join the user roles 
+
+        // Join the user roles
         $this->db->join($this->_tables['roles'], $this->_tables['roles'].'.actual_role_id = '.$this->_tables['users'].'.role_id');
 
         $user = $this->db->get($this->_tables['users']);
-        
+
         return ($user->num_rows() == 1) ? $user->row() : FALSE;
     }
-    
+
     /**
     * Gets errors from errors array and wraps them in delimiters
     * Parts of this function are using bits of code from the
@@ -810,5 +817,5 @@ class Auth extends CI_Model {
         // Return the result
         return $this->email->send();
     }
-    
+
 }
