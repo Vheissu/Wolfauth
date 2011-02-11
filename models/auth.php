@@ -315,7 +315,7 @@ class Auth extends CI_Model {
   
         foreach ( $metas as $id => $meta ) 
         {
-            $arrays[$meta['key']] = $meta['value'];
+            $arrays[$meta['meta_key']] = $meta['meta_value'];
         }
 
         return $arrays;
