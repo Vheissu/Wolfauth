@@ -16,8 +16,8 @@ All examples are to be inside of controllers, NOT models and NOT libraries or vi
 
 ## Simple login example with login redirection
 
-    $this->load->library('wolfauth');
-    $this->load->helper('wolfauth');
+    $this->load->model('auth');
+    $this->load->helper('auth');
 
     $redirect_url = base_url();
 
@@ -31,8 +31,8 @@ All examples are to be inside of controllers, NOT models and NOT libraries or vi
 
 ## Simple login example without login redirection
 
-    $this->load->library('wolfauth');
-    $this->load->helper('wolfauth');
+    $this->load->model('auth');
+    $this->load->helper('auth');
 
     //If login was successful we will be redirected
     $login = login($username, $password);
@@ -48,8 +48,8 @@ All examples are to be inside of controllers, NOT models and NOT libraries or vi
     
 ## Restrict access to a controller function by Role ID
 
-    $this->load->library('wolfauth');
-    $this->load->helper('wolfauth');
+    $this->load->model('auth');
+    $this->load->helper('auth');
 
     public function dashboard()
     {
@@ -59,8 +59,8 @@ All examples are to be inside of controllers, NOT models and NOT libraries or vi
     
 ## Restrict access to a controller function by Username
 
-    $this->load->library('wolfauth');
-    $this->load->helper('wolfauth');
+    $this->load->model('auth');
+    $this->load->helper('auth');
 
     public function dashboard()
     {
