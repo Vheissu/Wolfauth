@@ -8,14 +8,19 @@ class User extends CI_Controller {
         
         $this->load->helper('url');
         $this->load->helper('form');
-        $this->load->helper('wolfauth');
-        
-        $this->load->library('wolfauth');
+        $this->load->helper('auth');
+        $this->load->model('auth');
     }
     
     public function index()
     {
         redirect('user/login');
+    }
+    
+    public function restricted_function()
+    {
+        // Restrict this function to user roles 3, 4 and 5. If a user isn't any of those roles, send them to Google.
+        restrict(array(3,4,5), 'http://www.google.com');
     }
     
     public function login()
@@ -38,7 +43,7 @@ class User extends CI_Controller {
     
     public function generate_password($length = '')
     {
-        echo $this->wolfauth->generate_password($length);
+        echo generate_password($length);
     }
     
 }   
