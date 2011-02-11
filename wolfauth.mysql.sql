@@ -78,4 +78,4 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO users VALUES ('1', '1', 'admin', 'password', 'admin@gmail.com', 'no', null, null, null, '');
+INSERT INTO users VALUES ('1', '1', 'admin', 'password', 'admin@gmail.com', 'yes', null, null, null, 'active');
