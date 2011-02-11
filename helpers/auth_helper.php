@@ -308,12 +308,31 @@ function delete_user($userid = '')
     return $CI->auth->delete_user($userid);
 }
 
+/**
+* Generates a password based on specific length or length
+* defined in the config file which by default is 8.
+* 
+* @param mixed $length
+*/
 function generate_password($length = '')
 {
     $CI = &get_instance();
     
     $CI->load->model('auth');
     return $CI->auth->generate_password($length);
+}
+
+/**
+* Creates a hashed password
+* 
+* @param mixed $password
+*/
+function hash_password($password = '')
+{
+    $CI = &get_instance();
+    
+    $CI->load->model('auth');
+    return $CI->auth->hash_password($password);
 }
 
 /**

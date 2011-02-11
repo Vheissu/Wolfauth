@@ -1,16 +1,16 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : Localhost
-Source Server Version : 50137
+Source Server         : Local
+Source Server Version : 50141
 Source Host           : localhost:3306
-Source Database       : wolfauth
+Source Database       : dealfury
 
 Target Server Type    : MYSQL
-Target Server Version : 50137
+Target Server Version : 50141
 File Encoding         : 65001
 
-Date: 2011-01-30 23:22:13
+Date: 2011-02-11 10:25:49
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -46,11 +46,14 @@ CREATE TABLE `usermeta` (
   `key` varchar(120) NOT NULL,
   `value` longtext NOT NULL,
   PRIMARY KEY (`id`,`user_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of usermeta
 -- ----------------------------
+INSERT INTO usermeta VALUES ('1', '1', 'first_name', 'Admin');
+INSERT INTO usermeta VALUES ('2', '1', 'last_name', 'Istrator');
+INSERT INTO usermeta VALUES ('3', '1', 'dob', '22/08/1908');
 
 -- ----------------------------
 -- Table structure for `users`
@@ -59,18 +62,20 @@ DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `role_id` bigint(20) unsigned NOT NULL DEFAULT '1',
-  `username` varchar(80) NOT NULL,
+  `username` varchar(80) NOT NULL DEFAULT '',
   `password` varchar(120) NOT NULL,
   `email` varchar(80) NOT NULL,
-  `super_admin` enum('no','yes') NOT NULL DEFAULT 'no',
+  `super_admin` enum('yes','no') DEFAULT 'no',
   `activation_code` varchar(120) DEFAULT NULL,
-  `remember_me` longtext(0) DEFAULT NULL,
+  `remember_me` longtext,
   `last_login` int(10) unsigned DEFAULT NULL,
-  `status` enum('banned','inactive','active') NOT NULL,
-  PRIMARY KEY (`id`,`role_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+  `status` enum('banned','inactive','active') NOT NULL DEFAULT 'active',
+  PRIMARY KEY (`id`,`role_id`),
+  UNIQUE KEY `uniq_username` (`username`),
+  UNIQUE KEY `uniq_email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO users VALUES ('1', '5', 'admin', 'password', 'admin@website.com', 'yes', null, null, 'active');
+INSERT INTO users VALUES ('1', '1', 'admin', 'password', 'admin@gmail.com', 'no', null, null, null, '');

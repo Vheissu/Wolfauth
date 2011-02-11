@@ -569,7 +569,7 @@ class Auth extends CI_Model {
     * @access private
     * @return string
     */
-    protected function hash_password($password = '')
+    public function hash_password($password = '')
     {
         $this->load->helper('security');
 
