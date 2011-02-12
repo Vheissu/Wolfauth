@@ -26,7 +26,7 @@ class User extends CI_Controller {
         // Login using the helper function
         if ( login($username, $password) )
         {
-            // We are logged in baby
+            $this->load->view('auth/logged_in');
         }
         else
         {
@@ -50,6 +50,11 @@ class User extends CI_Controller {
     public function create_password()
     {
         echo generate_password(8);
+    }
+    
+    public function hash_password($password)
+    {
+        echo hash_password($password);
     }
 
 }

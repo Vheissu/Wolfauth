@@ -353,36 +353,14 @@ function hash_password($password = '')
 */
 function auth_errors($prefix = '', $suffix = '')
 {
-    if (FALSE === ($WA = &get_auth_class()))
-    {
-        return '';
-    }
+    $CI =& get_instance();
 
-    return $WA->get_errors($prefix, $suffix);
+    return $CI->auth->get_errors($prefix, $suffix);
 }
 
-/**
-* Return the WolfAuth library class by reference so we can access the
-* errors array variable populated inside of the library.
-*
-*/
-function &get_auth_class()
+function auth_messages($prefix = '', $suffix = '')
 {
     $CI =& get_instance();
 
-    $return = FALSE;
-
-    if ( ! isset($CI->load->_ci_classes) OR  ! isset($CI->load->_ci_classes['auth']))
-    {
-        return $return;
-    }
-
-    $object = $CI->load->_ci_classes['auth'];
-
-    if ( ! isset($CI->$object) OR ! is_object($CI->$object) )
-    {
-        return $return;
-    }
-
-    return $CI->$object;
+    return $CI->auth->get_messages($prefix, $suffix);
 }

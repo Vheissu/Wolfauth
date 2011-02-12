@@ -115,10 +115,7 @@ class Auth extends CI_Model {
                 {
                     redirect($redirect);
                 }
-                else
-                {
-                    return TRUE;
-                }
+                return TRUE;
             }
             else
             {
@@ -672,7 +669,7 @@ class Auth extends CI_Model {
     {
         $this->db->select(''. $this->_tables['users'] .'.*, '. $this->_tables['roles'] .'.name AS role_name, '. $this->_tables['roles'] .'.description AS role_description');
 
-        $this->db->where($this->_tables['users'].".".$haystack, $needle);
+        $this->db->where($haystack, $needle);
 
         // Join the user roles
         $this->db->join($this->_tables['roles'], $this->_tables['roles'].'.actual_role_id = '.$this->_tables['users'].'.role_id');
