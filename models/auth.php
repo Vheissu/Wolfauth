@@ -73,63 +73,70 @@ class Auth extends CI_Model {
     */
     public function login($needle = '', $password = '', $redirect = '')
     {
-        // Make sure we have a username/email and password.
-        if ( $needle == '' OR $password = '' )
+        if ($_POST)
         {
-            $this->error_array[] = $this->lang->line('missing_login_credentials');
-            return FALSE;
-        }
-
-        // We are already logged in
-        if ( $this->user_id > 0 OR $this->session->userdata('user_role') > $this->guest_role )
-        {
-            if ($redirect != '')
+            // Make sure we have a username/email and password.
+            if ( $needle == '' OR $password = '' )
             {
-                redirect($redirect);
+                $this->error_array[] = $this->lang->line('missing_login_credentials');
+                return FALSE;
             }
-            return TRUE;
-        }
 
-        // Find the user
-        $user = $this->get_user($needle, $this->identity_criteria);
-        
-        // If we found a user
-        if ($user)
-        {
-            // Hash password will encrypt the password and match it
-            if ($this->hash_password($password) == $user->password)
+            // We are already logged in
+            if ( $this->user_id > 0 OR $this->session->userdata('user_role') > $this->guest_role )
             {
-                $user_id = $user->id;
-                
-                // Force login sets the logged in session
-                $this->force_login($needle);
-                
-                // If we want to be remembered
-                if ($this->input->post('remember_me') == 'yes')
-                {
-                    $this->_set_remember_me($user_id);
-                }
-
-                // If we are redirecting after logging in
                 if ($redirect != '')
                 {
                     redirect($redirect);
                 }
                 return TRUE;
             }
-            else
+
+            // Find the user
+            $user = $this->get_user($needle, $this->identity_criteria);
+            
+            // If we found a user
+            if ($user)
             {
-                $this->error_array[] = $this->lang->line('login_incorrect');
+                // Hash password will encrypt the password and match it
+                if ($this->hash_password($password) == $user->password)
+                {
+                    $user_id = $user->id;
+                    
+                    // Force login sets the logged in session
+                    $this->force_login($needle);
+                    
+                    // If we want to be remembered
+                    if ($this->input->post('remember_me') == 'yes')
+                    {
+                        $this->_set_remember_me($user_id);
+                    }
 
-                return FALSE;
+                    // If we are redirecting after logging in
+                    if ($redirect != '')
+                    {
+                        redirect($redirect);
+                    }
+                    return TRUE;
+                }
+                else
+                {
+                    $this->error_array[] = $this->lang->line('login_incorrect');
+
+                    return FALSE;
+                }
             }
-        }
-        
-        // Obviously no account was found
-        $this->error_array[] = $this->lang->line('account_not_found');
+            
+            // Obviously no account was found
+            $this->error_array[] = $this->lang->line('account_not_found');
 
-        // All hope is lost...
-        return FALSE;
+            // All hope is lost...
+            return FALSE;
+        }
+        else
+        {
+            return FALSE;
+        }
     }
 
     /**
