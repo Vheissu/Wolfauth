@@ -18,9 +18,9 @@ class Auth extends CI_Model {
     protected $identity_criteria;
 
     protected $user_id = NULL;
+    protected $meta_fields = NULL;
 
     protected $error_array = array();
-
     protected $message_array = array();
 
     public function __construct()
@@ -48,6 +48,7 @@ class Auth extends CI_Model {
         $this->guest_role        = $this->config->item('guest_role', 'auth');
         $this->admin_roles       = $this->config->item('admin_roles', 'auth');
         $this->identity_criteria = $this->config->item('identity_criteria', 'auth');
+        $this->meta_fields       = $this->config->item('meta_fields', 'auth');
         $this->user_id           = $this->session->userdata('user_id');
 
         /**
@@ -416,13 +417,60 @@ class Auth extends CI_Model {
         {
             $user_data['password'] = $this->hash_password($user_data['password']);
         }
+        
+        /**
+        * If activation is switched on, this user needs an auth key created
+        * so an email can be sent to get them to activate their account
+        */
+        if ( $this->config->item('require_activation', 'auth') == "TRUE" )
+        {
+            $user_data['activation_code'] = $this->generate_password(15);
+            $user_data['status'] = "inactive";   
+        }
+        else
+        {
+            $user_data['status'] = "active";
+        }
+        
+        if ($user_data['first_name'])
+        {
+            $meta_data['first_name'] = $user_data['first_name'];
+            unset($user_data['first_name']);
+        }
+        
+        if ($user_data['last_name'])
+        {
+            $meta_data['last_name'] = $user_data['last_name'];
+            unset($user_data['last_name']);
+        }   
 
         // Insert the user
-        $insert = $this->db->insert($this->_tables['users'], $user_data);
+        $insert      = $this->db->insert($this->_tables['users'], $user_data);
+        //$insert_meta = $this->db->insert($this->_tables['user_meta'], $meta_data);
+        
+        $user = $this->get_user_by_username($user_data['username']);
 
         // If user successfully inserted
         if ($insert)
         {
+            // Send an activation email
+            if ( $this->config->item('require_activation', 'auth') == "TRUE" )
+            {
+                $body = $this->load->view('auth/emails/activation_email', '', TRUE);
+
+                // Replace some shiz in the email templates
+                $body    = str_replace('{site_name}', $this->config->item('site_name', 'auth'), $body);
+                $body    = str_replace('{first_name}', $meta_data['first_name'], $body);
+                $body    = str_replace('{last_name}', $meta_data['last_name'], $body);
+                $body    = str_replace('{activation_url}', base_url() . $this->config->item('activation_url', 'auth'), $body);
+                $body    = str_replace('{activation_code}', $user_data['activation_code'], $body);
+                
+                $subject = sprintf($this->lang->line('user_confirm_subject'), $this->config->item('site_name', 'auth'));
+                
+                // Send email
+                $this->_send_email($user->email, $subject, $body);   
+            }
+            
             $this->message_array[] = $this->lang->line('user_register_success');
             return $this->db->insert_id();
         }
@@ -483,7 +531,7 @@ class Auth extends CI_Model {
     */
     public function update_user($user_data = array())
     {
-        $this->db->where('id', $user_data['id']);
+        $this->db->where('username', $user_data['username']);
 
         if (isset($user_data['password']))
         {
@@ -499,7 +547,7 @@ class Auth extends CI_Model {
     * @param mixed $old_password
     * @param mixed $new_password
     */
-    public function update_password($username = '', $old_password = '', $new_password = '')
+    public function change_password($username = '', $old_password = '', $new_password = '')
     {
         // Make sure we have an old and new password
         if ($username == '' OR $old_password == '' OR $new_password == '')
@@ -516,6 +564,7 @@ class Auth extends CI_Model {
             $this->update_user($arr);
 
             return TRUE;
+            $this->message_array[] = $this->lang->line('password_changed');
         }
         else
         {
@@ -554,7 +603,6 @@ class Auth extends CI_Model {
 
         // Fetch the user based on the activation code supplied
         $user     = $this->db->where('id', $userid)->where('activation_code', $authkey)->get($this->_tables['users']);
-        $usermeta = $this->get_all_user_meta($user->id);
 
         // If the user was found
         if ($user->num_rows() == 1)
@@ -571,7 +619,7 @@ class Auth extends CI_Model {
             if ($update)
             {
                 // Are we sending an email after activating?
-                if ( $this->config->item('send_email_after_activation') )
+                if ( $this->config->item('send_email_after_activation') == TRUE )
                 {
                     $body = $this->load->view('auth/emails/account_activated', '', TRUE);
 
@@ -856,16 +904,19 @@ class Auth extends CI_Model {
     * @param mixed $subject
     * @param mixed $body
     */
-    private function _send_email($to, $subject, $body)
+    protected function _send_email($to, $subject, $body)
     {
         // Load the email library
         $this->load->library('email');
-
-        // Email behind the scenes settings like character sets and mailtypes
-        $config['mailtype']  = $this->config->item('email_format', 'auth');
-        $config['charset']   = $this->config->item('email_charset', 'auth');
-        $config['wordwrap']  = $this->config->item('email_wordwrap', 'auth');
-        $config['useragent'] = $this->config->item('email_useragent', 'auth');
+        
+        $config = '';
+        foreach ($this->config->item('email', 'auth') AS $name => $value)
+        {
+            if (!empty($value) AND $name != 'email_from_address' and $name != 'email_from_name')
+            {
+                $config[$name] = $value;   
+            }
+        }
 
         // Set up our email settings
         $this->email->initialize($config);

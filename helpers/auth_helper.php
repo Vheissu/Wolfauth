@@ -290,12 +290,12 @@ function update_user($user_data = array())
     return $CI->auth->update_user($user_data);
 }
 
-function update_password($username = '', $old_password = '', $new_password = '')
+function change_password($username = '', $old_password = '', $new_password = '')
 {
     $CI =& get_instance();
 
     $CI->load->model('auth');
-    return $CI->auth->update_password($username, $old_password, $new_password);
+    return $CI->auth->change_password($username, $old_password, $new_password);
 }
 
 function activate_user($userid = '', $authkey = '')

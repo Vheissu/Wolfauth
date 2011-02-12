@@ -19,6 +19,15 @@ class User extends CI_Controller {
 
     public function login()
     {
+        /*add_user(
+            array(
+                'username'   => 'testuser2',
+                'password'   => 'testuser123',
+                'email'      => 'testeremail@gmail.com',
+                'first_name' => 'Test',
+                'last_name'  => 'User'
+            )
+        );*/
         // Posted variables
         $username = $this->input->post('username');
         $password = $this->input->post('password');

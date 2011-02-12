@@ -19,13 +19,12 @@
 *
 */
 $config['tables'] =
-	array(
 
-    	'users'     => 'users',
-    	'user_meta' => 'usermeta',
-    	'roles'     => 'roles',
-
-	);
+array(
+    'users'     => 'users',
+    'user_meta' => 'usermeta',
+    'roles'     => 'roles',
+);
 
 $config['site_name'] = "WolfAuth";
 
@@ -34,7 +33,7 @@ $config['site_name'] = "WolfAuth";
 *
 * @var mixed
 */
-$config['send_email_after_activation'] = TRUE;
+$config['send_email_after_activation'] = "TRUE";
 
 /**
 * Require activation of user accounts?
@@ -42,7 +41,7 @@ $config['send_email_after_activation'] = TRUE;
 *
 * @var mixed
 */
-$config['require_activation'] = TRUE;
+$config['require_activation'] = "TRUE";
 
 /**
 * Activation Method
@@ -59,6 +58,30 @@ $config['require_activation'] = TRUE;
 * @var mixed
 */
 $config['activation_method'] = "AUTO";
+
+/**
+* Meta fields are values in the usermeta table that will be used
+* for adding user / editing user functions.
+* 
+* @var mixed
+*/
+$config['meta_fields'] = 
+
+array(
+    'first_name',
+    'last_name',
+    'dob'
+);
+
+/**
+* The URL users are sent to, to activate their accounts.
+* The base url will be prepended before this so, you only
+* need to provide the controller and function handling
+* the activation. See the default below.
+* 
+* @var mixed
+*/
+$config['activation_url'] = "user/activate_account/";
 
 /**
 * When generating a random password this is the
@@ -153,49 +176,19 @@ $config['message_suffic'] = "</p>";
 // Email Settings
 // =========================
 
-/**
-* Usually this would be the admin email,
-* but there are cases where you would want
-* to use a designated email address to be
-* sent from.
-*
-* @var mixed
-*/
-$config['email_from_address'] = "no-reply@websiteapp.com";
+$config['email']['protocol']  = "smtp";
+$config['email']['smtp_host'] = "ssl://smtp.googlemail.com";
+$config['email']['smtp_port'] = "465";
+$config['email']['smtp_user'] = "";
+$config['email']['smtp_pass'] = "";
+$config['email']['mailpath']  = "";
+$config['email']['newline']   = "\r\n";
 
-/**
-* When emails are sent what is the name the receiver will
-* see in their inbox?
-*
-* @var mixed
-*/
-$config['email_from_name'] = "Wolf from Websiteapp.com";
 
-/**
-* The format of this email
-*
-* @var mixed
-*/
-$config['email_format'] = "html";
+$config['email']['email_from_address'] = "";
+$config['email']['email_from_name'] = "Wolf from Websiteapp.com";
 
-/**
-* Email character set usually fine left as utf-8
-*
-* @var mixed
-*/
-$config['email_charset'] = "utf-8";
-
-/**
-* Do you want the email contents to wrap?
-*
-* @var mixed
-*/
-$config['email_wordwrap'] = FALSE;
-
-/**
-* In the email headers this usetagent will be displayed.
-* It's best to make this the name of your site or application.
-*
-* @var mixed
-*/
-$config['email_useragent'] = "WolfAuth";
+$config['email']['mailtype']  = "html";
+$config['email']['charset']   = "utf-8";
+$config['email']['wordwrap']  = FALSE;
+$config['email']['useragent'] = "WolfAuth";
