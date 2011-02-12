@@ -76,7 +76,7 @@ class Auth extends CI_Model {
         if ($_POST)
         {
             // Make sure we have a username/email and password.
-            if ( $needle == '' OR $password = '' )
+            if ( $needle == '' OR $password == '' )
             {
                 $this->error_array[] = $this->lang->line('missing_login_credentials');
                 return FALSE;
@@ -97,7 +97,7 @@ class Auth extends CI_Model {
             
             // If we found a user
             if ($user)
-            {
+            {                
                 // Hash password will encrypt the password and match it
                 if ($this->hash_password($password) == $user->password)
                 {
@@ -126,12 +126,14 @@ class Auth extends CI_Model {
                     return FALSE;
                 }
             }
-            
-            // Obviously no account was found
-            $this->error_array[] = $this->lang->line('account_not_found');
+            else
+            {
+                // Obviously no account was found
+                $this->error_array[] = $this->lang->line('account_not_found');
 
-            // All hope is lost...
-            return FALSE;
+                // All hope is lost...
+                return FALSE;   
+            }
         }
         else
         {
@@ -622,7 +624,7 @@ class Auth extends CI_Model {
         $this->db->join($this->_tables['user_meta'], $this->_tables['user_meta'].'.user_id = '.$this->_tables['users'].'.id');
         $this->db->join($this->_tables['roles'], $this->_tables['roles'].'.actual_role_id = '.$this->_tables['users'].'.role_id');
 
-        return $this->db->get($this->_tables['users']);
+        return $this->db->get($this->_tables['users'])->result_array();
     }
 
     /**
@@ -673,14 +675,18 @@ class Auth extends CI_Model {
     * @param mixed $haystack
     */
     public function get_user($needle = '', $haystack = '')
-    {
-        $this->db->select(''. $this->_tables['users'] .'.*, '. $this->_tables['roles'] .'.name AS role_name, '. $this->_tables['roles'] .'.description AS role_description');
-
+    {       
+        $this->db->select(
+            $this->_tables['users'] . ".*",
+            $this->_tables['roles'] . ".name AS role_name",
+            $this->_tables['roles'] . ".description AS role_description"
+        );
+        
+        // Where criteria (username or email) == needle 
         $this->db->where($haystack, $needle);
-
-        // Join the user roles
-        $this->db->join($this->_tables['roles'], $this->_tables['roles'].'.actual_role_id = '.$this->_tables['users'].'.role_id');
-
+        
+        $this->db->join($this->_tables['roles'], $this->_tables['roles'].'.actual_role_id = '.$this->_tables['users'].'.role_id', "LEFT");
+        
         $user = $this->db->get($this->_tables['users']);
 
         return ($user->num_rows() == 1) ? $user->row() : FALSE;
