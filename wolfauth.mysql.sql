@@ -1,16 +1,16 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : Local DB
-Source Server Version : 50141
+Source Server         : Localhost
+Source Server Version : 50137
 Source Host           : localhost:3306
-Source Database       : dealfury
+Source Database       : wolfauth
 
 Target Server Type    : MYSQL
-Target Server Version : 50141
+Target Server Version : 50137
 File Encoding         : 65001
 
-Date: 2011-02-11 18:18:01
+Date: 2011-02-12 18:41:44
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -29,6 +29,23 @@ CREATE TABLE `banned_users` (
 
 -- ----------------------------
 -- Records of banned_users
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `ci_sessions`
+-- ----------------------------
+DROP TABLE IF EXISTS `ci_sessions`;
+CREATE TABLE `ci_sessions` (
+  `session_id` varchar(40) NOT NULL DEFAULT '0',
+  `ip_address` varchar(16) NOT NULL DEFAULT '0',
+  `user_agent` varchar(50) NOT NULL,
+  `last_activity` int(10) unsigned NOT NULL DEFAULT '0',
+  `user_data` text NOT NULL,
+  PRIMARY KEY (`session_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of ci_sessions
 -- ----------------------------
 
 -- ----------------------------
