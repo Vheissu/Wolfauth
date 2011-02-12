@@ -17,7 +17,9 @@ class Auth_driver extends CI_Driver_Library {
     public function __construct()
     {
         // Set the valid drivers
-        $this->valid_drivers = array('auth_driver_facebook');
+        $this->valid_drivers[] = 'auth_driver_facebook';
+        $this->valid_drivers[] = 'auth_driver_twitter';
+        $this->valid_drivers[] = 'auth_driver_google';
         
         // Don't overwrite user data
         if (empty($this->_user_data))

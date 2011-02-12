@@ -73,7 +73,6 @@ class Auth extends CI_Model {
     */
     public function login($needle = '', $password = '', $redirect = '')
     {
-
         // Make sure we have a username/email and password.
         if ( $needle == '' OR $password = '' )
         {
@@ -93,14 +92,19 @@ class Auth extends CI_Model {
 
         // Find the user
         $user = $this->get_user($needle, $this->identity_criteria);
-
+        
+        // If we found a user
         if ($user)
         {
+            // Hash password will encrypt the password and match it
             if ($this->hash_password($password) == $user->password)
             {
                 $user_id = $user->id;
+                
+                // Force login sets the logged in session
                 $this->force_login($needle);
-
+                
+                // If we want to be remembered
                 if ($this->input->post('remember_me') == 'yes')
                 {
                     $this->_set_remember_me($user_id);
@@ -118,12 +122,13 @@ class Auth extends CI_Model {
             }
             else
             {
-                $this->error_array[] = $this->lang->line('password_incorrect');
+                $this->error_array[] = $this->lang->line('login_incorrect');
 
                 return FALSE;
             }
         }
-
+        
+        // Obviously no account was found
         $this->error_array[] = $this->lang->line('account_not_found');
 
         // All hope is lost...
@@ -639,9 +644,7 @@ class Auth extends CI_Model {
     */
     public function hash_password($password = '')
     {
-        $this->load->helper('security');
-
-        return do_hash($password);
+        return sha1($password . $this->config->item('encryption_key'));
     }
 
     /**
