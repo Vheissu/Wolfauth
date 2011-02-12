@@ -104,6 +104,15 @@ $config['guest_role'] = "0";
 */
 $config['cookie_expiry'] = "60 * 60 * 24 * 7"; // One week expiry
 
+/**
+* Passwords are salted with this code. If you change this, any accounts created
+* using this salt value will not work any more. Leave it the following value
+* if you can. 
+* 
+* @var mixed
+*/
+$config['password_hash'] = "kjgkds09gs8d09g8s092523523758237";
+
 // =========================
 // Error Settings
 // =========================

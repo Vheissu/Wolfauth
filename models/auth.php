@@ -645,7 +645,7 @@ class Auth extends CI_Model {
     */
     public function hash_password($password = '')
     {
-        return sha1($password . $this->config->item('encryption_key'));
+        return sha1($password . $this->config->item('password_hash'));
     }
 
     /**
