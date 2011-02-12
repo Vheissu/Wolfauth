@@ -405,31 +405,24 @@ class Auth extends CI_Model {
     */
     public function add_user($user_data = array())
     {
-        if ($_POST)
+        // Hash the password
+        if (isset($user_data['password']))
         {
-            // Hash the password
-            if (isset($user_data['password']))
-            {
-                $user_data['password'] = $this->hash_password($user_data['password']);
-            }
+            $user_data['password'] = $this->hash_password($user_data['password']);
+        }
 
-            // Insert the user
-            $insert = $this->db->insert($this->_tables['users'], $user_data);
+        // Insert the user
+        $insert = $this->db->insert($this->_tables['users'], $user_data);
 
-            // If user successfully inserted
-            if ($insert)
-            {
-                $this->message_array[] = $this->lang->line('user_register_success');
-                return $this->db->insert_id();
-            }
-            else
-            {
-                $this->error_array[] = $this->lang->line('user_register_failure');
-                return FALSE;
-            }
+        // If user successfully inserted
+        if ($insert)
+        {
+            $this->message_array[] = $this->lang->line('user_register_success');
+            return $this->db->insert_id();
         }
         else
         {
+            $this->error_array[] = $this->lang->line('user_register_failure');
             return FALSE;
         }
     }
@@ -447,6 +440,7 @@ class Auth extends CI_Model {
             return FALSE;
         }
         
+        // If we're not updating meta for a specific user, update the current user.
         if ($userid == '')
         {
             $userid = $this->user_id;
@@ -459,6 +453,7 @@ class Auth extends CI_Model {
             'meta_value' => $meta_value
         );
         
+        // Insert the feedin' tube
         $insert = $this->db->insert($this->_tables['user_meta'], $data);
         
         if ($insert)
@@ -545,7 +540,7 @@ class Auth extends CI_Model {
     */
     public function activate_user($userid = '', $authkey = '')
     {
-
+        // Make sure details of the user being activated are provided
         if ($userid == '' OR $authkey == '')
         {
             return FALSE;
