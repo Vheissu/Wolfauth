@@ -98,5 +98,5 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO users VALUES ('1', '1', 'admin', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'dwaynecharrington@gmail.com', 'no', null, null, null, 'active');
-INSERT INTO users VALUES ('2', '1', 'johnsmith', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 'johnsmith@gmail.com', 'no', null, null, null, 'inactive');
+INSERT INTO users VALUES ('1', '6', 'admin', '3fb5c4aea2c8005c3c6b1f27d583cb544434c535', 'dwaynecharrington@gmail.com', 'yes', null, null, null, 'active');
+INSERT INTO users VALUES ('2', '1', 'johnsmith', '3fb5c4aea2c8005c3c6b1f27d583cb544434c535', 'johnsmith@gmail.com', 'no', null, null, null, 'inactive');

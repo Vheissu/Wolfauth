@@ -46,5 +46,10 @@ class User extends CI_Controller {
             $this->load->view('auth/register_form');
         }
     }
+    
+    public function create_password()
+    {
+        echo generate_password(8);
+    }
 
 }
