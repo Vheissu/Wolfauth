@@ -19,6 +19,9 @@ Setting up is really simple.
 * Drop the files from the downloadable zip into your 'application' directory. None of your files will be overridden or anything.
 * Open up your config/autoload.php file and autoload the model 'auth' and helper 'auth'.
 * That's it! start using it.
+* WolfAuth comes with two premade accounts. One an elevated administrator and a standard user. Each both use the same password which is: password.
+* The admin account: Username: admin / Password: password
+* The standard user account: Username: jacksmith / Password: password
 
 ## Compatibility
 
