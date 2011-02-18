@@ -18,9 +18,8 @@
 * 'roles' is the site roles table
 *
 */
-$config['tables'] =
-
-array(
+$config['tables'] = array
+(
     'users'     => 'users',
     'user_meta' => 'usermeta',
     'roles'     => 'roles',
@@ -62,12 +61,11 @@ $config['activation_method'] = "AUTO";
 /**
 * Meta fields are values in the usermeta table that will be used
 * for adding user / editing user functions.
-* 
+*
 * @var mixed
 */
-$config['meta_fields'] = 
-
-array(
+$config['meta_fields'] = array
+(
     'first_name',
     'last_name',
     'dob'
@@ -78,7 +76,7 @@ array(
 * The base url will be prepended before this so, you only
 * need to provide the controller and function handling
 * the activation. See the default below.
-* 
+*
 * @var mixed
 */
 $config['activation_url'] = "user/activate_account/";
@@ -130,8 +128,8 @@ $config['cookie_expiry'] = "60 * 60 * 24 * 7"; // One week expiry
 /**
 * Passwords are salted with this code. If you change this, any accounts created
 * using this salt value will not work any more. Leave it the following value
-* if you can. 
-* 
+* if you can.
+*
 * @var mixed
 */
 $config['password_hash'] = "kjgkds09gs8d09g8s092523523758237";

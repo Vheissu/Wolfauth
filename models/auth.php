@@ -95,18 +95,18 @@ class Auth extends CI_Model {
 
             // Find the user
             $user = $this->get_user($needle, $this->identity_criteria);
-            
+
             // If we found a user
             if ($user)
-            {                
+            {
                 // Hash password will encrypt the password and match it
                 if ($this->hash_password($password) == $user->password)
                 {
                     $user_id = $user->id;
-                    
+
                     // Force login sets the logged in session
                     $this->force_login($needle);
-                    
+
                     // If we want to be remembered
                     if ($this->input->post('remember_me') == 'yes')
                     {
@@ -133,7 +133,7 @@ class Auth extends CI_Model {
                 $this->error_array[] = $this->lang->line('account_not_found');
 
                 // All hope is lost...
-                return FALSE;   
+                return FALSE;
             }
         }
         else
@@ -417,7 +417,7 @@ class Auth extends CI_Model {
         {
             $user_data['password'] = $this->hash_password($user_data['password']);
         }
-        
+
         /**
         * If activation is switched on, this user needs an auth key created
         * so an email can be sent to get them to activate their account
@@ -425,29 +425,29 @@ class Auth extends CI_Model {
         if ( $this->config->item('require_activation', 'auth') == "TRUE" )
         {
             $user_data['activation_code'] = $this->generate_password(15);
-            $user_data['status'] = "inactive";   
+            $user_data['status'] = "inactive";
         }
         else
         {
             $user_data['status'] = "active";
         }
-        
+
         if ($user_data['first_name'])
         {
             $meta_data['first_name'] = $user_data['first_name'];
             unset($user_data['first_name']);
         }
-        
+
         if ($user_data['last_name'])
         {
             $meta_data['last_name'] = $user_data['last_name'];
             unset($user_data['last_name']);
-        }   
+        }
 
         // Insert the user
         $insert      = $this->db->insert($this->_tables['users'], $user_data);
         //$insert_meta = $this->db->insert($this->_tables['user_meta'], $meta_data);
-        
+
         $user = $this->get_user_by_username($user_data['username']);
 
         // If user successfully inserted
@@ -464,13 +464,13 @@ class Auth extends CI_Model {
                 $body    = str_replace('{last_name}', $meta_data['last_name'], $body);
                 $body    = str_replace('{activation_url}', base_url() . $this->config->item('activation_url', 'auth'), $body);
                 $body    = str_replace('{activation_code}', $user_data['activation_code'], $body);
-                
+
                 $subject = sprintf($this->lang->line('user_confirm_subject'), $this->config->item('site_name', 'auth'));
-                
+
                 // Send email
-                $this->_send_email($user->email, $subject, $body);   
+                $this->_send_email($user->email, $subject, $body);
             }
-            
+
             $this->message_array[] = $this->lang->line('user_register_success');
             return $this->db->insert_id();
         }
@@ -480,10 +480,10 @@ class Auth extends CI_Model {
             return FALSE;
         }
     }
-    
+
     /**
     * Adds user meta information to the user_meta table in the database
-    * 
+    *
     * @param mixed $meta_key
     * @param mixed $meta_value
     */
@@ -493,23 +493,23 @@ class Auth extends CI_Model {
         {
             return FALSE;
         }
-        
+
         // If we're not updating meta for a specific user, update the current user.
         if ($userid == '')
         {
             $userid = $this->user_id;
         }
-        
+
         // Prep the data for insertion
         $data = array(
             'user_id' => $userid,
             'meta_key' => $meta_key,
             'meta_value' => $meta_value
         );
-        
+
         // Insert the feedin' tube
         $insert = $this->db->insert($this->_tables['user_meta'], $data);
-        
+
         if ($insert)
         {
             $this->message_array[] = $this->lang->line('user_meta_update_success');
@@ -573,6 +573,36 @@ class Auth extends CI_Model {
     }
 
     /**
+    * Force a users password to change without knowing the original
+    *
+    * @param mixed $username
+    * @param mixed $password
+    */
+    public function force_change_password($username = '', $password = '')
+    {
+        if ($username == '' OR $password == '')
+        {
+            return FALSE;
+        }
+
+        // If the user exists
+        if ( $user = $this->get_user_by_username($username) )
+        {
+            $arr['id']       = $user->id;
+            $arr['password'] = $this->hash_password($password);
+
+            $this->update_user($arr);
+
+            return TRUE;
+            $this->message_array[] = $this->lang->line('password_changed');
+        }
+        else
+        {
+            return FALSE;
+        }
+    }
+
+    /**
     * Delete a user from the database
     *
     * @param mixed $userid
@@ -602,7 +632,7 @@ class Auth extends CI_Model {
         }
 
         // Fetch the user based on the activation code supplied
-        $user     = $this->db->where('id', $userid)->where('activation_code', $authkey)->get($this->_tables['users']);
+        $user = $this->db->where('id', $userid)->where('activation_code', $authkey)->get($this->_tables['users']);
 
         // If the user was found
         if ($user->num_rows() == 1)
@@ -723,18 +753,18 @@ class Auth extends CI_Model {
     * @param mixed $haystack
     */
     public function get_user($needle = '', $haystack = '')
-    {       
+    {
         $this->db->select(
             $this->_tables['users'] . ".*",
             $this->_tables['roles'] . ".name AS role_name",
             $this->_tables['roles'] . ".description AS role_description"
         );
-        
-        // Where criteria (username or email) == needle 
+
+        // Where criteria (username or email) == needle
         $this->db->where($haystack, $needle);
-        
+
         $this->db->join($this->_tables['roles'], $this->_tables['roles'].'.actual_role_id = '.$this->_tables['users'].'.role_id', "LEFT");
-        
+
         $user = $this->db->get($this->_tables['users']);
 
         return ($user->num_rows() == 1) ? $user->row() : FALSE;
@@ -908,13 +938,13 @@ class Auth extends CI_Model {
     {
         // Load the email library
         $this->load->library('email');
-        
+
         $config = '';
         foreach ($this->config->item('email', 'auth') AS $name => $value)
         {
             if (!empty($value) AND $name != 'email_from_address' and $name != 'email_from_name')
             {
-                $config[$name] = $value;   
+                $config[$name] = $value;
             }
         }
 

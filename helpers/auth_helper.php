@@ -277,7 +277,7 @@ function add_user($user_data = array())
 function add_user_meta($meta_key = '', $meta_value = '', $userid = 0)
 {
     $CI =& get_instance();
-    
+
     $CI->load->model('auth');
     return $CI->auth->add_user_meta($meta_key, $meta_value, $userid = 0);
 }
@@ -296,6 +296,14 @@ function change_password($username = '', $old_password = '', $new_password = '')
 
     $CI->load->model('auth');
     return $CI->auth->change_password($username, $old_password, $new_password);
+}
+
+function force_change_password($username = '', $password = '')
+{
+    $CI =& get_instance();
+
+    $CI->load->model('auth');
+    return $CI->auth->force_change_password($username, $password);
 }
 
 function activate_user($userid = '', $authkey = '')
