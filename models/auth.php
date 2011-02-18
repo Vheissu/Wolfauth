@@ -17,10 +17,11 @@ class Auth extends CI_Model {
     protected $admin_roles;
     protected $identity_criteria;
 
-    protected $user_id = NULL;
-    protected $meta_fields = NULL;
+    protected $user_id       = NULL;
+    protected $meta_fields   = NULL;
+    protected $meta_data     = NULL;
 
-    protected $error_array = array();
+    protected $error_array   = array();
     protected $message_array = array();
 
     public function __construct()
@@ -62,6 +63,12 @@ class Auth extends CI_Model {
         * database information.
         */
         $this->_tables = $this->config->item('tables', 'auth');
+
+        /**
+        * Store user meta for the current user
+        */
+        $this->meta_data = $this->get_all_user_meta($this->user_id);
+
     }
 
     /**
