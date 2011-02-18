@@ -17,12 +17,12 @@ class Auth extends CI_Model {
     protected $admin_roles;
     protected $identity_criteria;
 
-    protected $user_id       = NULL;
-    protected $meta_fields   = NULL;
-    protected $meta_data     = NULL;
+    protected $user_id        = NULL;
+    protected $meta_fields    = NULL;
+    protected $meta_data      = NULL;
 
-    protected $error_array   = array();
-    protected $message_array = array();
+    protected $error_array    = array();
+    protected $message_array  = array();
 
     public function __construct()
     {
@@ -327,17 +327,18 @@ class Auth extends CI_Model {
         {
             $userid = $this->user_id;
         }
-
-        $arrays = array();
-
-        $metas = $this->db->select('meta_key, meta_value')->where('user_id', $userid)->get($this->_tables['user_meta'])->result_array();
-
-        foreach ( $metas as $id => $meta )
+        
+        $result = $this->db->select('meta_key, meta_value')->where('user_id', $userid)->get('usermeta')->result_array();
+        
+        $usermeta = new stdClass;
+        
+        // Iterate over the results and pull out the keys
+        foreach ($result AS $meta)
         {
-            $arrays[$meta['meta_key']] = $meta['meta_value'];
+            $usermeta->$meta['meta_key'] = $meta['meta_value'];
         }
-
-        return $arrays;
+        
+        return $usermeta;
     }
 
     /**
