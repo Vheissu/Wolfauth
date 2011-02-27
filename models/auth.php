@@ -568,11 +568,21 @@ class Auth extends CI_Model {
         {
             $arr['id']       = $user->id;
             $arr['password'] = $this->hash_password($new_password);
+            
+            /**
+            * Check we know the old password first
+            */
+            if ($old_password == $user->password)
+            {
+                $this->update_user($arr);
 
-            $this->update_user($arr);
-
-            return TRUE;
-            $this->message_array[] = $this->lang->line('password_changed');
+                return TRUE;
+                $this->message_array[] = $this->lang->line('password_changed');   
+            }
+            else
+            {
+                $this->error_array[] = $this->lang->line('password_change_mismatch'); 
+            }
         }
         else
         {
