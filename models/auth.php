@@ -49,7 +49,7 @@ class Auth extends CI_Model {
         $this->guest_role        = $this->config->item('guest_role', 'auth');
         $this->admin_roles       = $this->config->item('admin_roles', 'auth');
         $this->identity_criteria = $this->config->item('identity_criteria', 'auth');
-        $this->meta_fields       = $this->config->item('meta_fields', 'auth');
+        //$this->meta_fields       = $this->config->item('meta_fields', 'auth');
         $this->user_id           = $this->session->userdata('user_id');
 
         /**
@@ -214,6 +214,12 @@ class Auth extends CI_Model {
     */
     public function is_admin($userid = 0)
     {
+        // If no user ID specified, then get the current user ID
+        if ($userid == 0)
+        {
+            $userid = $this->user_id;
+        }
+        
         // Conditional to return TRUE or FALSE if the user has an admin ID
         return (in_array($this->get_role($userid), $this->admin_roles)) ? TRUE : FALSE;
     }
@@ -225,6 +231,11 @@ class Auth extends CI_Model {
     */
     public function is_user($userid = 0)
     {
+        // If no user ID specified, then get the current user ID
+        if ($userid == 0)
+        {
+            $userid = $this->user_id;
+        }
         // If user role is greater thsn 0, return true
         return ($this->get_role($userid) > $this->guest_role) ? TRUE : FALSE;
     }
@@ -454,7 +465,11 @@ class Auth extends CI_Model {
 
         // Insert the user
         $insert      = $this->db->insert($this->_tables['users'], $user_data);
-        //$insert_meta = $this->db->insert($this->_tables['user_meta'], $meta_data);
+        
+        if (count($meta_data) >= 1)
+        {
+            $insert_meta = $this->db->insert($this->_tables['user_meta'], $meta_data);   
+        }
 
         $user = $this->get_user_by_username($user_data['username']);
 
