@@ -289,7 +289,7 @@ class Auth extends CI_Model {
     */
     public function get_user_by_id($userid = '')
     {
-        return $this->get_user($userid, 'id');
+        return $this->get_user($userid, $this->_tables['users'].'.id');
     }
 
     /**
@@ -299,7 +299,7 @@ class Auth extends CI_Model {
     */
     public function get_user_by_email($email = '')
     {
-        return $this->get_user($email, 'email');
+        return $this->get_user($email, $this->_tables['users'].'.email');
     }
 
     /**
@@ -309,7 +309,7 @@ class Auth extends CI_Model {
     */
     public function get_user_by_username($username = '')
     {
-        return $this->get_user($username, 'username');
+        return $this->get_user($username, $this->_tables['users'].'.username');
     }
 
     /**
