@@ -684,16 +684,39 @@ class Auth extends CI_Model {
             if ($update)
             {
                 // Are we sending an email after activating?
-                if ( $this->config->item('send_email_after_activation') == TRUE )
+                if ( $this->config->item('send_email_after_activation', 'auth') == TRUE )
                 {
                     $body = $this->load->view('auth/emails/account_activated', '', TRUE);
 
                     // Replace some shiz in the email templates
                     $body = str_replace('{site_name}', $this->config->item('{site_name}'), $body);
-                    $body = str_replace('{first_name}', $usermeta['first_name'], $body);
-                    $body = str_replace('{last_name}', $usermeta['last_name'], $body);
+                    
+                    // If we have a first name, change it
+                    // Otherwise set it to nothing in the template
+                    if ( isset($usermeta['first_name']) )
+                    {
+                        $body = str_replace('{first_name}', $usermeta['first_name'], $body);
+                    }
+                    else
+                    {
+                        $body = str_replace('{first_name}', '', $body);
+                    }
+                    
+                    // If we have a last name, change it
+                    // Otherwise set it to nothing in the template
+                    if ( isset($usermeta['last_name']) )
+                    {
+                        $body = str_replace('{last_name}', $usermeta['last_name'], $body);
+                    }
+                    else
+                    {
+                        $body = str_replace('{last_name}', $usermeta['last_name'], $body);
+                    }
+                    
+                    // URL to the site
                     $body = str_replace('{site_url}', base_url(), $body);
-
+                    
+                    // Send the email
                     $this->_send_email($user->email, $this->lang->line('user_activated_subject'), $body);
                 }
 
