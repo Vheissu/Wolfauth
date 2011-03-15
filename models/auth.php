@@ -30,7 +30,7 @@ class Auth extends CI_Model {
 
         /**
         * We load all of this in-case the end user doesn't autoload
-        * anything.
+        * anything. Always assume the end user is a lazy SOB.
         */
         $this->load->database();
         $this->load->config('auth', TRUE);
@@ -451,13 +451,13 @@ class Auth extends CI_Model {
             $user_data['status'] = "active";
         }
 
-        if ($user_data['first_name'])
+        if ( isset($user_data['first_name']) )
         {
             $meta_data['first_name'] = $user_data['first_name'];
             unset($user_data['first_name']);
         }
 
-        if ($user_data['last_name'])
+        if ( isset($user_data['last_name']) )
         {
             $meta_data['last_name'] = $user_data['last_name'];
             unset($user_data['last_name']);
@@ -466,11 +466,13 @@ class Auth extends CI_Model {
         // Insert the user
         $insert      = $this->db->insert($this->_tables['users'], $user_data);
         
-        if (count($meta_data) >= 1)
+        // If we have meta data, insert it into the database
+        if ( count($meta_data) >= 1 )
         {
             $insert_meta = $this->db->insert($this->_tables['user_meta'], $meta_data);   
         }
-
+        
+        // Get the user we just added
         $user = $this->get_user_by_username($user_data['username']);
 
         // If user successfully inserted

@@ -18,8 +18,7 @@
 * 'roles' is the site roles table
 *
 */
-$config['tables'] = array
-(
+$config['tables'] = array(
     'users'     => 'users',
     'user_meta' => 'usermeta',
     'roles'     => 'roles',
@@ -64,8 +63,7 @@ $config['activation_method'] = "AUTO";
 *
 * @var mixed
 */
-$config['meta_fields'] = array
-(
+$config['meta_fields'] = array(
     'first_name',
     'last_name',
     'dob'
