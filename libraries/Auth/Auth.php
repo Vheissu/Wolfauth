@@ -79,7 +79,7 @@ class Auth extends CI_Driver_Library {
     */
     public function restrict_to($needle, $criteria = 'role', $config = array())
     {
-        $this->{$this->_adapter}->restrict_access($needle, $criteria, $config);
+        $this->{$this->_adapter}->restrict_to($needle, $criteria, $config);
     }
     
     /**

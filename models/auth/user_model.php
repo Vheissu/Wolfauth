@@ -2,8 +2,8 @@
 
 class User_model extends CI_Model {
     
-    protected $_users;
-    protected $_usermeta;
+    protected $table;
+    protected $method;
     
     public function __construct()
     {
@@ -12,27 +12,20 @@ class User_model extends CI_Model {
         $this->load->config('auth');
         $this->load->database();
         
-        $this->table = $this->config->item('users_table');
+        $this->table   = $this->config->item('users_table');
+        $this->method  = $this->config->item('login_method');
     }
     
     /**
-    * Get a user from the database by ID
+    * Get a user from the database by user ID
     * 
     * @param mixed $id
     */
-    public function get_user($id)
-    {
-        $object = new stdClass;
+    public function get_user($value)
+    {        
+        $user     = $this->db->where($this->method, $value)->get($this->table);
         
-        $user     = $this->db->where('id', $id)->get($this->_users);
-        $usermeta = $this->db->where('user_id', $id)->get($this->_usermeta);
-        
-        if ($user->num_rows() > 0)
-        {
-            
-        }
-        
-        return ($object) ? $object : false;
+        return ($user->num_rows() > 0) ? $user->row() : false;
     }
     
 }
