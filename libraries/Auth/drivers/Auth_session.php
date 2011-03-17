@@ -39,13 +39,20 @@ class Auth_Session extends CI_Driver {
     {
         $this->load->database();
         $this->load->config('auth');
+        $this->load->helper('cookie');
+        $this->load->helper('url');
+        $this->lang->load('auth');
         $this->load->library('session');
         $this->load->model('auth/user_model.php');
         
         $this->user_id  = ($this->session->userdata('user_id')) ? $this->session->userdata('user_id') : 0;
         $this->role_id  = ($this->session->userdata('role_id')) ? $this->session->userdata('role_id') : $this->auth_config->guest_role_id;
         $this->username = $this->session->userdata('username');
-        $this->email    = $this->session->userdata('email');        
+        $this->email    = $this->session->userdata('email');
+        
+        // Do we remember the user?
+        $this->do_you_remember_me();
+                
     }
     
     /**
@@ -92,7 +99,16 @@ class Auth_Session extends CI_Driver {
     */
     public function force_login($username, $config = array())
     {
-       
+        $user = $this->user_model->get_user($username);
+        
+        $user_data = array(
+            'user_id'  => $user->id,
+            'role_id'  => $user->role_id,
+            'username' => $user->username,
+            'email'    => $user->email
+        );
+        $this->session->set_userdata($user_data);
+        return true;
     }
     
     /**
@@ -114,13 +130,30 @@ class Auth_Session extends CI_Driver {
             // Passwords match
             if ( $user->password == $this->hash_password($password) )
             {
-                $user_data = array(
-                    'user_id'  => $user->id,
-                    'role_id'  => $user->role_id,
-                    'username' => $user->username,
-                    'email'    => $user->email
-                );
-                $this->session->set_userdata($user_data);
+                // Set remember me
+                if ($remember === true)
+                {
+                    $this->_set_remember_me($user->id);
+                }
+                
+                // Log the user in
+                if ( $this->force_login($user->username) )
+                {
+                    // If we are redirecting after logging in
+                    if ( $this->config->item('redirect_after_login') === TRUE )
+                    {
+                        // If we have a location to redirect too (and we should)
+                        if ( $this->config->item('redirect_after_login_location') )
+                        {
+                            redirect($this->config->item('redirect_after_login_location'));
+                        }
+                        else
+                        {
+                            // There is nowhere to redirect, bail out!
+                            show_error($this->lang->line('no_login_redirect'));
+                        }
+                    }   
+                }                
             }
         }
     }
@@ -200,6 +233,93 @@ class Auth_Session extends CI_Driver {
     public function change_password($id, $old, $new, $config = array())
     {
         
+    }
+    
+    /**
+    * Sets a user to be remembered
+    * 
+    * @param mixed $userid
+    */
+    private function set_remember_me($id)
+    {
+        $this->load->library('encrypt');
+
+        $token  = md5(uniqid(rand(), TRUE));
+        $expiry = $this->config->item('cookie_expiry');
+
+        $remember_me = $this->encrypt->encode(serialize(array($id, $token, $expiry)));
+
+        $cookie = array(
+            'name'      => $this->config->item('cookie_name'),
+            'value'     => $remember_me,
+            'expire'    => $expiry
+        );
+
+        // For DB insertion
+        $cookie_db_data = array(
+            'id' => $id,
+            'remember_me' => $remember_me
+        );
+
+        set_cookie($cookie);
+        $this->update_user($cookie_db_data);
+    }
+    
+    /**
+    * Checks if we remember a particular user
+    * 
+    */
+    private function do_you_remember_me()
+    {
+        $this->load->library('encrypt');
+
+        $cookie_data = get_cookie($this->config->item('cookie_name'));
+
+        // Cookie Monster: Me want cookie. Me want to know, cookie exist?
+        if ($cookie_data)
+        {
+            // Set up some default empty variables
+            $id = '';
+            $token = '';
+            $timeout = '';
+
+            // Unencrypt and unserialize the cookie
+            $cookie_data = $this->encrypt->encode(unserialize($cookie_data));
+
+            // If we have cookie data
+            if ( !empty($cookie_data) )
+            {
+                // Make sure we have 3 values in our cookie array
+                if ( count($cookie_data) == 3 )
+                {
+                    // Create variables from array values
+                    list($id, $token, $expiry) = $cookie_data;
+                }
+            }
+
+            // Cookie Monster: Me not eat, EXPIRED COOKIEEEE!
+            if ( (int) $expiry < time() )
+            {
+                delete_cookie($this->config->item('cookie_name'));
+                return FALSE;
+            }
+
+            // Make sure the user exists by fetching info by their ID
+            $data = $this->get_user_by_id($id);
+
+            // If the user obviously exists
+            if ($data)
+            {
+                $this->force_login($data->username);
+                $this->set_remember_me($id);
+
+                return TRUE;
+            }
+
+        }
+
+        // Cookie Monster: ME NOT FIND COOKIE! ME WANT COOOKIEEE!!!
+        return FALSE;
     }
 
 }
