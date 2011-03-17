@@ -156,6 +156,11 @@ class Auth_Session extends CI_Driver {
                 }                
             }
         }
+        else
+        {
+            // We are already logged in, redirect
+            redirect($this->config->item('default_redirection_url'));
+        }
     }
     
     /**

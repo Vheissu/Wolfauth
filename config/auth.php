@@ -7,6 +7,7 @@ $config['login_method'] = "username";
 // Should we redirect the user after logging in?
 $config['redirect_after_login'] = true;
 
+// Location to redirect user after logging in
 $config['redirect_after_login_location'] = "/";
 
 // The role ID of a guest
@@ -24,3 +25,8 @@ $config['cookie_expiry'] = 60;
 // Driver configuration stuff
 $config['valid_drivers']  = array('auth_session');
 $config['default_driver'] = "session";
+
+// Default location to redirect too if redirection is required
+// This will not be used in places a redirection location is
+// using its own config value
+$config['default_redirection_url'] = "/";
