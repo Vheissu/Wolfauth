@@ -97,7 +97,7 @@ class Auth_Session extends CI_Driver {
     * 
     * @param mixed $data
     */
-    public function add_user($data)
+    public function add_user($data, $config = array())
     {
         
     }

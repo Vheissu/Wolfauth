@@ -1,16 +1,26 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-   
+
+/**
+ * WolfAuth
+ *
+ * An open source driver based authentication library for Codeigniter
+ *
+ * @package       WolfAuth
+ * @author        Dwayne Charrington
+ * @copyright     Copyright (c) 2011 Dwayne Charrington.
+ * @link          http://ilikekillnerds.com
+ */
+ 
 class Auth extends CI_Driver_Library {
     
     protected $ci;
     
     /**
     * Constructor
-    * 
     */
     public function __construct()
     {
-        
+        // Get Codeigniter instance
         $this->ci = get_instance();
         
         // Load config file
@@ -24,19 +34,6 @@ class Auth extends CI_Driver_Library {
         
         // Set default driver
         $this->_adapter = $this->ci->config->item('default_driver');
-    }
-    
-    /**
-    * Return an instance of this class
-    * 
-    */
-    public static function instance()
-    {
-        static $instance;
-
-        empty($instance) and $instance = new Auth();
-
-        return $instance;
     }
     
     public function logged_in($config = array())
@@ -55,6 +52,7 @@ class Auth extends CI_Driver_Library {
     * @param mixed $username
     * @param mixed $password
     * @param mixed $remember
+    * @param mixed $config
     */
     public function login($username, $password, $remember = false, $config = array())
     {
@@ -65,6 +63,7 @@ class Auth extends CI_Driver_Library {
     * Forces a user to be logged in
     * 
     * @param mixed $username
+    * @param mixed $config
     */
     public function force_login($username, $config = array())
     {
@@ -76,20 +75,44 @@ class Auth extends CI_Driver_Library {
     * 
     * @param mixed $needle
     * @param mixed $criteria can be 'role' or 'username'
+    * @param mixed $config
     */
-    public function restrict_access($needle, $criteria = 'role', $config = array())
+    public function restrict_to($needle, $criteria = 'role', $config = array())
     {
         $this->{$this->_adapter}->restrict_access($needle, $criteria, $config);
     }
     
     /**
-    * Adds a new user in the form of an array of info for full extensibility.
+    * Add a new user
     * 
     * @param mixed $data
+    * @param mixed $config
     */
-    public function add_user($data)
+    public function add_user($data, $config = array())
     {
-        $this->{$this->_adapter}->add_user($data);
+        $this->{$this->_adapter}->add_user($data, $config);
+    } 
+       
+    /**
+    * Edit a user
+    * 
+    * @param mixed $data
+    * @param mixed $config
+    */
+    public function edit_user($data, $config = array())
+    {
+        $this->{$this->_adapter}->edit_user($data, $config);
+    }
+           
+    /**
+    * Delete a user
+    * 
+    * @param mixed $id
+    * @param mixed $config
+    */
+    public function delete_user($id, $config = array())
+    {
+        $this->{$this->_adapter}->delete_user($id, $config);
     }
     
     /**
@@ -97,10 +120,24 @@ class Auth extends CI_Driver_Library {
     * 
     * @param mixed $password
     * @param mixed $hash
+    * @param mixed $config
     */
     public function hash_password($password, $hash = '', $config = array())
     {
         return $this->{$this->_adapter}->hash_password($password, $hash, $config);
+    }
+    
+    /**
+    * Change a password for a particular user ID
+    * 
+    * @param mixed $id
+    * @param mixed $old
+    * @param mixed $new
+    * @param mixed $config
+    */
+    public function change_password($id, $old, $new, $config = array())
+    {
+        return $this->{$this->_adapter}->change_password($password, $hash, $config);
     }
     
 }
