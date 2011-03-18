@@ -20,11 +20,8 @@ class Auth extends CI_Driver_Library {
     */
     public function __construct()
     {
-        // Get Codeigniter instance
-        $this->ci = get_instance();
-        
-        // Load config file
-        $this->ci->load->config('auth');
+        $this->ci = get_instance();      // Get Codeigniter instance
+        $this->ci->load->config('auth'); // Load config file
         
         // Get valid drivers
         foreach ($this->ci->config->item('valid_drivers') AS $driver)
@@ -36,14 +33,24 @@ class Auth extends CI_Driver_Library {
         $this->_adapter = $this->ci->config->item('default_driver');
     }
     
+    /**
+    * Is a user currently logged in?
+    * 
+    * @param mixed $config
+    */
     public function logged_in($config = array())
     {
-        $this->{$this->_adapter}->logged_in($config);
+        return $this->{$this->_adapter}->logged_in($config);
     }
     
+    /**
+    * Get a user
+    * 
+    * @param mixed $config
+    */
     public function get_user($config = array())
     {
-        $this->{$this->_adapter}->get_user();
+        return $this->{$this->_adapter}->get_user($config);
     }
     
     /**
@@ -56,7 +63,15 @@ class Auth extends CI_Driver_Library {
     */
     public function login($username, $password, $remember = false, $config = array())
     {
-        $this->{$this->_adapter}->login($username, $password, $remember, $config);   
+        return $this->{$this->_adapter}->login($username, $password, $remember, $config);   
+    }
+    
+    /**
+    * Logout
+    */
+    public function logout($config = array())
+    {
+        return $this->{$this->_adapater}->logout($config);
     }
     
     /**

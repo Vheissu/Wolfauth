@@ -81,14 +81,16 @@ class Auth_Session extends CI_Driver {
         // Get user based on defined criteria
         if ( $this->config->item('login_method') == 'username' )
         {
+            $where = "username";
             $value = $this->username;   
         }
         elseif ( $this->config->item('login_method') == 'email' )
         {
+            $where = "email";
             $value = $this->email;   
         }
         
-        return $this->user_model->get_user($value); 
+        return $this->user_model->get_user($where, $value); 
     }
     
     /**
@@ -159,6 +161,28 @@ class Auth_Session extends CI_Driver {
         else
         {
             // We are already logged in, redirect
+            redirect($this->config->item('default_redirection_url'));
+        }
+    }
+    
+    /**
+    * Logout
+    */
+    public function logout($config = array())
+    {
+        // If we have a user ID, someone is logged in
+        if ( $this->user_id > 0 )
+        {
+            $user_data = array(
+                'user_id'  => 0,
+                'role_id'  => 0,
+                'username' => '',
+                'email'    => '',
+            );
+            $this->session->set_userdata($user_data);
+        }
+        else
+        {
             redirect($this->config->item('default_redirection_url'));
         }
     }
