@@ -16,11 +16,12 @@ $config['guest_role_id'] = 0;
 // The role ID's for administrators
 $config['admin_role_ids'] = array(4, 5);
 
-// The name of the remember me cookie
-$config['cookie_name'] = "wolfauth";
+// Cookie stuff
+$config['cookie_name'] = "wolfauth";           // Name of the remember me cookie
+$config['cookie_expiry'] = "60 * 60 * 24 * 7"; // One week expiry
 
-// How long the remember me cookie lasts
-$config['cookie_expiry'] = 60;
+// Password stuff
+$config['password_length'] = 8; // Randomly generated passwords are this long
 
 // Driver configuration stuff
 $config['valid_drivers']  = array('auth_session');
