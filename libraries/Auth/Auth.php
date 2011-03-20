@@ -54,6 +54,28 @@ class Auth extends CI_Driver_Library {
     }
     
     /**
+    * Get a user by their user ID
+    * 
+    * @param mixed $id
+    * @param mixed $config
+    */
+    public function get_user_by_id($id, $config = array())
+    {
+        return $this->{$this->_adapter}->get_user_by_id($id, $config);
+    }
+    
+    /**
+    * Get a particular user by username
+    * 
+    * @param mixed $username
+    * @param mixed $config
+    */
+    public function get_user_by_username($username, $config = array())
+    {
+        return $this->{$this->_adapter}->get_user_by_username($username, $config);
+    }
+    
+    /**
     * Log a user in
     * 
     * @param mixed $username
@@ -153,6 +175,18 @@ class Auth extends CI_Driver_Library {
     public function change_password($id, $old, $new, $config = array())
     {
         return $this->{$this->_adapter}->change_password($password, $hash, $config);
+    }
+    
+    /**
+    * Change a user password without knowing the old one
+    * 
+    * @param mixed $id
+    * @param mixed $password
+    * @param mixed $config
+    */
+    public function force_change_password($id, $password, $config = array())
+    {
+        return $this->{$this->_adapter}->force_change_password($id, $password, $config);
     }
     
 }
