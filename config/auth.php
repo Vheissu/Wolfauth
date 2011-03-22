@@ -25,7 +25,6 @@ $config['password_length'] = 8; // Randomly generated passwords are this long
 
 // Driver configuration stuff
 $config['valid_drivers']  = array('auth_session');
-$config['default_driver'] = "session";
 
 // Default location to redirect too if redirection is required
 // This will not be used in places a redirection location is

@@ -76,7 +76,7 @@ class Auth_Session extends CI_Driver {
     * 
     * @param mixed $config
     */
-    public function get_user($config = array())
+    public function get_this_user($config = array())
     {
         // Get user based on defined criteria
         if ( $this->config->item('login_method') == 'username' )

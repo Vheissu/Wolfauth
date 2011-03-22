@@ -18,7 +18,7 @@ class Auth extends CI_Driver_Library {
     /**
     * Constructor
     */
-    public function __construct()
+    public function __construct($adapter = '')
     {
         $this->ci = get_instance();      // Get Codeigniter instance
         $this->ci->load->config('auth'); // Load config file
@@ -29,8 +29,26 @@ class Auth extends CI_Driver_Library {
             $this->valid_drivers[] = $driver;
         }
         
-        // Set default driver
-        $this->_adapter = $this->ci->config->item('default_driver');
+        // If we have been supplied a default adapter to this function, load it.
+        if ( !is_empty($adapter) )
+        {
+            $this->_adapter = trim($adapter);
+        }
+        else
+        {
+            // No default adapter supplied, so make it 'session'
+            $this->_adapter = "session";   
+        }
+    }
+    
+    /**
+    * If a function isn't found, search our driver for the method or variable
+    * 
+    * @param mixed $bleh
+    */
+    public function __get($bleh)
+    {
+        return $this->{$this->_adapter}->$bleh;
     }
     
     /**
@@ -48,9 +66,9 @@ class Auth extends CI_Driver_Library {
     * 
     * @param mixed $config
     */
-    public function get_user($config = array())
+    public function get_this_user($config = array())
     {
-        return $this->{$this->_adapter}->get_user($config);
+        return $this->{$this->_adapter}->get_this_user($config);
     }
     
     /**
