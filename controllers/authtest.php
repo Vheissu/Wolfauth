@@ -20,7 +20,7 @@ class Authtest extends CI_Controller {
         {
             // Posted details
             $username = $this->input->post('username');
-            $password = $this->input->post('username');
+            $password = $this->input->post('password');
             
             // Remember me?
             if ( $this->input->post('remember') == TRUE )
