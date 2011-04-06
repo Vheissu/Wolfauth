@@ -2,17 +2,14 @@
 
 class User_model extends CI_Model {
     
-    protected $table;
-    protected $method;
+    protected $__table;
+    protected $__method;
     
     public function __construct()
     {
         parent::__construct();
         
-        $this->load->config('auth');
-        
-        $this->table   = $this->config->item('users_table');
-        $this->method  = $this->config->item('login_method');
+        $this->__table   = "users";
     }
     
     /**
@@ -23,7 +20,7 @@ class User_model extends CI_Model {
     */
     public function get_user($where, $value)
     {        
-        $user = $this->db->where($where, $value)->get($this->table);
+        $user = $this->db->where($where, $value)->get($this->__table);
         
         return ($user->num_rows() > 0) ? $user->row() : false;
         $user->free_result();
@@ -42,7 +39,7 @@ class User_model extends CI_Model {
             // Make sure we have a username
             if ( isset($data['username']) )
             {
-                $query = $this->db->insert($this->table, $data);
+                $query = $this->db->insert($this->__table, $data);
                 return ($query) ? true : false;
                 $query->free_result();
             }
@@ -90,7 +87,7 @@ class User_model extends CI_Model {
     {
         if ( is_int($id) )
         {
-            $query = $this->db->where('id', $id)->delete($this->table);
+            $query = $this->db->where('id', $id)->delete($this->__table);
             return ($query) ? $true : false;
             $query->free_result();
         }
