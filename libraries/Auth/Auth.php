@@ -9,6 +9,7 @@
  * @author        Dwayne Charrington
  * @copyright     Copyright (c) 2011 Dwayne Charrington.
  * @link          http://ilikekillnerds.com
+ * @license       Phil Sturgeon's Don't Be A Dick (DBAD) Licence
  */
  
 class Auth extends CI_Driver_Library {
@@ -17,7 +18,7 @@ class Auth extends CI_Driver_Library {
     protected $_adapter = 'simpleauth';
     
     // Valid drivers
-    protected $valid_drivers = array('auth_simpleauth', 'auth_facebook'); 
+    protected $valid_drivers = array('auth_simpleauth'); 
     
     /**
     * Redirect all method calls not in this class to the child class
