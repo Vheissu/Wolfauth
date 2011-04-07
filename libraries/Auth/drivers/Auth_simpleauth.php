@@ -51,7 +51,10 @@ class Auth_Simpleauth extends CI_Driver {
         $this->_ci->load->model('auth/user_model');
         
         // Simpleauth config data
-        $this->config = $this->_ci->config->item('simpleauth');
+        $this->config = (object)$this->_ci->config->item('simpleauth');
+        
+        print_r($this->config);
+        exit;
         
         // Get role meta info
         $role = $this->get_role_meta();

@@ -69,8 +69,8 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO users VALUES ('1', 'admin', 'fd40f787af9d2e136faa1df87114439fbba667d5', 'admin@admin.com', '1', '0000-00-00 00:00:00', '0000-00-00 00:00:00', '21057135534d9932dc1cbef2.70204711', '', '', 'banned');
-INSERT INTO users VALUES ('2', 'testuser', '6d0085e0d86c2bf3607eac0fd390e96e135c58b9', 'testuser@test.com', '1', '0000-00-00 00:00:00', '0000-00-00 00:00:00', '18887459754d999e2fe30e86.34226797', '', 'a:3:{s:6:\"points\";i:10;s:7:\"uploads\";i:15;s:5:\"ratio\";s:3:\"9.5\";}', 'banned');
+INSERT INTO users VALUES ('1', 'admin', 'fd40f787af9d2e136faa1df87114439fbba667d5', 'admin@admin.com', '0000-00-00 00:00:00', '0000-00-00 00:00:00', '21057135534d9932dc1cbef2.70204711', '', '', 'banned');
+INSERT INTO users VALUES ('2', 'testuser', '6d0085e0d86c2bf3607eac0fd390e96e135c58b9', 'testuser@test.com', '0000-00-00 00:00:00', '0000-00-00 00:00:00', '18887459754d999e2fe30e86.34226797', '', 'a:3:{s:6:\"points\";i:10;s:7:\"uploads\";i:15;s:5:\"ratio\";s:3:\"9.5\";}', 'banned');
 
 -- ----------------------------
 -- Table structure for `users_to_roles`
