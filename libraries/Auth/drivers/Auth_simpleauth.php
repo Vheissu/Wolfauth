@@ -53,9 +53,6 @@ class Auth_Simpleauth extends CI_Driver {
         // Simpleauth config data
         $this->config = (object)$this->_ci->config->item('simpleauth');
         
-        print_r($this->config);
-        exit;
-        
         // Get role meta info
         $role = $this->get_role_meta();
         
@@ -82,9 +79,9 @@ class Auth_Simpleauth extends CI_Driver {
         $this->messages = "";
         
         // If we have some admin roles
-        if ( $this->config['admin_roles'] )
+        if ( $this->config->admin_roles )
         {
-            $this->admin_roles = $this->config['admin_roles'];   
+            $this->admin_roles = $this->config->admin_roles;   
         }
         
         // Do we remember the user?
@@ -625,7 +622,7 @@ class Auth_Simpleauth extends CI_Driver {
     {
         $this->_ci->load->library('encrypt');
 
-        $cookie_data = get_cookie($this->config['cookie_name']);
+        $cookie_data = get_cookie($this->config->cookie_name);
 
         // Cookie Monster: Me want cookie. Me want to know, cookie exist?
         if ($cookie_data)
@@ -652,7 +649,7 @@ class Auth_Simpleauth extends CI_Driver {
             // Cookie Monster: Me not eat, EXPIRED COOKIEEEE!
             if ( (int) $expiry < time() )
             {
-                delete_cookie($this->config['cookie_name']);
+                delete_cookie($this->config->cookie_name);
                 return false;
             }
 
