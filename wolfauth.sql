@@ -1,16 +1,16 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : Localhost
-Source Server Version : 50508
+Source Server         : Local DB
+Source Server Version : 50141
 Source Host           : localhost:3306
 Source Database       : wolfauth
 
 Target Server Type    : MYSQL
-Target Server Version : 50508
+Target Server Version : 50141
 File Encoding         : 65001
 
-Date: 2011-04-07 13:07:26
+Date: 2011-04-08 07:52:33
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -26,6 +26,10 @@ CREATE TABLE `ci_sessions` (
   `user_data` text NOT NULL,
   PRIMARY KEY (`session_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of ci_sessions
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for `roles`
@@ -58,10 +62,12 @@ CREATE TABLE `users` (
   `email` varchar(255) NOT NULL,
   `join_date` datetime NOT NULL,
   `last_login` datetime NOT NULL,
-  `salt` varchar(255) NOT NULL,
-  `remember_me` longtext NOT NULL,
+  `facebook_id` varchar(255) DEFAULT NULL,
+  `twitter_id` varchar(255) DEFAULT NULL,
   `profile_fields` longtext NOT NULL,
   `status` enum('banned','inactive','validating','active') NOT NULL,
+  `remember_me` longtext NOT NULL,
+  `salt` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `Unique` (`username`,`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
@@ -69,8 +75,8 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO users VALUES ('1', 'admin', 'fd40f787af9d2e136faa1df87114439fbba667d5', 'admin@admin.com', '0000-00-00 00:00:00', '0000-00-00 00:00:00', '21057135534d9932dc1cbef2.70204711', '', '', 'banned');
-INSERT INTO users VALUES ('2', 'testuser', '6d0085e0d86c2bf3607eac0fd390e96e135c58b9', 'testuser@test.com', '0000-00-00 00:00:00', '0000-00-00 00:00:00', '18887459754d999e2fe30e86.34226797', '', 'a:3:{s:6:\"points\";i:10;s:7:\"uploads\";i:15;s:5:\"ratio\";s:3:\"9.5\";}', 'banned');
+INSERT INTO users VALUES ('1', 'admin', 'fd40f787af9d2e136faa1df87114439fbba667d5', 'admin@admin.com', '0000-00-00 00:00:00', '0000-00-00 00:00:00', null, null, '', 'banned', '', '21057135534d9932dc1cbef2.70204711');
+INSERT INTO users VALUES ('2', 'testuser', '6d0085e0d86c2bf3607eac0fd390e96e135c58b9', 'testuser@test.com', '0000-00-00 00:00:00', '0000-00-00 00:00:00', null, null, 'a:3:{s:6:\"points\";i:10;s:7:\"uploads\";i:15;s:5:\"ratio\";s:3:\"9.5\";}', 'banned', '', '18887459754d999e2fe30e86.34226797');
 
 -- ----------------------------
 -- Table structure for `users_to_roles`
