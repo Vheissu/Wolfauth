@@ -44,6 +44,22 @@ class User_model extends CI_Model {
     }
     
     /**
+    * Get user meta from the database and unserialize it.
+    * 
+    * @param mixed $userid
+    * @return mixed
+    */
+    public function get_user_meta($userid)
+    {
+        $user = $this->get_user('id', $userid);
+        $meta = @unserialize($user->profile_fields);
+        
+        settype($meta, "object");
+        
+        return ($meta) ? $meta : false;
+    }
+    
+    /**
     * Add a new user
     * 
     * @param mixed $data

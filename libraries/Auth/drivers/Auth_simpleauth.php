@@ -104,6 +104,21 @@ class Auth_Simpleauth extends CI_Driver {
     }
     
     /**
+    * Get user meta from the profile fields column in the user table.
+    * 
+    * @param mixed $userid
+    */
+    public function get_user_meta($userid = '')
+    {
+        if ( $userid == '' )
+        {
+            $userid = $this->_ci->session->userdata('user_id');
+        }
+        
+        return $this->_ci->user_model->get_user_meta($userid);
+    }
+    
+    /**
     * Is anyone logged in? Assumes a logged in user has a user_id higher than 0
     * 
     * @param mixed $config
