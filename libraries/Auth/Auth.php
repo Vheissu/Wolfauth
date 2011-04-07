@@ -25,10 +25,7 @@ class Auth extends CI_Driver_Library {
         // If we have a list of valid drivers
         if ( $ci->config->item('valid_drivers') )
         {
-            foreach ($ci->config->item('valid_drivers') AS $key => $driver)
-            {
-                $this->valid_drivers[] = $driver;
-            }
+            $this->valid_drivers = $ci->config->item('valid_drivers');
         }
         
         // If we have a default driver set
