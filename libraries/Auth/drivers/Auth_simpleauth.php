@@ -23,7 +23,10 @@ class Auth_Simpleauth extends CI_Driver {
     protected $_ci;
     
     // Logged in user info
-    protected $user_info; 
+    protected $user_info;
+    
+    // Store config
+    protected $config; 
     
     // Admin role ID's that determine a user to be an admin
     protected $admin_roles;
@@ -40,11 +43,15 @@ class Auth_Simpleauth extends CI_Driver {
     {
         $this->_ci = get_instance();
         $this->_ci->load->database();
+        $this->_ci->config->load('auth');
         $this->_ci->load->helper('cookie');
         $this->_ci->load->helper('url');
         $this->_ci->lang->load('auth');
         $this->_ci->load->library('session');
         $this->_ci->load->model('auth/user_model');
+        
+        // Simpleauth config data
+        $this->config = $this->_ci->config->item('simpleauth');
         
         // Store the logged in userinfo in the user array so we can neatly access it
         $this->user_info = array(
@@ -58,8 +65,11 @@ class Auth_Simpleauth extends CI_Driver {
         $this->errors   = "";
         $this->messages = "";
         
-        // Set admin roles
-        $this->admin_roles = array(3,4);
+        // If we have some admin roles
+        if ( $this->config['admin_roles'] )
+        {
+            $this->admin_roles = $this->config['admin_roles'];   
+        }
         
         // Do we remember the user?
         $this->do_you_remember_me();        
@@ -545,7 +555,7 @@ class Auth_Simpleauth extends CI_Driver {
         $remember_me = $this->_ci->encrypt->encode(serialize(array($id, $token, $expiry)));
 
         $cookie = array(
-            'name'      => "wolfauth",
+            'name'      => $this->config['cookie_name'],
             'value'     => $remember_me,
             'expire'    => $expiry
         );
@@ -569,7 +579,7 @@ class Auth_Simpleauth extends CI_Driver {
     {
         $this->_ci->load->library('encrypt');
 
-        $cookie_data = get_cookie("wolfauth");
+        $cookie_data = get_cookie($this->config['cookie_name']);
 
         // Cookie Monster: Me want cookie. Me want to know, cookie exist?
         if ($cookie_data)
@@ -596,7 +606,7 @@ class Auth_Simpleauth extends CI_Driver {
             // Cookie Monster: Me not eat, EXPIRED COOKIEEEE!
             if ( (int) $expiry < time() )
             {
-                delete_cookie("wolfauth");
+                delete_cookie($this->config['cookie_name']);
                 return false;
             }
 

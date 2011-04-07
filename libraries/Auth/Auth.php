@@ -15,10 +15,29 @@
 class Auth extends CI_Driver_Library {
     
     // Default driver
-    protected $_adapter = 'simpleauth';
+    protected $_adapter;
     
-    // Valid drivers
-    protected $valid_drivers = array('auth_simpleauth'); 
+    public function __construct()
+    {
+        $ci = get_instance();
+        $ci->config->load('auth');
+        
+        // If we have a list of valid drivers
+        if ( $ci->config->item('valid_drivers') )
+        {
+            foreach ($ci->config->item('valid_drivers') AS $key => $driver)
+            {
+                $this->valid_drivers[] = $driver;
+            }
+        }
+        
+        // If we have a default driver set
+        if ( $ci->config->item('default_driver') )
+        {
+            $this->_adapter = $ci->config->item('default_driver');
+        }
+                
+    } 
     
     /**
     * Redirect all method calls not in this class to the child class
