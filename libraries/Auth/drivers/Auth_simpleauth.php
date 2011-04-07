@@ -53,13 +53,26 @@ class Auth_Simpleauth extends CI_Driver {
         // Simpleauth config data
         $this->config = $this->_ci->config->item('simpleauth');
         
+        // Get role meta info
+        $role = $this->get_role_meta();
+        
+        // Default role values
+        $this->user_info['role_id']       = 0;
+        $this->user_info['role_name']     = "guest";
+        $this->user_info['role_realname'] = "Guest";
+        
+        // If we have role meta (only for logged in users)
+        if ($role)
+        {
+            $this->user_info['role_id']       = $role->role_id;
+            $this->user_info['role_name']     = $role->role_slug;
+            $this->user_info['role_realname'] = $role->role_name;
+        }
+        
         // Store the logged in userinfo in the user array so we can neatly access it
-        $this->user_info = array(
-            'user_id'  => ($this->_ci->session->userdata('user_id')) ? $this->_ci->session->userdata('user_id') : 0,
-            'role_id'  => ($this->_ci->session->userdata('role_id')) ? $this->_ci->session->userdata('role_id') : 0,
-            'username' => $this->_ci->session->userdata('username'),
-            'email'    => $this->_ci->session->userdata('email')
-        );
+        $this->user_info['user_id']  = ($this->_ci->session->userdata('user_id')) ? $this->_ci->session->userdata('user_id') : 0;
+        $this->user_info['username'] = $this->_ci->session->userdata('username');
+        $this->user_info['email']    = $this->_ci->session->userdata('email');
         
         // Reset each time this class is constructed, yo!
         $this->errors   = "";
@@ -73,6 +86,21 @@ class Auth_Simpleauth extends CI_Driver {
         
         // Do we remember the user?
         $this->do_you_remember_me();        
+    }
+    
+    /**
+    * Will get information about the current user or a specific user
+    * in relation to their role, etc.
+    * 
+    */
+    public function get_role_meta($userid = '')
+    {
+        if ( $userid == '' )
+        {
+            $userid = $this->_ci->session->userdata('user_id');
+        }
+        
+        return $this->_ci->user_model->get_role($userid);
     }
     
     /**

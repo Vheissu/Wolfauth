@@ -27,6 +27,23 @@ class User_model extends CI_Model {
     }
     
     /**
+    * Get role information for a user ID
+    * 
+    * @param mixed $userid
+    */
+    public function get_role($userid)
+    {
+        $roles = $this->db->
+                          select('users_to_roles.role_id, roles.name, roles.slug, roles.description')
+                          ->where('users_to_roles.user_id', $userid)
+                          ->join('roles', 'roles.id = users_to_roles.role_id')
+                          ->get('users_to_roles');
+        
+        return ($roles->num_rows() > 0) ? $roles->row() : false;
+        $roles->free_result();   
+    }
+    
+    /**
     * Add a new user
     * 
     * @param mixed $data
