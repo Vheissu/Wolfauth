@@ -22,14 +22,13 @@ class Authtest extends CI_Controller {
             $username = $this->input->post('username');
             $password = $this->input->post('username');
             
+            // Remember me
+            $remember = false;
+            
             // Remember me?
-            if ( $this->input->post('remember') == TRUE )
+            if ( $this->input->post('remember') == 1 )
             {
                 $remember = $this->input->post('remember');
-            }
-            else
-            {
-                $remember = false;
             }
             
             // Array of extra information you can pass to your functions
