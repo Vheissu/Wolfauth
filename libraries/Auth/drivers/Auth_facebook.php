@@ -61,9 +61,33 @@ class Auth_facebook extends CI_Driver {
             // User was found aiiiighhttt
             if ( $user )
             {
+                    
+            }
+            // Looks like this user has Facebook, but no account created
+            else
+            {
+                $details = array();
                 
+                // User addition was successful
+                if ( $this->_ci->user_model->add_user($details) )
+                {
+                    return true;
+                }
+                else
+                {
+                    show_error($this->_ci->lang->line('error_user_not_added'));
+                }
             }
         }        
+    }
+    
+    /**
+    * Destroy any Facebooksession currently running
+    * 
+    */
+    public function destroy_session()
+    {
+        
     }
     
 }
