@@ -65,8 +65,8 @@ class Auth_Simpleauth extends CI_Driver {
         if ($role)
         {
             $this->user_info['role_id']       = $role->role_id;
-            $this->user_info['role_name']     = $role->role_slug;
-            $this->user_info['role_realname'] = $role->role_name;
+            $this->user_info['role_name']     = $role->slug;
+            $this->user_info['role_realname'] = $role->name;
         }
         
         // Store the logged in userinfo in the user array so we can neatly access it
@@ -107,14 +107,21 @@ class Auth_Simpleauth extends CI_Driver {
     * 
     * @param mixed $userid
     */
-    public function get_user_meta($userid = '')
+    public function get_user_meta($username = '')
     {
-        if ( $userid == '' )
+        if ($username == '')
         {
-            $userid = $this->_ci->session->userdata('user_id');
+            $username = $this->user_info['username'];
         }
         
-        return $this->_ci->user_model->get_user_meta($userid);
+        // Get the user
+        $user = $this->_ci->user_model->get_user('username', $username);
+        
+        // Unserialize profile fields
+        $fields = @unserialize($user->profile_fields);
+        
+        // Return the profile fields as an object
+        return (!empty($fields)) ? (object)$fields : false;
     }
     
     /**
@@ -175,10 +182,10 @@ class Auth_Simpleauth extends CI_Driver {
     public function force_login($username)
     {
         $user = $this->_ci->user_model->get_user('username', $username);
+        $role = $this->get_role_meta($user->id);
         
         $user_data = array(
             'user_id'  => $user->id,
-            'role_id'  => $user->role_id,
             'username' => $user->username,
             'email'    => $user->email
         );
@@ -225,6 +232,9 @@ class Auth_Simpleauth extends CI_Driver {
                         // Log the user in using the force login function
                         if ( $this->force_login($user->username) )
                         {
+                            // Update login date/time
+                            $this->update_user(array('last_login' => date('Y-m-d H:m:s')), $username);
+                            
                             // If we are redirecting after logging in
                             if ( $redirect_to != '' )
                             {
@@ -311,28 +321,6 @@ class Auth_Simpleauth extends CI_Driver {
                 return true;
             }
         }
-    }
-    
-    /**
-    * Get custom profile fields information about a user
-    * 
-    * @param mixed $username
-    */
-    public function get_profile_fields($username = '')
-    {
-        if ($username == '')
-        {
-            $username = $this->user_info['username'];
-        }
-        
-        // Get the user
-        $user = $this->_ci->user_model->get_user('username', $username);
-        
-        // Unserialize profile fields
-        $fields = @unserialize($user->profile_fields);
-        
-        // Return the profile fields as an object
-        return (!empty($fields)) ? (object)$fields : false;
     }
     
     /**
