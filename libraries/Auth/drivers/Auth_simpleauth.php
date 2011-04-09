@@ -89,8 +89,7 @@ class Auth_Simpleauth extends CI_Driver {
     }
     
     /**
-    * Will get information about the current user or a specific user
-    * in relation to their role, etc.
+    * Will return role name, role ID, role slug
     * 
     */
     public function get_role_meta($userid = '')
@@ -134,7 +133,8 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function is_user()
     {
-        return ($this->user_info['username']) ? $this->user_info['username'] : false;
+        $username = $this->user_info['username'];
+        return ($username) ? $username : false;
     }
     
     /**
@@ -143,7 +143,8 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function is_admin()
     {
-        return (in_array($this->user_info['role_id'], $this->admin_roles)) ? true : false;
+        $roleid = $this->user_info['role_id'];
+        return (in_array($roleid, $this->admin_roles)) ? true : false;
     }
     
     /**
@@ -152,7 +153,8 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function get_this_user()
     {   
-        return $this->_ci->user_model->get_user("username", $this->user_info['username']); 
+        $username = $this->user_info['username'];
+        return $this->_ci->user_model->get_user("username", $username); 
     }
     
     /**
@@ -160,7 +162,7 @@ class Auth_Simpleauth extends CI_Driver {
     * 
     * @param mixed $id
     */
-    public function get_user_by_id($id)
+    public function get_user_by_id($id = 0)
     {
         return $this->_ci->user_model->get_user("id", $id);
     }
@@ -195,6 +197,10 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function login($username, $password, $remember = false, $redirect_to = '')
     {
+        // Trim details
+        $username = trim($username);
+        $password = trim($password);
+        
         // Make sure we're not logged in
         if ( $this->user_info['user_id'] == 0 )
         {   
@@ -207,6 +213,7 @@ class Auth_Simpleauth extends CI_Driver {
                 // Passwords match
                 if ( $user->password == $this->hash_password($password, $user->salt) )
                 {
+                    // If the user is an activated
                     if ( $user->status == "active" )
                     {
                         // Set remember me
@@ -307,6 +314,28 @@ class Auth_Simpleauth extends CI_Driver {
     }
     
     /**
+    * Get custom profile fields information about a user
+    * 
+    * @param mixed $username
+    */
+    public function get_profile_fields($username = '')
+    {
+        if ($username == '')
+        {
+            $username = $this->user_info['username'];
+        }
+        
+        // Get the user
+        $user = $this->_ci->user_model->get_user('username', $username);
+        
+        // Unserialize profile fields
+        $fields = @unserialize($user->profile_fields);
+        
+        // Return the profile fields as an object
+        return (!empty($fields)) ? (object)$fields : false;
+    }
+    
+    /**
     * Add a new user
     * 
     * @param mixed $username
@@ -314,7 +343,7 @@ class Auth_Simpleauth extends CI_Driver {
     * @param mixed $email
     * @param mixed $profile_fields
     */
-    public function add_user($username, $password, $email, $role_id = 1, $profile_fields = array())
+    public function add_user($username, $password, $email, $role_id = 1, $status = 'active', $profile_fields = array())
     {
         if ( empty($username) OR empty($password) OR empty($email) )
         {
@@ -328,7 +357,8 @@ class Auth_Simpleauth extends CI_Driver {
             'username'       => trim($username),
             'password'       => $password,
             'email'          => trim($email),
-            'role_id'        => $role_id,
+            'join_date'      => date('Y-m-d H:m:s'),
+            'status'         => $status,
             'salt'           => $salt,
             'profile_fields' => serialize($profile_fields)
         );
@@ -337,6 +367,9 @@ class Auth_Simpleauth extends CI_Driver {
         
         if ($this->_ci->db->affected_rows() >= 1)
         {
+            $role_meta = array('user_id' => $this->_ci->db->insert_id(),'role_id' => $role_id);
+            $this->_ci->db->insert('users_to_roles', $role_meta);
+            
             return true;
         }
         else
@@ -396,12 +429,19 @@ class Auth_Simpleauth extends CI_Driver {
             unset($values['email']);
         }
         
+        // Update the last login date
+        if ( array_key_exists('last_login', $values) )
+        {
+            $update['last_login'] = $values['last_login'];
+            unset($values['last_login']);
+        }
+        
         // If we have a role ID
         if ( array_key_exists('role_id', $values) )
         {
-            if ( is_int($values['user_id']) )
+            if ( is_int($values['role_id']) )
             {
-                $update['role_id'] = $values['user_id'];
+                $update_role['role_id'] = $values['role_id'];
             }
             unset($values['role_id']);
         }
@@ -428,6 +468,12 @@ class Auth_Simpleauth extends CI_Driver {
         // Update the user
         $this->_ci->where('username', $username)->update('users', $update);
         
+        // If we're updating the role ID
+        if ( $update_role )
+        {
+            $this->_ci->where('user_id', $current_values->user_id)->update('users_to_roles', $update_role);   
+        }
+        
         // If update was successful.
         if ( $this->_ci->db->affected_rows() == 1 )
         {
@@ -437,8 +483,7 @@ class Auth_Simpleauth extends CI_Driver {
         {
             $this->errors[] = $this->_ci->lang->line('error_user_not_updated');
             return false;
-        }
-               
+        }   
     }   
     
     /**
@@ -478,9 +523,10 @@ class Auth_Simpleauth extends CI_Driver {
     * @param mixed $restrict
     * @param mixed $redirect_to
     */
-    public function restrict_access($needles = '', $restrict = 'role', $redirect_to = '')
+    public function restrict($needles = '', $restrict = 'role', $redirect_to = null)
     {
-        $redirect_to = ($redirect_to == '') ? base_url() : $redirect_to;
+        // Redirect to base url if no redirect URL supplied
+        $redirect_to = ($redirect_to === null) ? base_url() : $redirect_to;
 
         // If we are restricting to role ID's
         if ( $restrict == 'role' )
@@ -503,7 +549,7 @@ class Auth_Simpleauth extends CI_Driver {
                 // Or if the current user is an admin, they can do anything
                 if ( in_array($criteria, $needles) OR in_array($this->user_info['role_id'], $this->admin_roles) )
                 {
-                    return TRUE;
+                    return true;
                 }
                 else
                 {
@@ -515,7 +561,7 @@ class Auth_Simpleauth extends CI_Driver {
             {
                 if ($criteria == $needles)
                 {
-                    return TRUE;
+                    return true;
                 }
                 else
                 {
@@ -535,10 +581,8 @@ class Auth_Simpleauth extends CI_Driver {
     * 
     */
     public function create_salt()
-    {        
-        $salt = uniqid(mt_rand(), true);
-        
-        return $salt;  
+    {                
+        return uniqid(mt_rand(), true);  
     }
     
     /**
@@ -547,9 +591,9 @@ class Auth_Simpleauth extends CI_Driver {
     * @param mixed $password
     * @param mixed $salt
     */
-    public function hash_password($password, $salt = '')
+    public function hash_password($password, $salt = null)
     {
-        if ($salt == '')
+        if ($salt === null)
         {
             $password = sha1($password);
         }
@@ -672,10 +716,11 @@ class Auth_Simpleauth extends CI_Driver {
     }
     
     /**
-    * Just for decoration, ha ha.
+    * Show error messages
+    * 
+    * @param mixed $left
+    * @param mixed $right
     */
-    public function decorate() {}
-    
     public function show_errors($left = "<p class='error'>", $right = "</p>")
     {
         if ( is_array($this->errors) AND !empty($this->errors) )
@@ -690,5 +735,10 @@ class Auth_Simpleauth extends CI_Driver {
             return false;
         }
     }
+    
+    /**
+    * Just for decoration, ha ha.
+    */
+    public function decorate() {}
 
 }
