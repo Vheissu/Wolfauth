@@ -625,7 +625,7 @@ class Auth_Simpleauth extends CI_Driver {
         $this->_ci->load->library('encrypt');
 
         $token  = md5(uniqid(rand(), TRUE));
-        $expiry = 60 * 24;
+        $expiry = $this->config->cookie_expiry;
 
         $remember_me = $this->_ci->encrypt->encode(serialize(array($id, $token, $expiry)));
 

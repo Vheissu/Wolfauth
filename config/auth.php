@@ -24,8 +24,9 @@ $config['default_driver'] = "simpleauth";
 
 // Simpleauth driver config options
 $config['simpleauth'] = array(
-    "admin_roles" => array(3,4), // Admin role IDs
-    "cookie_name" => "wolfauth"  // The name of the remember me cookie
+    "admin_roles"   => array(3,4),  // Admin role IDs
+    "cookie_name"   => "wolfauth",  // The name of the remember me cookie
+    "cookie_expiry" => 3600      // 1 hour (you should probably make this longer)
 );
 
 // Facebook driver config options
