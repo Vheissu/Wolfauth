@@ -565,6 +565,31 @@ class Auth_Simpleauth extends CI_Driver {
     }
     
     /**
+    * Does the currently logged in user or specific user
+    * have a particular user role.
+    * 
+    * @param mixed $role_id
+    */
+    public function has_role($role_id, $user_id = 0)
+    {
+        if ($user_id == 0)
+        {
+            $user_id = $this->user_info['user_id'];
+        }
+        
+        $meta = $this->get_role_meta($user_id);
+        
+        if ($meta AND $meta->role_id == $role_id)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    /**
     * Creates a password salt
     * 
     */
