@@ -233,7 +233,7 @@ class Auth_Simpleauth extends CI_Driver {
                         if ( $this->force_login($user->username) )
                         {
                             // Update login date/time
-                            $this->update_user(array('last_login' => date('Y-m-d H:m:s')), $username);
+                            $this->update_user(array('last_login' => date('Y-m-d H:i:s')), $username);
                             
                             // If we are redirecting after logging in
                             if ( $redirect_to != '' )
@@ -345,7 +345,7 @@ class Auth_Simpleauth extends CI_Driver {
             'username'       => trim($username),
             'password'       => $password,
             'email'          => trim($email),
-            'join_date'      => date('Y-m-d H:m:s'),
+            'join_date'      => date('Y-m-d H:i:s'),
             'status'         => $status,
             'salt'           => $salt,
             'profile_fields' => serialize($profile_fields)
