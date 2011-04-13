@@ -3,7 +3,6 @@
 class User_model extends CI_Model {
     
     protected $__table;
-    protected $__method;
     
     public function __construct()
     {
