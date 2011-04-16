@@ -213,6 +213,13 @@ class Auth_Simpleauth extends CI_Driver {
         {   
             // Get the user from the database
             $user = $this->_ci->user_model->get_user('username', $username);
+			
+			// No user? Let's get out of here
+            if ( $user === FALSE )
+            {
+                $this->errors[] = $this->_ci->lang->line('error_login_details');
+                return false;
+            }
             
             // If we have a salt
             if ( !empty($user->salt) )
