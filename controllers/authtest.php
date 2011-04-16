@@ -30,12 +30,12 @@ class Authtest extends CI_Controller {
             {
                 $remember = $this->input->post('remember');
             }
-            
-            // Array of extra information you can pass to your functions
-            $config = array();
-            
+
+			// Redirecting the user after login? Where?
+			$redirect = FALSE;
+			
             // Log on in
-            $this->auth->login($username, $password, $remember, $config);
+            $this->auth->login($username, $password, $remember, $redirect);
         }
            
     }

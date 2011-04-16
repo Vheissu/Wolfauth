@@ -202,7 +202,7 @@ class Auth_Simpleauth extends CI_Driver {
     * @param mixed $remember
     * @param mixed $redirect_to
     */
-    public function login($username, $password, $remember = false, $redirect_to = '')
+    public function login($username, $password, $remember = false, $redirect_to = false)
     {
         // Trim details
         $username = trim($username);
@@ -243,7 +243,7 @@ class Auth_Simpleauth extends CI_Driver {
                             $this->update_user(array('last_login' => date('Y-m-d H:i:s')), $username);
                             
                             // If we are redirecting after logging in
-                            if ( $redirect_to != '' )
+                            if ( $redirect_to !== FALSE )
                             {
                                 redirect($redirect_to);
                             }
