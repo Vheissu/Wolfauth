@@ -233,7 +233,7 @@ class Auth_Simpleauth extends CI_Driver {
                         // Set remember me
                         if ($remember === true)
                         {
-                            $this->_set_remember_me($user->id);
+                            $this->set_remember_me($user->id);
                         }
                     
                         // Log the user in using the force login function
@@ -253,7 +253,7 @@ class Auth_Simpleauth extends CI_Driver {
                             }   
                         }
                         else
-                        {
+                        { 
                             $this->errors[] = $this->_ci->lang->line('error_login');
                         }
                     }
@@ -657,7 +657,7 @@ class Auth_Simpleauth extends CI_Driver {
         $this->_ci->load->library('encrypt');
 
         $token  = md5(uniqid(rand(), TRUE));
-        $expiry = $this->config->cookie_expiry;
+        $expiry = time() + $this->config->cookie_expiry;
 
         $remember_me = $this->_ci->encrypt->encode(serialize(array($id, $token, $expiry)));
 
@@ -689,7 +689,7 @@ class Auth_Simpleauth extends CI_Driver {
         $cookie_data = get_cookie($this->config->cookie_name);
 
         // Cookie Monster: Me want cookie. Me want to know, cookie exist?
-        if ($cookie_data)
+        if (!empty($cookie_data))
         {
             // Set up some default empty variables
             $id = '';
@@ -697,18 +697,15 @@ class Auth_Simpleauth extends CI_Driver {
             $timeout = '';
 
             // Unencrypt and unserialize the cookie
-            $cookie_data = $this->_ci->encrypt->encode(unserialize($cookie_data));
+            $cookie_data = unserialize( $this->_ci->encrypt->decode($cookie_data) );
 
-            // If we have cookie data
-            if ( !empty($cookie_data) )
-            {
-                // Make sure we have 3 values in our cookie array
-                if ( count($cookie_data) == 3 )
-                {
-                    // Create variables from array values
-                    list($id, $token, $expiry) = $cookie_data;
-                }
-            }
+			// Make sure we have 3 values in our cookie array
+			if ( count($cookie_data) == 3 )
+			{
+				// Create variables from array values
+				list($id, $token, $expiry) = $cookie_data;
+			}
+            
 
             // Cookie Monster: Me not eat, EXPIRED COOKIEEEE!
             if ( (int) $expiry < time() )

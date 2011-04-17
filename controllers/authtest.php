@@ -28,11 +28,11 @@ class Authtest extends CI_Controller {
             // Remember me?
             if ( $this->input->post('remember') == 1 )
             {
-                $remember = $this->input->post('remember');
+                $remember = true;
             }
 
-			// Redirecting the user after login? Where?
-			$redirect = FALSE;
+			// Redirecting the user after login? Where? 
+			$redirect = false;
 			
             // Log on in
             $this->auth->login($username, $password, $remember, $redirect);
