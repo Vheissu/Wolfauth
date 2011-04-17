@@ -731,10 +731,20 @@ class Auth_Simpleauth extends CI_Driver {
             // If the user obviously exists
             if ($data)
             {
-                $this->force_login($data->username);
-                $this->set_remember_me($id);
+                // Check the tokens match
+                if ($token == $user['token'])
+                {
+                    $this->force_login($data->username);
+                    $this->set_remember_me($id);
 
-                return true;
+                    return true;
+                }
+                else
+                {
+                    // if not, delete the cookie - we don't remember the punk!
+                    delete_cookie($this->config->cookie_name);
+                    return false;
+                }
             }
 
         }
