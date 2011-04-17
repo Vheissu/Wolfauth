@@ -579,8 +579,10 @@ class Auth_Simpleauth extends CI_Driver {
     * 
     * @param mixed $role_id
     */
-    public function has_role($role_id, $user_id = 0)
+    public function has_role($role_ids, $user_id = 0)
     {
+        $role_ids = is_array($role_ids) ? $role_ids : array($role_ids);
+
         if ($user_id == 0)
         {
             $user_id = $this->user_info['user_id'];
@@ -588,7 +590,7 @@ class Auth_Simpleauth extends CI_Driver {
         
         $meta = $this->get_role_meta($user_id);
         
-        if ($meta AND $meta->role_id == $role_id)
+        if ($meta AND in_array($meta->role_id, $role_ids))
         {
             return true;
         }
