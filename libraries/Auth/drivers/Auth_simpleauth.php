@@ -418,6 +418,13 @@ class Auth_Simpleauth extends CI_Driver {
         {
             unset($values['old_password']);
         }
+		
+        // Remembering this user?
+        if (array_key_exists('remember_me', $values))
+        {
+            $update['remember_me'] = $values['remember_me'];
+            unset($values['remember_me']);
+        }
             
         // If we have an email in our values
         if ( array_key_exists('email', $values) )
