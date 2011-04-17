@@ -295,7 +295,7 @@ class Auth_Simpleauth extends CI_Driver {
     /**
     * Logout
     */
-    public function logout($redirect_to = '')
+    public function logout($redirect_to = false)
     {
         // If we have a user ID, someone is logged in
         if ( $this->user_info['user_id'] > 0 )
@@ -306,9 +306,11 @@ class Auth_Simpleauth extends CI_Driver {
                 'username' => '',
                 'email'    => '',
             );
+			
             $this->_ci->session->set_userdata($user_data);
-            
-            if ($redirect_to != '')
+            delete_cookie($this->config->cookie_name);
+			
+            if ($redirect_to !== false)
             {
                 redirect($redirect_to);
             }
@@ -319,7 +321,7 @@ class Auth_Simpleauth extends CI_Driver {
         }
         else
         {
-            if ($redirect_to != '')
+            if ($redirect_to !== false)
             {
                 redirect($redirect_to);
             }
@@ -682,7 +684,7 @@ class Auth_Simpleauth extends CI_Driver {
     * Checks if we remember a particular user
     * 
     */
-    private function do_you_remember_me()
+    public function do_you_remember_me()
     {
         $this->_ci->load->library('encrypt');
 
