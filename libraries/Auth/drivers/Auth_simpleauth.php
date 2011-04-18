@@ -295,7 +295,7 @@ class Auth_Simpleauth extends CI_Driver {
     /**
     * Logout
     */
-    public function logout($redirect_to = '')
+    public function logout($redirect_to = false)
     {
         // If we have a user ID, someone is logged in
         if ( $this->user_info['user_id'] > 0 )
@@ -306,9 +306,11 @@ class Auth_Simpleauth extends CI_Driver {
                 'username' => '',
                 'email'    => '',
             );
+			
             $this->_ci->session->set_userdata($user_data);
-            
-            if ($redirect_to != '')
+            delete_cookie($this->config->cookie_name);
+			
+            if ($redirect_to !== false)
             {
                 redirect($redirect_to);
             }
@@ -319,7 +321,7 @@ class Auth_Simpleauth extends CI_Driver {
         }
         else
         {
-            if ($redirect_to != '')
+            if ($redirect_to !== false)
             {
                 redirect($redirect_to);
             }
@@ -415,6 +417,13 @@ class Auth_Simpleauth extends CI_Driver {
         if (array_key_exists('old_password', $values))
         {
             unset($values['old_password']);
+        }
+		
+        // Remembering this user?
+        if (array_key_exists('remember_me', $values))
+        {
+            $update['remember_me'] = $values['remember_me'];
+            unset($values['remember_me']);
         }
             
         // If we have an email in our values
@@ -577,8 +586,10 @@ class Auth_Simpleauth extends CI_Driver {
     * 
     * @param mixed $role_id
     */
-    public function has_role($role_id, $user_id = 0)
+    public function has_role($role_ids, $user_id = 0)
     {
+        $role_ids = is_array($role_ids) ? $role_ids : array($role_ids);
+
         if ($user_id == 0)
         {
             $user_id = $this->user_info['user_id'];
@@ -586,7 +597,7 @@ class Auth_Simpleauth extends CI_Driver {
         
         $meta = $this->get_role_meta($user_id);
         
-        if ($meta AND $meta->role_id == $role_id)
+        if ($meta AND in_array($meta->role_id, $role_ids))
         {
             return true;
         }
@@ -682,7 +693,7 @@ class Auth_Simpleauth extends CI_Driver {
     * Checks if we remember a particular user
     * 
     */
-    private function do_you_remember_me()
+    public function do_you_remember_me()
     {
         $this->_ci->load->library('encrypt');
 
@@ -720,10 +731,20 @@ class Auth_Simpleauth extends CI_Driver {
             // If the user obviously exists
             if ($data)
             {
-                $this->force_login($data->username);
-                $this->set_remember_me($id);
+                // Check the tokens match
+                if ($token == $user['token'])
+                {
+                    $this->force_login($data->username);
+                    $this->set_remember_me($id);
 
-                return true;
+                    return true;
+                }
+                else
+                {
+                    // if not, delete the cookie - we don't remember the punk!
+                    delete_cookie($this->config->cookie_name);
+                    return false;
+                }
             }
 
         }
