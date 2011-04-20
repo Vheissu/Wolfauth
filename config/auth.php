@@ -30,7 +30,7 @@ $config['default_driver'] = "simpleauth";
 * 
 * @var mixed
 */
-$config['validation_method'] = "auto";
+$config['identity'] = "auto";
 
 // Simpleauth driver config options
 $config['simpleauth'] = array(
