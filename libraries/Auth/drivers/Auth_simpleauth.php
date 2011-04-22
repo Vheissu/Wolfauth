@@ -211,11 +211,7 @@ class Auth_Simpleauth extends CI_Driver {
     * @param mixed $remember
     * @param mixed $redirect_to
     */
-<<<<<<< HEAD
-    public function login($username, $password, $remember = false, $redirect_to = false)
-=======
     public function login($identity, $password, $remember = false, $redirect_to = false)
->>>>>>> 006ab45d10ba32bd936db3c8f5e19f8529123953
     {
         // Trim details
         $identity = trim($identity);
@@ -228,11 +224,7 @@ class Auth_Simpleauth extends CI_Driver {
         if ( $this->user_info['user_id'] == 0 )
         {   
             // Get the user from the database
-<<<<<<< HEAD
-            $user = $this->_ci->user_model->get_user('username', $username);
-=======
             $user = $this->_ci->user_model->get_user($this->identity_method, $identity);
->>>>>>> 006ab45d10ba32bd936db3c8f5e19f8529123953
 			
 			// No user? Let's get out of here
             if ( $user === FALSE )
@@ -260,11 +252,7 @@ class Auth_Simpleauth extends CI_Driver {
                         if ( $this->force_login($user->username) )
                         {
                             // Update login date/time
-<<<<<<< HEAD
-                            $this->update_user(array('last_login' => date('Y-m-d H:i:s')), $username);
-=======
                             $this->update_user(array('last_login' => date('Y-m-d H:i:s')), $user->username);
->>>>>>> 006ab45d10ba32bd936db3c8f5e19f8529123953
                             
                             // If we are redirecting after logging in
                             if ( $redirect_to !== FALSE )
