@@ -22,11 +22,21 @@ $config['valid_drivers'] = array('auth_simpleauth', 'auth_facebook');
 // Default auth driver to use without the prefixing auth_
 $config['default_driver'] = "simpleauth";
 
+
+/**
+* When a user logs in what do they need to supply?
+* A username, email address or do we autodetect?
+* Valid values; "email", "username" and "auto"
+* 
+* @var mixed
+*/
+$config['identity'] = "auto";
+
 // Simpleauth driver config options
 $config['simpleauth'] = array(
     "admin_roles"   => array(3,4),  // Admin role IDs
     "cookie_name"   => "wolfauth",  // The name of the remember me cookie
-    "cookie_expiry" => 3600      // 1 hour (you should probably make this longer)
+    "cookie_expiry" => 3600         // 1 hour (you should probably make this longer)
 );
 
 // Facebook driver config options

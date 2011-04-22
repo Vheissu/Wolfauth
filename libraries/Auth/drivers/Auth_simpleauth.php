@@ -26,7 +26,10 @@ class Auth_Simpleauth extends CI_Driver {
     protected $user_info;
     
     // Store config
-    protected $config; 
+    protected $config;
+    
+    // Are you checking for a username, email address or auto detecting?
+    protected $identity_method; 
     
     // Admin role ID's that determine a user to be an admin
     protected $admin_roles;
@@ -52,6 +55,9 @@ class Auth_Simpleauth extends CI_Driver {
         
         // Simpleauth config data
         $this->config = (object)$this->_ci->config->item('simpleauth');
+        
+        // Identity method for checking users against
+        $this->identity_method = config_item('identity');
         
         // Get role meta info
         $role = $this->get_role_meta();
@@ -177,11 +183,14 @@ class Auth_Simpleauth extends CI_Driver {
     /**
     * Forces a user to be logged in without a password
     * 
-    * @param mixed $username
+    * @param mixed $identity
     */
-    public function force_login($username)
-    {
-        $user = $this->_ci->user_model->get_user('username', $username);
+    public function force_login($identity)
+    {       
+        // Determine and set the identity type
+        $this->detect_identity($identity);
+        
+        $user = $this->_ci->user_model->get_user($this->identity_method, $identity);
         $role = $this->get_role_meta($user->id);
         
         $user_data = array(
@@ -197,22 +206,33 @@ class Auth_Simpleauth extends CI_Driver {
     /**
     * Log a user in
     * 
-    * @param mixed $username
+    * @param mixed $identity
     * @param mixed $password
     * @param mixed $remember
     * @param mixed $redirect_to
     */
+<<<<<<< HEAD
     public function login($username, $password, $remember = false, $redirect_to = false)
+=======
+    public function login($identity, $password, $remember = false, $redirect_to = false)
+>>>>>>> 006ab45d10ba32bd936db3c8f5e19f8529123953
     {
         // Trim details
-        $username = trim($username);
+        $identity = trim($identity);
         $password = trim($password);
+        
+        // Determine and set the identity type
+        $this->detect_identity($identity);
         
         // Make sure we're not logged in
         if ( $this->user_info['user_id'] == 0 )
         {   
             // Get the user from the database
+<<<<<<< HEAD
             $user = $this->_ci->user_model->get_user('username', $username);
+=======
+            $user = $this->_ci->user_model->get_user($this->identity_method, $identity);
+>>>>>>> 006ab45d10ba32bd936db3c8f5e19f8529123953
 			
 			// No user? Let's get out of here
             if ( $user === FALSE )
@@ -240,7 +260,11 @@ class Auth_Simpleauth extends CI_Driver {
                         if ( $this->force_login($user->username) )
                         {
                             // Update login date/time
+<<<<<<< HEAD
                             $this->update_user(array('last_login' => date('Y-m-d H:i:s')), $username);
+=======
+                            $this->update_user(array('last_login' => date('Y-m-d H:i:s')), $user->username);
+>>>>>>> 006ab45d10ba32bd936db3c8f5e19f8529123953
                             
                             // If we are redirecting after logging in
                             if ( $redirect_to !== FALSE )
@@ -751,6 +775,30 @@ class Auth_Simpleauth extends CI_Driver {
 
         // Cookie Monster: ME NOT FIND COOKIE! ME WANT COOOKIEEE!!!
         return false;
+    }
+    
+    /**
+    * Detect Identity
+    * Determine what identity we want if set to auto
+    * 
+    * @param mixed $identity
+    */
+    private function detect_identity($identity)
+    {
+        if ($this->identity_method == "auto")
+        {
+            $this->_ci->load->helper('email');
+            
+            // If we were supplied a valid email
+            if (valid_email($identity))
+            {
+                $this->identity_method = "email";
+            }
+            else
+            {
+                $this->identity_method = "username";
+            }
+        }
     }
     
     /**
