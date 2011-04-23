@@ -249,7 +249,7 @@ class Auth_Simpleauth extends CI_Driver {
                         }
                     
                         // Log the user in using the force login function
-                        if ( $this->force_login($user->username) )
+                        if ( $this->force_login( $user->{$this->identity_method} ) )
                         {
                             // Update login date/time
                             $this->update_user(array('last_login' => date('Y-m-d H:i:s')), $user->username);
