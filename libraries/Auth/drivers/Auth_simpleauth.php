@@ -358,6 +358,11 @@ class Auth_Simpleauth extends CI_Driver {
         {
             return false;
         }
+		
+        if ( !$this->_ci->user_model->is_unique(array("email" => $email, "username" => $username)) )
+        {
+            return false;
+        }
         
         $salt     = $this->create_salt();
         $password = $this->hash_password($password, $salt);

@@ -11,6 +11,27 @@ class User_model extends CI_Model {
         
         $this->__table   = "users";
     }
+	
+    /*
+     * Check whether not a user is unique based on properties passed in
+     *
+     * @param array $properties
+     */
+    public function is_unique($properties)
+    {
+        foreach ($properties as $prop => $value)
+        {
+            $user = $this->get_user($prop, $value);
+
+            if ( !empty($user) )
+            {
+                return false;
+                break;
+            }
+        }
+
+        return true;
+    }
     
     /**
     * Get a user from the database
