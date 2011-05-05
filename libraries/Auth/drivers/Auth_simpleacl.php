@@ -1,4 +1,21 @@
-<?php
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+/**
+ * WolfAuth
+ *
+ * An open source driver based authentication library for Codeigniter
+ * 
+ * This driver is a simple ACL implementation which also interfaces
+ * with the Simple Auth driver to allow you to restrict access to
+ * certain parts of your site.
+ *
+ * @package       WolfAuth
+ * @subpackage    Simpleacl
+ * @author        Dwayne Charrington
+ * @copyright     Copyright (c) 2011 Dwayne Charrington.
+ * @link          http://ilikekillnerds.com
+ * @license       Do What You Want As Long As You Attribute Me (DWYWALAYAM) licence
+ */
 
 class Auth_simpleacl extends CI_Driver {
     
