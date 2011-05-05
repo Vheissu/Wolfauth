@@ -70,4 +70,17 @@ class Auth_simpleacl extends CI_Driver {
         }        
     }
     
+    /**
+    * Add Permission
+    * Allows you to add permission to a particular
+    * set of resources.
+    * 
+    * @param mixed $role_id
+    * @param mixed $permissions
+    */
+    public function add_permission($role_id, $permissions)
+    {
+        
+    }
+    
 }
