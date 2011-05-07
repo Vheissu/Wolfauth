@@ -795,19 +795,27 @@ class Auth_Simpleauth extends CI_Driver {
     }
     
     /**
-    * Show error messages
+    * Show or return error messages
     * 
+	* @param bool $return
     * @param mixed $left
     * @param mixed $right
     */
-    public function show_errors($left = "<p class='error'>", $right = "</p>")
+    public function show_errors($return=false, $left = "<p class='error'>", $right = "</p>")
     {
         if ( is_array($this->errors) AND !empty($this->errors) )
         {
+            $html = "";
+            
             foreach ($this->errors AS $error)
             {
-                echo $left.$error.$right;
+                $html .= $left.$error.$right;
             }
+
+            if ($return === FALSE)
+                echo $html;
+            else
+                return $html;
         }
         else
         {
