@@ -34,9 +34,11 @@ $config['identity'] = "auto";
 
 // Simpleauth driver config options
 $config['simpleauth'] = array(
-    "admin_roles"   => array(3,4),  // Admin role IDs
-    "cookie_name"   => "wolfauth",  // The name of the remember me cookie
-    "cookie_expiry" => 3600         // 1 hour (you should probably make this longer)
+    "admin_roles"   => array(3,4),   // Admin role IDs
+    "cookie_name"   => "wolfauth",   // The name of the remember me cookie
+    "cookie_expiry" => 3600,         // 1 hour (you should probably make this longer)
+    "flash_errors" => TRUE,          // Put error message in flash data for output?
+    "flash_errors_name" => "error"   // What name will we store your flash data errors with?
 );
 
 // Facebook driver config options

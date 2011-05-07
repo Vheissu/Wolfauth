@@ -186,11 +186,12 @@ class Auth_Simpleauth extends CI_Driver {
     * @param mixed $identity
     */
     public function force_login($identity)
-    {       
+    {
         // Determine and set the identity type
         $this->detect_identity($identity);
         
         $user = $this->_ci->user_model->get_user($this->identity_method, $identity);
+
         $role = $this->get_role_meta($user->id);
         
         $user_data = array(
@@ -216,20 +217,21 @@ class Auth_Simpleauth extends CI_Driver {
         // Trim details
         $identity = trim($identity);
         $password = trim($password);
-        
+
         // Determine and set the identity type
         $this->detect_identity($identity);
-        
+
         // Make sure we're not logged in
         if ( $this->user_info['user_id'] == 0 )
         {   
             // Get the user from the database
             $user = $this->_ci->user_model->get_user($this->identity_method, $identity);
-			
-			// No user? Let's get out of here
+            
+
+            // No user? Let's get out of here
             if ( $user === FALSE )
             {
-                $this->errors[] = $this->_ci->lang->line('error_login_details');
+                $this->add_error($this->_ci->lang->line('error_login_details'));
                 return false;
             }
             
@@ -266,34 +268,34 @@ class Auth_Simpleauth extends CI_Driver {
                         }
                         else
                         { 
-                            $this->errors[] = $this->_ci->lang->line('error_login');
+                            $this->add_error($this->_ci->lang->line('error_login'));
                         }
                     }
                     elseif ( $user->status == "banned" )
                     {
-                        $this->errors[] = $this->_ci->lang->line('error_banned');
+                        $this->add_error($this->_ci->lang->line('error_banned'));
                         return false;
                     }
                     elseif ( $user->status == "inactive" )
                     {
-                        $this->errors[] = $this->_ci->lang->line('error_inactive');
+                        $this->add_error($this->_ci->lang->line('error_inactive'));
                         return false;
                     }  
                     elseif ( $user->status == "validating" )
                     {
-                        $this->errors[] = $this->_ci->lang->line('error_validating');
+                        $this->add_error($this->_ci->lang->line('error_validating'));
                         return false;
                     }               
                 }
                 else
                 {
-                    $this->errors[] = $this->_ci->lang->line('error_password_mismatch_login');
+                    $this->add_error($this->_ci->lang->line('error_password_mismatch_login'));
                     return false;
                 }   
             }
             else
             {
-                $this->errors[] = $this->_ci->lang->line('error_nosalt');
+                $this->add_error($this->_ci->lang->line('error_nosalt'));
                 return false;
             }
         }
@@ -356,9 +358,9 @@ class Auth_Simpleauth extends CI_Driver {
     {
         if ( empty($username) OR empty($password) OR empty($email) )
         {
-            return false;
+           return false;
         }
-		
+
         if ( !$this->_ci->user_model->is_unique(array("email" => $email, "username" => $username)) )
         {
             return false;
@@ -388,7 +390,7 @@ class Auth_Simpleauth extends CI_Driver {
         }
         else
         {
-            $this->errors[] = $this->_ci->lang->line('error_user_not_added');
+            $this->add_error($this->_ci->lang->line('error_user_not_added'));
             return false;
         }
         
@@ -409,7 +411,7 @@ class Auth_Simpleauth extends CI_Driver {
         
         if ( array_key_exists('username', $values) )
         {
-            $this->errors[] = $this->_ci->lang->line('error_username_change');
+            $this->add_error($this->_ci->lang->line('error_username_change'));
             return false;
         }
         
@@ -418,7 +420,7 @@ class Auth_Simpleauth extends CI_Driver {
             // Old password is wrong
             if ( $current_values->password != $this->hash_password($values['old_password'], $current_values->salt) )
             {
-                $this->errors[] = $this->_ci->lang->line('error_username_mismatch');
+                $this->add_error($this->_ci->lang->line('error_username_mismatch'));
                 return false;
             }
             
@@ -502,7 +504,7 @@ class Auth_Simpleauth extends CI_Driver {
         }
         else
         {
-            $this->errors[] = $this->_ci->lang->line('error_user_not_updated');
+            $this->add_error($this->_ci->lang->line('error_user_not_updated'));
             return false;
         }   
     }   
@@ -516,7 +518,7 @@ class Auth_Simpleauth extends CI_Driver {
     {
         if ( empty($username) )
         {
-            $this->errors[] = $this->_ci->lang->line('empty_username_update');
+            $this->add_error($this->_ci->lang->line('empty_username_update'));
             return false;
         }
         else
@@ -530,7 +532,7 @@ class Auth_Simpleauth extends CI_Driver {
             }
             else
             {
-                $this->errors[] = $this->_ci->lang->line('error_user_not_deleted');
+                $this->add_error($this->_ci->lang->line('error_user_not_deleted'));
                 return false;
             }
             
@@ -544,10 +546,18 @@ class Auth_Simpleauth extends CI_Driver {
     * @param mixed $restrict
     * @param mixed $redirect_to
     */
-    public function restrict($needles = '', $restrict = 'role', $redirect_to = null)
+    public function restrict($needles = '', $restrict = 'role', $redirect_to = NULL)
     {
+        // Force needles to be array
+        $needles = is_array($needles) ? $needles : array($needles);
+
+        if (empty($needles))
+        {
+            return false;
+        }
+
         // Redirect to base url if no redirect URL supplied
-        $redirect_to = ($redirect_to === null) ? base_url() : $redirect_to;
+        $redirect_to = ($redirect_to === NULL) ? base_url() : $redirect_to;
 
         // If we are restricting to role ID's
         if ( $restrict == 'role' )
@@ -559,41 +569,19 @@ class Auth_Simpleauth extends CI_Driver {
         {
             $criteria = $this->user_info['username'];
         }
+        else
+            return false;
 
-        // If we have allowed user ID's or usernames
-        if ( !empty($needles) )
+
+        // If the role is in the allowed roles list
+        if ( in_array($criteria, $needles) )
         {
-            // If multiple needles are supplied as an array
-            if ( is_array($needles) )
-            {
-                // If the role is in the allowed roles list
-                // Or if the current user is an admin, they can do anything
-                if ( in_array($criteria, $needles) OR in_array($this->user_info['role_id'], $this->admin_roles) )
-                {
-                    return true;
-                }
-                else
-                {
-                    redirect($redirect_to);
-                }
-            }
-            // If only a single value is provided
-            else
-            {
-                if ($criteria == $needles)
-                {
-                    return true;
-                }
-                else
-                {
-                    redirect($redirect_to);
-                }
-            }
+            return true;
         }
         else
-        {
-            $this->errors[] = $this->_ci->lang->line('access_denied');
-            return false;
+        {            
+            $this->add_error($this->_ci->lang->line('access_denied'));
+            redirect($redirect_to);
         }
     }
     
@@ -666,7 +654,7 @@ class Auth_Simpleauth extends CI_Driver {
         
         if ( $update === FALSE )
         {
-            $this->errors[] = $this->_ci->lang->line('error_password_update');
+            $this->add_error($this->_ci->lang->line('error_password_update'));
             return false;
         }
         else
@@ -795,13 +783,12 @@ class Auth_Simpleauth extends CI_Driver {
     }
     
     /**
-    * Show or return error messages
+    * Show error messages
     * 
-	* @param bool $return
     * @param mixed $left
     * @param mixed $right
     */
-    public function show_errors($return=false, $left = "<p class='error'>", $right = "</p>")
+    public function show_errors($return=false, $left = "", $right = "")
     {
         if ( is_array($this->errors) AND !empty($this->errors) )
         {
@@ -820,6 +807,21 @@ class Auth_Simpleauth extends CI_Driver {
         else
         {
             return false;
+        }
+    }
+
+    /**
+     * Add an error message to the array
+     *
+     * @param string $message
+     */
+    public function add_error($message)
+    {
+        $this->errors[] = $message;
+
+        if ($this->config->flash_errors)
+        {
+            $this->_ci->session->set_flashdata($this->config->flash_errors_name, $this->errors);
         }
     }
     
