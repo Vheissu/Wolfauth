@@ -203,7 +203,31 @@ class Auth_Simpleauth extends CI_Driver {
         $this->_ci->session->set_userdata($user_data);
         return true;
     }
-    
+
+    /**
+    * Detect Identity
+    * Determine what identity we want if set to auto
+    *
+    * @param mixed $identity
+    */
+    private function detect_identity($identity)
+    {
+        if ($this->identity_method == "auto")
+        {
+            $this->_ci->load->helper('email');
+
+            // If we were supplied a valid email
+            if (valid_email($identity))
+            {
+                $this->identity_method = "email";
+            }
+            else
+            {
+                $this->identity_method = "username";
+            }
+        }
+    }
+
     /**
     * Log a user in
     * 
@@ -307,21 +331,27 @@ class Auth_Simpleauth extends CI_Driver {
     }
     
     /**
-    * Logout
-    */
+     * Logout
+     *
+     * 07/05/11 - Updated function to clear out database cookie data if needed
+     */
     public function logout($redirect_to = false)
     {
         // If we have a user ID, someone is logged in
         if ( $this->user_info['user_id'] > 0 )
         {
+            if ($this->do_you_remember_me() == TRUE)
+                $this->update_user(array("remember_me" => ""), $this->user_info['username']);
+
             $user_data = array(
                 'user_id'  => 0,
                 'role_id'  => 0,
                 'username' => '',
                 'email'    => '',
             );
-			
+
             $this->_ci->session->set_userdata($user_data);
+
             delete_cookie($this->config->cookie_name);
 			
             if ($redirect_to !== false)
@@ -678,7 +708,7 @@ class Auth_Simpleauth extends CI_Driver {
         $remember_me = $this->_ci->encrypt->encode(serialize(array($id, $token, $expiry)));
 
         $cookie = array(
-            'name'      => $this->config['cookie_name'],
+            'name'      => $this->config->cookie_name,
             'value'     => $remember_me,
             'expire'    => $expiry
         );
@@ -693,7 +723,7 @@ class Auth_Simpleauth extends CI_Driver {
         set_cookie($cookie);
         $this->update_user($cookie_db_data, $user->username);
     }
-    
+
     /**
     * Checks if we remember a particular user
     * 
@@ -701,85 +731,70 @@ class Auth_Simpleauth extends CI_Driver {
     public function do_you_remember_me()
     {
         $this->_ci->load->library('encrypt');
-
+        $error = FALSE;
         $cookie_data = get_cookie($this->config->cookie_name);
 
-        // Cookie Monster: Me want cookie. Me want to know, cookie exist?
+        // If we have a cookie stored
         if (!empty($cookie_data))
         {
-            // Set up some default empty variables
-            $id = '';
-            $token = '';
-            $timeout = '';
-
-            // Unencrypt and unserialize the cookie
             $cookie_data = unserialize( $this->_ci->encrypt->decode($cookie_data) );
 
-			// Make sure we have 3 values in our cookie array
-			if ( count($cookie_data) == 3 )
-			{
-				// Create variables from array values
-				list($id, $token, $expiry) = $cookie_data;
-			}
-            
-
-            // Cookie Monster: Me not eat, EXPIRED COOKIEEEE!
-            if ( (int) $expiry < time() )
+            if (!empty($cookie_data) && count($cookie_data) == 3)
             {
-                delete_cookie($this->config->cookie_name);
-                return false;
-            }
+                list($c_id, $c_token, $c_expiry) = $cookie_data;
 
-            // Make sure the user exists by fetching info by their ID
-            $data = $this->get_user_by_id($id);
+                $user = $this->get_user_by_id($c_id);
 
-            // If the user obviously exists
-            if ($data)
-            {
-                // Check the tokens match
-                if ($token == $user['token'])
+                // If we got a user
+                if (!empty($user))
                 {
-                    $this->force_login($data->username);
-                    $this->set_remember_me($id);
+                    $db_data = unserialize( $this->_ci->encrypt->decode($user->remember_me) );
 
-                    return true;
+                    if (!empty($db_data) && count($db_data) == 3)
+                    {
+                        list($db_id, $db_token, $db_expiry) = $db_data;
+
+                        if ($c_id != $db_id || $c_token != $db_token || $c_expiry != $db_expiry)
+                        {
+                            // Something isn't right, kick em out
+                            delete_cookie($this->config->cookie_name);
+                            return FALSE;
+                        }
+                        else
+                        {
+                            // All good, I remember ya captain, but is it too late?
+                            if ((int) $db_expiry < time())
+                            {
+                                delete_cookie($this->config->cookie_name);
+                                return FALSE;
+                            }
+
+                            // Welcome back!
+                            $this->force_login($user->username);
+                            return TRUE;
+                        }
+                    }
+                    else
+                        delete_cookie($this->config->cookie_name);
+                        return FALSE;
+
                 }
                 else
                 {
-                    // if not, delete the cookie - we don't remember the punk!
                     delete_cookie($this->config->cookie_name);
-                    return false;
+                    return FALSE;
                 }
-            }
 
-        }
-
-        // Cookie Monster: ME NOT FIND COOKIE! ME WANT COOOKIEEE!!!
-        return false;
-    }
-    
-    /**
-    * Detect Identity
-    * Determine what identity we want if set to auto
-    * 
-    * @param mixed $identity
-    */
-    private function detect_identity($identity)
-    {
-        if ($this->identity_method == "auto")
-        {
-            $this->_ci->load->helper('email');
-            
-            // If we were supplied a valid email
-            if (valid_email($identity))
-            {
-                $this->identity_method = "email";
             }
             else
             {
-                $this->identity_method = "username";
+                delete_cookie($this->config->cookie_name);
+                return FALSE;
             }
         }
+        else
+            return FALSE;
+        
     }
     
     /**
