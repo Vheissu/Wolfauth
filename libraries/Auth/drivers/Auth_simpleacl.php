@@ -34,27 +34,19 @@ class Auth_simpleacl extends CI_Driver {
         
         $this->_ci->load->library('session');
         $this->_ci->load->helper('cookie');
-        $this->_ci->load->model('simpleacl_model');
+        $this->_ci->load->model('acl_model');
         
-        // Are we logged in?
-        if ( $this->_sa->logged_in() )
-        {
-            // Get user data
-            $this->user_data = $this->_sa->get_this_user();
-        }
-        else
-        {
-            // set guest info
-        }
+        // Get user data
+        $this->user_data = $this->_sa->get_this_user();
     }
     
     /**
     * Check Permission
     * Do we have permission to access the current resource?
     * 
-    * @param mixed $permission
+    * @param mixed $resource
     */
-    public function check_permission($permission = NULL)
+    public function check_permission($resource = NULL)
     {
         // If we are an administrator, we always have access baby
         if ( $this->_sa->is_admin() )
@@ -63,11 +55,28 @@ class Auth_simpleacl extends CI_Driver {
         }
         
         // If no permission supplied, try and work it out
-        if ( is_null($permission) )
+        if ( is_null($resource) )
         {
-            // Get the segments from the URL
-            $url_string = $this->_ci->uri->rsegment_array();
+            $resource = '';
+            
+            // Get the URL segments
+            $url_string = $this->_ci->uri->uri_string();
+            
+            // If we don't just have a slash in the URL
+            if ($url_string !== "/")
+            {
+                $resource = ltrim($url_string, "/");   
+            }
         }        
+        
+        // No segments, just allow access
+        if ( strlen($resource) == 0 )
+        {
+            return true;
+        }
+        
+        // Check if the user has access to this resource
+        $acl = $this->_ci->simpleacl_model->check_resource($resource);
     }
     
     /**
