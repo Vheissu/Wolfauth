@@ -39,6 +39,7 @@ $config['simpleauth'] = array(
     "cookie_expiry" => 3600         // 1 hour (you should probably make this longer)
 );
 
+// SimpleACL driver config options
 $config['simpleacl'] = array(
     // Can be DENIABLE (will only allow defined allowed resources) or ALLOWABLE will allow everyone except rules on the list.
     "method" => "DENIABLE"

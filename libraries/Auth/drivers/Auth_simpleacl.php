@@ -69,14 +69,8 @@ class Auth_simpleacl extends CI_Driver {
             }
         }        
         
-        // No segments, just allow access
-        if ( strlen($resource) == 0 )
-        {
-            return true;
-        }
-        
-        // Check if the user has access to this resource
-        $acl = $this->_ci->simpleacl_model->check_resource($resource);
+        // Return whether or not we're allowed access
+        return $this->_ci->simpleacl_model->check_resource($resource);
     }
     
     /**
@@ -84,12 +78,12 @@ class Auth_simpleacl extends CI_Driver {
     * Allows you to add permission to a particular
     * set of resources.
     * 
-    * @param mixed $role_id
+    * @param mixed $role_name
     * @param mixed $permissions
     */
-    public function add_permission($role_id, $permissions)
+    public function add_permission($role_name, $permissions)
     {
-        
+        $this->_ci->simpleacl_model->add_permission($role_name, $permissions);
     }
     
 }

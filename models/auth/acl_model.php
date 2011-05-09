@@ -64,10 +64,10 @@ class Acl_model extends CI_Model {
     * Add Resource
     * Add a new ACL resource
     * 
-    * @param mixed $resource
     * @param mixed $role_name
+    * @param mixed $resource
     */
-    public function add_resource($resource, $role_name)
+    public function add_resource($role_name, $resource)
     {
         
     }
