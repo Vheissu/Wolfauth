@@ -39,6 +39,10 @@ $config['simpleauth'] = array(
     "cookie_expiry" => 3600         // 1 hour (you should probably make this longer)
 );
 
+$config['simpleacl'] = array(
+    "method" => "DENIABLE" // Can be DENIABLE (will only allow defined allowed resources) or ALLOWABLE will allow everyone except those on the list.
+);
+
 // Facebook driver config options
 $config['facebook'] = array(
     "api_key" => "", // Your Facebook API key,

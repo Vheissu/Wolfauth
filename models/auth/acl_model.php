@@ -24,6 +24,7 @@ class Acl_model extends CI_Model {
     {
         parent::__construct();
         $this->_user_info = $this->auth->simpleauth->get_this_user();
+        $this->load->config('auth');
     }
     
     /**
@@ -36,7 +37,6 @@ class Acl_model extends CI_Model {
     {
         // Get this current guest or users details
         $role_name = $this->_user_info['role_name'];
-        $role_id   = $this->_user_info['role_id'];
         
         // Lowercase in-case someone puts capitals in the URL
         $resource = strtolower($resource);
@@ -46,6 +46,18 @@ class Acl_model extends CI_Model {
         
         // If this resource has been assigned permission
         return ($dbquery->num_rows() == 1) ? true : false;
+    }
+    
+    /**
+    * Add Resource
+    * Add a new ACL resource
+    * 
+    * @param mixed $resource
+    * @param mixed $role_name
+    */
+    public function add_resource($resource, $role_name)
+    {
+        
     }
     
 }
