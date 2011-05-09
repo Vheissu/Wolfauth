@@ -40,6 +40,12 @@ class Acl_model extends CI_Model {
         
         // Lowercase in-case someone puts capitals in the URL
         $resource = strtolower($resource);
+        
+        // Check if this user can access this resource
+        $dbquery = $this->db->where('resource_slug', $resource)->where('role_name', $role_name)->get('acl_permissions');
+        
+        // If this resource has been assigned permission
+        return ($dbquery->num_results() == 1) ? true : false;
     }
     
 }
