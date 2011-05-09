@@ -40,7 +40,8 @@ $config['simpleauth'] = array(
 );
 
 $config['simpleacl'] = array(
-    "method" => "DENIABLE" // Can be DENIABLE (will only allow defined allowed resources) or ALLOWABLE will allow everyone except those on the list.
+    // Can be DENIABLE (will only allow defined allowed resources) or ALLOWABLE will allow everyone except rules on the list.
+    "method" => "DENIABLE"
 );
 
 // Facebook driver config options

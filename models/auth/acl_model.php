@@ -41,11 +41,23 @@ class Acl_model extends CI_Model {
         // Lowercase in-case someone puts capitals in the URL
         $resource = strtolower($resource);
         
+        // Get our config stuff for simpleacl
+        $simpleacl = config_item('simpleacl');
+        
         // Check if this user can access this resource
         $dbquery = $this->db->where('resource_slug', $resource)->where('role_name', $role_name)->get('acl_permissions');
         
-        // If this resource has been assigned permission
-        return ($dbquery->num_rows() == 1) ? true : false;
+        // Deniable means if it's not on the list, deny access
+        if ($simpleacl['method'] == "DENIABLE")
+        {
+            // If this resource has been assigned permission
+            return ($dbquery->num_rows() == 1) ? true : false;   
+        }
+        // Return true if on the list, return true if not
+        else
+        {
+            return ($dbquery->num_rows() == 1) ? true : true;
+        }
     }
     
     /**
