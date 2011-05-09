@@ -45,7 +45,7 @@ class Acl_model extends CI_Model {
         $dbquery = $this->db->where('resource_slug', $resource)->where('role_name', $role_name)->get('acl_permissions');
         
         // If this resource has been assigned permission
-        return ($dbquery->num_results() == 1) ? true : false;
+        return ($dbquery->num_rows() == 1) ? true : false;
     }
     
 }
