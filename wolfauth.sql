@@ -10,10 +10,25 @@ Target Server Type    : MYSQL
 Target Server Version : 50141
 File Encoding         : 65001
 
-Date: 2011-04-08 07:52:33
+Date: 2011-05-10 07:51:27
 */
 
 SET FOREIGN_KEY_CHECKS=0;
+-- ----------------------------
+-- Table structure for `acl_permissions`
+-- ----------------------------
+DROP TABLE IF EXISTS `acl_permissions`;
+CREATE TABLE `acl_permissions` (
+  `id` bigint(10) unsigned NOT NULL AUTO_INCREMENT,
+  `resource_slug` varchar(255) NOT NULL,
+  `role_name` varchar(120) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+-- ----------------------------
+-- Records of acl_permissions
+-- ----------------------------
+
 -- ----------------------------
 -- Table structure for `ci_sessions`
 -- ----------------------------

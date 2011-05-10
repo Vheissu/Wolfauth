@@ -41,6 +41,12 @@ $config['simpleauth'] = array(
     "flash_errors_name" => "error"   // What name will we store your flash data errors with?
 );
 
+// SimpleACL driver config options
+$config['simpleacl'] = array(
+    // Can be DENIABLE (will only allow defined allowed resources) or ALLOWABLE will allow everyone except rules on the list.
+    "method" => "DENIABLE"
+);
+
 // Facebook driver config options
 $config['facebook'] = array(
     "api_key" => "", // Your Facebook API key,

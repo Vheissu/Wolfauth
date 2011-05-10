@@ -166,8 +166,15 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function get_this_user()
     {   
-        $username = $this->user_info['username'];
-        return $this->_ci->user_model->get_user("username", $username); 
+        if ( $this->logged_in() )
+        {
+            $username = $this->user_info['username'];
+            return $this->_ci->user_model->get_user("username", $username);
+        }
+        else
+        {
+            return $this->user_info;
+        }
     }
     
     /**
@@ -391,6 +398,11 @@ class Auth_Simpleauth extends CI_Driver {
            return false;
         }
 
+        if ( !$this->_ci->user_model->is_unique(array("email" => $email, "username" => $username)) )
+        {
+            return false;
+        }
+		
         if ( !$this->_ci->user_model->is_unique(array("email" => $email, "username" => $username)) )
         {
             return false;
