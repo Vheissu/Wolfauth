@@ -193,11 +193,12 @@ class Auth_Simpleauth extends CI_Driver {
     * @param mixed $identity
     */
     public function force_login($identity)
-    {       
+    {
         // Determine and set the identity type
         $this->detect_identity($identity);
         
         $user = $this->_ci->user_model->get_user($this->identity_method, $identity);
+
         $role = $this->get_role_meta($user->id);
         
         $user_data = array(
@@ -209,7 +210,31 @@ class Auth_Simpleauth extends CI_Driver {
         $this->_ci->session->set_userdata($user_data);
         return true;
     }
-    
+
+    /**
+    * Detect Identity
+    * Determine what identity we want if set to auto
+    *
+    * @param mixed $identity
+    */
+    private function detect_identity($identity)
+    {
+        if ($this->identity_method == "auto")
+        {
+            $this->_ci->load->helper('email');
+
+            // If we were supplied a valid email
+            if (valid_email($identity))
+            {
+                $this->identity_method = "email";
+            }
+            else
+            {
+                $this->identity_method = "username";
+            }
+        }
+    }
+
     /**
     * Log a user in
     * 
@@ -223,20 +248,21 @@ class Auth_Simpleauth extends CI_Driver {
         // Trim details
         $identity = trim($identity);
         $password = trim($password);
-        
+
         // Determine and set the identity type
         $this->detect_identity($identity);
-        
+
         // Make sure we're not logged in
         if ( $this->user_info['user_id'] == 0 )
         {   
             // Get the user from the database
             $user = $this->_ci->user_model->get_user($this->identity_method, $identity);
-			
-			// No user? Let's get out of here
+            
+
+            // No user? Let's get out of here
             if ( $user === FALSE )
             {
-                $this->errors[] = $this->_ci->lang->line('error_login_details');
+                $this->add_error($this->_ci->lang->line('error_login_details'));
                 return false;
             }
             
@@ -273,34 +299,34 @@ class Auth_Simpleauth extends CI_Driver {
                         }
                         else
                         { 
-                            $this->errors[] = $this->_ci->lang->line('error_login');
+                            $this->add_error($this->_ci->lang->line('error_login'));
                         }
                     }
                     elseif ( $user->status == "banned" )
                     {
-                        $this->errors[] = $this->_ci->lang->line('error_banned');
+                        $this->add_error($this->_ci->lang->line('error_banned'));
                         return false;
                     }
                     elseif ( $user->status == "inactive" )
                     {
-                        $this->errors[] = $this->_ci->lang->line('error_inactive');
+                        $this->add_error($this->_ci->lang->line('error_inactive'));
                         return false;
                     }  
                     elseif ( $user->status == "validating" )
                     {
-                        $this->errors[] = $this->_ci->lang->line('error_validating');
+                        $this->add_error($this->_ci->lang->line('error_validating'));
                         return false;
                     }               
                 }
                 else
                 {
-                    $this->errors[] = $this->_ci->lang->line('error_password_mismatch_login');
+                    $this->add_error($this->_ci->lang->line('error_password_mismatch_login'));
                     return false;
                 }   
             }
             else
             {
-                $this->errors[] = $this->_ci->lang->line('error_nosalt');
+                $this->add_error($this->_ci->lang->line('error_nosalt'));
                 return false;
             }
         }
@@ -312,21 +338,27 @@ class Auth_Simpleauth extends CI_Driver {
     }
     
     /**
-    * Logout
-    */
+     * Logout
+     *
+     * 07/05/11 - Updated function to clear out database cookie data if needed
+     */
     public function logout($redirect_to = false)
     {
         // If we have a user ID, someone is logged in
         if ( $this->user_info['user_id'] > 0 )
         {
+            if ($this->do_you_remember_me() == TRUE)
+                $this->update_user(array("remember_me" => ""), $this->user_info['username']);
+
             $user_data = array(
                 'user_id'  => 0,
                 'role_id'  => 0,
                 'username' => '',
                 'email'    => '',
             );
-			
+
             $this->_ci->session->set_userdata($user_data);
+
             delete_cookie($this->config->cookie_name);
 			
             if ($redirect_to !== false)
@@ -363,6 +395,11 @@ class Auth_Simpleauth extends CI_Driver {
     {
         if ( empty($username) OR empty($password) OR empty($email) )
         {
+           return false;
+        }
+
+        if ( !$this->_ci->user_model->is_unique(array("email" => $email, "username" => $username)) )
+        {
             return false;
         }
 		
@@ -395,7 +432,7 @@ class Auth_Simpleauth extends CI_Driver {
         }
         else
         {
-            $this->errors[] = $this->_ci->lang->line('error_user_not_added');
+            $this->add_error($this->_ci->lang->line('error_user_not_added'));
             return false;
         }
         
@@ -416,7 +453,7 @@ class Auth_Simpleauth extends CI_Driver {
         
         if ( array_key_exists('username', $values) )
         {
-            $this->errors[] = $this->_ci->lang->line('error_username_change');
+            $this->add_error($this->_ci->lang->line('error_username_change'));
             return false;
         }
         
@@ -425,7 +462,7 @@ class Auth_Simpleauth extends CI_Driver {
             // Old password is wrong
             if ( $current_values->password != $this->hash_password($values['old_password'], $current_values->salt) )
             {
-                $this->errors[] = $this->_ci->lang->line('error_username_mismatch');
+                $this->add_error($this->_ci->lang->line('error_username_mismatch'));
                 return false;
             }
             
@@ -509,7 +546,7 @@ class Auth_Simpleauth extends CI_Driver {
         }
         else
         {
-            $this->errors[] = $this->_ci->lang->line('error_user_not_updated');
+            $this->add_error($this->_ci->lang->line('error_user_not_updated'));
             return false;
         }   
     }   
@@ -523,7 +560,7 @@ class Auth_Simpleauth extends CI_Driver {
     {
         if ( empty($username) )
         {
-            $this->errors[] = $this->_ci->lang->line('empty_username_update');
+            $this->add_error($this->_ci->lang->line('empty_username_update'));
             return false;
         }
         else
@@ -537,7 +574,7 @@ class Auth_Simpleauth extends CI_Driver {
             }
             else
             {
-                $this->errors[] = $this->_ci->lang->line('error_user_not_deleted');
+                $this->add_error($this->_ci->lang->line('error_user_not_deleted'));
                 return false;
             }
             
@@ -551,10 +588,18 @@ class Auth_Simpleauth extends CI_Driver {
     * @param mixed $restrict
     * @param mixed $redirect_to
     */
-    public function restrict($needles = '', $restrict = 'role', $redirect_to = null)
+    public function restrict($needles = '', $restrict = 'role', $redirect_to = NULL)
     {
+        // Force needles to be array
+        $needles = is_array($needles) ? $needles : array($needles);
+
+        if (empty($needles))
+        {
+            return false;
+        }
+
         // Redirect to base url if no redirect URL supplied
-        $redirect_to = ($redirect_to === null) ? base_url() : $redirect_to;
+        $redirect_to = ($redirect_to === NULL) ? base_url() : $redirect_to;
 
         // If we are restricting to role ID's
         if ( $restrict == 'role' )
@@ -566,41 +611,19 @@ class Auth_Simpleauth extends CI_Driver {
         {
             $criteria = $this->user_info['username'];
         }
+        else
+            return false;
 
-        // If we have allowed user ID's or usernames
-        if ( !empty($needles) )
+
+        // If the role is in the allowed roles list
+        if ( in_array($criteria, $needles) )
         {
-            // If multiple needles are supplied as an array
-            if ( is_array($needles) )
-            {
-                // If the role is in the allowed roles list
-                // Or if the current user is an admin, they can do anything
-                if ( in_array($criteria, $needles) OR in_array($this->user_info['role_id'], $this->admin_roles) )
-                {
-                    return true;
-                }
-                else
-                {
-                    redirect($redirect_to);
-                }
-            }
-            // If only a single value is provided
-            else
-            {
-                if ($criteria == $needles)
-                {
-                    return true;
-                }
-                else
-                {
-                    redirect($redirect_to);
-                }
-            }
+            return true;
         }
         else
-        {
-            $this->errors[] = $this->_ci->lang->line('access_denied');
-            return false;
+        {            
+            $this->add_error($this->_ci->lang->line('access_denied'));
+            redirect($redirect_to);
         }
     }
     
@@ -673,7 +696,7 @@ class Auth_Simpleauth extends CI_Driver {
         
         if ( $update === FALSE )
         {
-            $this->errors[] = $this->_ci->lang->line('error_password_update');
+            $this->add_error($this->_ci->lang->line('error_password_update'));
             return false;
         }
         else
@@ -697,7 +720,7 @@ class Auth_Simpleauth extends CI_Driver {
         $remember_me = $this->_ci->encrypt->encode(serialize(array($id, $token, $expiry)));
 
         $cookie = array(
-            'name'      => $this->config['cookie_name'],
+            'name'      => $this->config->cookie_name,
             'value'     => $remember_me,
             'expire'    => $expiry
         );
@@ -712,7 +735,7 @@ class Auth_Simpleauth extends CI_Driver {
         set_cookie($cookie);
         $this->update_user($cookie_db_data, $user->username);
     }
-    
+
     /**
     * Checks if we remember a particular user
     * 
@@ -720,85 +743,70 @@ class Auth_Simpleauth extends CI_Driver {
     public function do_you_remember_me()
     {
         $this->_ci->load->library('encrypt');
-
+        $error = FALSE;
         $cookie_data = get_cookie($this->config->cookie_name);
 
-        // Cookie Monster: Me want cookie. Me want to know, cookie exist?
+        // If we have a cookie stored
         if (!empty($cookie_data))
         {
-            // Set up some default empty variables
-            $id = '';
-            $token = '';
-            $timeout = '';
-
-            // Unencrypt and unserialize the cookie
             $cookie_data = unserialize( $this->_ci->encrypt->decode($cookie_data) );
 
-			// Make sure we have 3 values in our cookie array
-			if ( count($cookie_data) == 3 )
-			{
-				// Create variables from array values
-				list($id, $token, $expiry) = $cookie_data;
-			}
-            
-
-            // Cookie Monster: Me not eat, EXPIRED COOKIEEEE!
-            if ( (int) $expiry < time() )
+            if (!empty($cookie_data) && count($cookie_data) == 3)
             {
-                delete_cookie($this->config->cookie_name);
-                return false;
-            }
+                list($c_id, $c_token, $c_expiry) = $cookie_data;
 
-            // Make sure the user exists by fetching info by their ID
-            $data = $this->get_user_by_id($id);
+                $user = $this->get_user_by_id($c_id);
 
-            // If the user obviously exists
-            if ($data)
-            {
-                // Check the tokens match
-                if ($token == $user['token'])
+                // If we got a user
+                if (!empty($user))
                 {
-                    $this->force_login($data->username);
-                    $this->set_remember_me($id);
+                    $db_data = unserialize( $this->_ci->encrypt->decode($user->remember_me) );
 
-                    return true;
+                    if (!empty($db_data) && count($db_data) == 3)
+                    {
+                        list($db_id, $db_token, $db_expiry) = $db_data;
+
+                        if ($c_id != $db_id || $c_token != $db_token || $c_expiry != $db_expiry)
+                        {
+                            // Something isn't right, kick em out
+                            delete_cookie($this->config->cookie_name);
+                            return FALSE;
+                        }
+                        else
+                        {
+                            // All good, I remember ya captain, but is it too late?
+                            if ((int) $db_expiry < time())
+                            {
+                                delete_cookie($this->config->cookie_name);
+                                return FALSE;
+                            }
+
+                            // Welcome back!
+                            $this->force_login($user->username);
+                            return TRUE;
+                        }
+                    }
+                    else
+                        delete_cookie($this->config->cookie_name);
+                        return FALSE;
+
                 }
                 else
                 {
-                    // if not, delete the cookie - we don't remember the punk!
                     delete_cookie($this->config->cookie_name);
-                    return false;
+                    return FALSE;
                 }
-            }
 
-        }
-
-        // Cookie Monster: ME NOT FIND COOKIE! ME WANT COOOKIEEE!!!
-        return false;
-    }
-    
-    /**
-    * Detect Identity
-    * Determine what identity we want if set to auto
-    * 
-    * @param mixed $identity
-    */
-    private function detect_identity($identity)
-    {
-        if ($this->identity_method == "auto")
-        {
-            $this->_ci->load->helper('email');
-            
-            // If we were supplied a valid email
-            if (valid_email($identity))
-            {
-                $this->identity_method = "email";
             }
             else
             {
-                $this->identity_method = "username";
+                delete_cookie($this->config->cookie_name);
+                return FALSE;
             }
         }
+        else
+            return FALSE;
+        
     }
     
     /**
@@ -807,18 +815,40 @@ class Auth_Simpleauth extends CI_Driver {
     * @param mixed $left
     * @param mixed $right
     */
-    public function show_errors($left = "<p class='error'>", $right = "</p>")
+    public function show_errors($return=false, $left = "", $right = "")
     {
         if ( is_array($this->errors) AND !empty($this->errors) )
         {
+            $html = "";
+            
             foreach ($this->errors AS $error)
             {
-                echo $left.$error.$right;
+                $html .= $left.$error.$right;
             }
+
+            if ($return === FALSE)
+                echo $html;
+            else
+                return $html;
         }
         else
         {
             return false;
+        }
+    }
+
+    /**
+     * Add an error message to the array
+     *
+     * @param string $message
+     */
+    public function add_error($message)
+    {
+        $this->errors[] = $message;
+
+        if ($this->config->flash_errors)
+        {
+            $this->_ci->session->set_flashdata($this->config->flash_errors_name, $this->errors);
         }
     }
     
