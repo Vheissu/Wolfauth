@@ -20,7 +20,7 @@ $lang['error_password_update']         = "The password was not changed, somethin
 $lang['error_login']                   = "There was an error logging you in, I don't know what else to say really.";
 $lang['error_banned']                  = "Epic fail, your account was banned. You probably know the reason.";
 $lang['error_inactive']                = "Your account is inactive. Probably because you didn't sign in for a while or something.";
-$lang['error_validating']              = "You must active your account before you can use it. Check your email inbox, dude.";
+$lang['error_validating']              = "You must activate your account before you can use it. Check your email inbox, dude.";
 $lang['error_nosalt']                  = "The chips are missing SALT! Chips aren't edible without salt, let the administrator know at once!";
 $lang['error_user_not_added']          = "Looks like there was a problem whilst trying to add a new user, oops.";
 $lang['error_user_not_updated']        = "Looks like there was a problem whilst trying to update that user account, oops.";
@@ -28,11 +28,11 @@ $lang['error_user_not_deleted']        = "Looks like there was a problem whilst 
 
 // Empty messages
 $lang['empty_username']        = "Please enter a username";
-$lang['empty_password']        = "You must enter a vlaid password";
+$lang['empty_password']        = "You must enter a valid password";
 $lang['empty_username_update'] = "A username is required to delete a user";
 
 // Success messages
-$lang['success_register']  = "You your account has been successfully created.";
+$lang['success_register']  = "Your account has been successfully created.";
 $lang['success_activated'] = "Your account has been successfully activated.";
 $lang['standard_redirect'] = "Please wait while you are redirected...";
 
