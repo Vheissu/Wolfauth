@@ -32,8 +32,8 @@ $lang['empty_password']        = "&Egrave; necessario immettere una password val
 $lang['empty_username_update'] = "&Egrave; necessario inserire il nome utente da eliminare";
 
 // Success messages
-$lang['success_register']  = "Il tuo account è stato creato con successo.";
-$lang['success_activated'] = "Il tuo account è stato attivato correttamente.";
+$lang['success_register']  = "Il tuo account &egrave; stato creato con successo.";
+$lang['success_activated'] = "Il tuo account &egrave; stato attivato correttamente.";
 $lang['standard_redirect'] = "Si prega di attendere mentre si viene reindirizzati ...";
 
 $lang['access_denied']     = "Non hai i permessi per accedere a questa risorsa.";
