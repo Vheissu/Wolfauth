@@ -534,7 +534,7 @@ class Auth_Simpleauth extends CI_Driver {
         $this->_ci->db->where('username', $username)->update('users', $update);
         
         // If we're updating the role ID
-        if ( $update_role )
+        if ( isset($update_role) )
         {
             $this->_ci->db->where('user_id', $current_values->user_id)->update('users_to_roles', $update_role);   
         }
