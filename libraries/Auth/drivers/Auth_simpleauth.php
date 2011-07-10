@@ -462,7 +462,7 @@ class Auth_Simpleauth extends CI_Driver {
             // Old password is wrong
             if ( $current_values->password != $this->hash_password($values['old_password'], $current_values->salt) )
             {
-                $this->add_error($this->_ci->lang->line('error_username_mismatch'));
+                $this->add_error($this->_ci->lang->line('error_password_mismatch'));
                 return false;
             }
             
