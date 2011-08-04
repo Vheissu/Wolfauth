@@ -24,6 +24,8 @@ WolfAuth requires Codeigniter Reactor. The later the version the better for the 
 
 Documentation will be written shortly and this is a beta, so you'll need to delve a little into the code to work things out (it's not that bad though). Remember WolfAuth uses Codeigniter Driver functionality, so in your controller or whereever you'll have to go $this->load->driver('auth'); to load the library - make sure that none of your controllers are named auth as this will cause problems with name collisions unless you use namespaces.
 
+The default account uses the username 'admin' and password 'password'.
+
 ## Drivers
 WolfAuth uses the Codeigniter implementation of drivers, so take note with the default classes what is being extended and what needs to be done to access core Codeigniter functionality.
 
