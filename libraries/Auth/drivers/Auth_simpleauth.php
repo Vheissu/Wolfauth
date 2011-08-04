@@ -14,7 +14,7 @@
  * @author        Dwayne Charrington
  * @copyright     Copyright (c) 2011 Dwayne Charrington.
  * @link          http://ilikekillnerds.com
- * @license       Phil Sturgeon's Don't Be A Dick (DBAD) Licence
+ * @license       http://www.apache.org/licenses/LICENSE-2.0.html
  */
 
 class Auth_Simpleauth extends CI_Driver {
