@@ -213,6 +213,9 @@ CREATE TABLE `users` (
   `email` varchar(120) NOT NULL,
   `password` varchar(150) NOT NULL,
   `salt` varchar(120) NOT NULL,
+  `questions_count` int(5) NOT NULL DEFAULT '0',
+  `answers_count` int(5) NOT NULL DEFAULT '0',
+  `points` int(10) unsigned NOT NULL DEFAULT '0',
   `created` datetime NOT NULL,
   `last_login` datetime NOT NULL,
   `last_ip` varchar(60) NOT NULL,
@@ -225,4 +228,4 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES ('1', '1', 'admin', 'admin@localhost', '06da0b92ad87efda3ec60fd184f7a7cbc672fc00', 'ZroJKXzM', '2011-07-31 08:45:48', '0000-00-00 00:00:00', '127.0.0.1', 'active', '', null);
+INSERT INTO `users` VALUES ('1', '1', 'admin', 'admin@localhost', '06da0b92ad87efda3ec60fd184f7a7cbc672fc00', 'ZroJKXzM', '0', '0', '0', '2011-07-31 08:45:48', '0000-00-00 00:00:00', '', 'active', '', null);

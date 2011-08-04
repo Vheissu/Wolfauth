@@ -10,22 +10,14 @@ class Testauth extends MY_Controller {
     
     public function index()
     {
-        if ($this->auth->user_has_permission(1, 1))
-        {
-            echo "You have permission";   
-        }
-        else
-        {
-            echo "No permission for you!";
-        }
         
-        if ( !$this->auth->logged_in() )
+        if (logged_in())
         {
-            echo "Not logged in";
+            echo "Logged in!";
         }
         else
         {
-            echo "You're logged in buddy";
+            echo "Not logged baby";
         }
     }
     
