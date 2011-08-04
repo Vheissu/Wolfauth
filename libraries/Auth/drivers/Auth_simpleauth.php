@@ -1230,6 +1230,7 @@ class Auth_Simpleauth extends CI_Driver {
     * @param mixed $password
     * @param mixed $fields
     * @param mixed $roles
+    * @param mixed $groups
     */
     public function create_user($login, $password, $fields = array(), $roles = array(), $groups = array())
     {    
@@ -1276,7 +1277,6 @@ class Auth_Simpleauth extends CI_Driver {
                 {
                     $um->{$field} = $value;
                 }
-                $um->save();
                 $u->save($um);
             }
             
@@ -1314,23 +1314,18 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function update_user($user_id, $fields = array())
     {
-        $u = new User();
+        $u = new User;
         $u->get_by_id($user_id);
         
         if ( isset($fields['password']) )
         {
             $fields['password'] = $this->create_password($fields['password'], $u->salt);
-            unset($fields['password2']);
+            
+            if ( isset($fields['password2']) )            
+                unset($fields['password2']);
         }
         
-        if ( $u->exists() )
-        {                
-            return $u->update($fields);
-        }
-        else
-        {
-            return FALSE;
-        }                 
+        return ( $u->exists() ) ? $u->update($fields) : FALSE;                 
     }
     
     /**
@@ -1344,14 +1339,7 @@ class Auth_Simpleauth extends CI_Driver {
         $u = new User();
         $u->get_by_id($user_id);
         
-        if ($u->delete())
-        {
-            return TRUE;
-        }
-        else
-        {
-            return FALSE;
-        }
+        return $u->delete();
     }
     
     /**
@@ -1388,6 +1376,32 @@ class Auth_Simpleauth extends CI_Driver {
             
             return $metas;
         }
+        else
+        {
+            return array();
+        }
+    }
+    
+    /**
+    * Update User Meta
+    * Updates meta values of a user
+    * 
+    * @param mixed $user_id
+    * @param mixed $fields
+    */
+    public function update_user_meta($user_id, $fields = array())
+    {
+        $u = new User;
+        $u->get_by_id($user_id);
+                 
+        $um = new Umeta;
+        foreach ($fields AS $field => $value)
+        {
+            $um->{$field} = $value;
+        }
+
+        
+        return ( $u->exists() ) ? $u->save($um) : FALSE;
     }
     
     /**
@@ -1403,7 +1417,7 @@ class Auth_Simpleauth extends CI_Driver {
 
         delete_cookie('rememberme');
         
-        $u = new User();
+        $u = new User;
         $u->where('id', $user_id);
         
         return $this->update_user($user_id, array('remember_me' => ''));
