@@ -4,6 +4,10 @@ Welcome to WolfAuth version 2.0. It has been a very long time coming, but meet a
 ## Disclaimer
 By downloading this you agree that if you find something wrong you'll log an issue on the repo so I can fix it. Or better, if you find an issue and come up with a solution, create a pull request and you'll get full credit for doing so. This is still beta, so some things will change this includes the database structure and how particular functions work based on feedback from everyone.
 
+## Requirements  
+
+WolfAuth requires Codeigniter Reactor. The later the version the better for the both of us. WolfAuth makes use of Codeigniter drivers functionality and it's always best to make sure that you have the latest version.
+
 ## So... what's new?  
 
 * Roles management (a group can have roles, a user can have roles).
@@ -19,10 +23,6 @@ By downloading this you agree that if you find something wrong you'll log an iss
 ## How to use it  
 
 Documentation will be written shortly and this is a beta, so you'll need to delve a little into the code to work things out (it's not that bad though). Remember WolfAuth uses Codeigniter Driver functionality, so in your controller or whereever you'll have to go $this->load->driver('auth'); to load the library - make sure that none of your controllers are named auth as this will cause problems with name collisions unless you use namespaces.
-
-## Requirements  
-
-WolfAuth requires Codeigniter Reactor. The later the version the better for the both of us. WolfAuth makes use of Codeigniter drivers functionality and it's always best to make sure that you have the latest version.
 
 ## Drivers
 WolfAuth uses the Codeigniter implementation of drivers, so take note with the default classes what is being extended and what needs to be done to access core Codeigniter functionality.

@@ -46,6 +46,7 @@ class Auth_Simpleauth extends CI_Driver {
         $this->ci->load->helper('string');
         $this->ci->load->library('encrypt');
         $this->ci->load->library('session');
+        $this->ci->load->library('datamapper');
         
         $this->config = config_item('simpleauth');
         
