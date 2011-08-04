@@ -17,21 +17,23 @@ class Auth extends CI_Driver_Library {
     // Default driver
     protected $_adapter;
     
+    protected $ci;
+    
     public function __construct()
     {
-        $ci = get_instance();
-        $ci->config->load('auth');
+        $this->ci = get_instance();
+        $this->ci->config->load('auth');
         
         // If we have a list of valid drivers
-        if ( $ci->config->item('valid_drivers') )
+        if ( $this->ci->config->item('valid_drivers') )
         {
-            $this->valid_drivers = $ci->config->item('valid_drivers');
+            $this->valid_drivers = $this->ci->config->item('valid_drivers');
         }
         
         // If we have a default driver set
-        if ( $ci->config->item('default_driver') )
+        if ( $this->ci->config->item('default_driver') )
         {
-            $this->_adapter = $ci->config->item('default_driver');
+            $this->_adapter = $this->ci->config->item('default_driver');
         }
                 
     } 
@@ -49,4 +51,25 @@ class Auth extends CI_Driver_Library {
         return call_user_func_array(array($this->{$this->_adapter}, $child), $arguments);
     }
     
+    /**
+    * Auth Instance
+    * Static function wrapper for auth drivers
+    * 
+    */
+    public static function auth_instance()
+    {
+        $ci = get_instance();
+        return $ci->auth;
+    }
+    
+}
+
+/**
+* Auth Instance
+* Function shortcut to the proper auth instance
+* 
+*/
+function auth_instance()
+{
+    return Auth::auth_instance();
 }

@@ -6,56 +6,47 @@
 
 function logged_in()
 {
-    $ci = get_instance();
-    return $ci->auth->logged_in();  
+    return auth_instance()->logged_in();  
 }
 
 function get_user_info($user_id = 0)
 {
-    $ci = get_instance();
-    return $ci->auth->get_user_info($user_id);
+    return auth_instance()->get_user_info($user_id);
 }
 
 function get_user_by($identity)
 {
-    $ci = get_instance();
-    return $ci->auth->get_user_by($identity);
+    return auth_instance()->get_user_by($identity);
 }
 
 function login($login, $password, $remember = FALSE)
 {
-    $ci = get_instance();
-    return $ci->auth->login($login, $password, $remember);
+    return auth_instance()->login($login, $password, $remember);
 }
 
 function logout()
 {
-    $ci = get_instance();
-    return $ci->auth->logout(); 
+    return auth_instance()->logout(); 
 }
 
 function create_user($login, $password, $fields = array(), $roles = array(), $groups = array())
 {
-    $ci = get_instance();
-    return $ci->auth->create_user($login, $password, $fields, $roles, $groups);
+    return auth_instance()->create_user($login, $password, $fields, $roles, $groups);
 }
 
 function update_user($user_id, $fields = array())
 {
-    $ci = get_instance();
-    return $ci->auth->update_user($user_id, $fields);
+    return auth_instance()->update_user($user_id, $fields);
 }
 
 function update_user_meta($user_id, $fields = array())
 {
-    $ci = get_instance();
-    return $ci->auth->update_user_meta($user_id, $fields);
+    return auth_instance()->update_user_meta($user_id, $fields);
 }
 
 function delete_user($user_id)
 {
-    $ci = get_instance();
-    return $ci->auth->delete_user($user_id);
+    return auth_instance()->delete_user($user_id);
 }
 
 // ===========================================================
@@ -71,20 +62,17 @@ function delete_user($user_id)
 
 function user_has_permission($user_id, $permission = '')
 {
-    $ci = get_instance();    
-    return $ci->auth->user_has_permission($user_id, $permission);
+    return auth_instance()->user_has_permission($user_id, $permission);
 }
 
 function group_has_permission($group_id, $permission = '')
 {
-    $ci = get_instance();   
-    return $ci->auth->group_has_permission($group_id, $permission);
+    return auth_instance()->group_has_permission($group_id, $permission);
 }
 
 function role_has_permission($role_id, $permission = '')
 {
-    $ci = get_instance();    
-    return $ci->auth->role_has_permission($role_id, $permission);
+    return auth_instance()->role_has_permission($role_id, $permission);
 }
 
 // ===========================================================
@@ -100,26 +88,22 @@ function role_has_permission($role_id, $permission = '')
 
 function get_user_id($username)
 {
-    $ci = get_instance();
-    return $ci->auth->get_user_id($username); 
+    return auth_instance()->get_user_id($username); 
 }
 
 function get_group_id($group_name)
 {
-    $ci = get_instance();
-    return $ci->auth->get_group_id($group_name); 
+    return auth_instance()->get_group_id($group_name); 
 }
 
 function get_role_id($role_name)
 {
-    $ci = get_instance();
-    return $ci->auth->get_role_id($role_name); 
+    return auth_instance()->get_role_id($role_name); 
 }
 
 function get_permission_id($permission = '')
 {
-    $ci = get_instance();
-    return $ci->auth->get_permission_id($permission = ''); 
+    return auth_instance()->get_permission_id($permission = ''); 
 }
 
 // ===========================================================
@@ -135,32 +119,27 @@ function get_permission_id($permission = '')
 
 function role_id_exists($role_id) 
 {
-    $ci = get_instance();
-    return $ci->auth->role_id_exists($role_id);
+    return auth_instance()->role_id_exists($role_id);
 }
 
 function group_id_exists($group_id) 
 {
-    $ci = get_instance();
-    return $ci->auth->group_id_exists($group_id);
+    return auth_instance()->group_id_exists($group_id);
 }
 
 function user_id_exists($user_id) 
 {
-    $ci = get_instance();
-    return $ci->auth->user_id_exists($user_id);
+    return auth_instance()->user_id_exists($user_id);
 }
 
 function username_exists($username) 
 {
-    $ci = get_instance();
-    return $ci->auth->username_exists($username);
+    return auth_instance()->username_exists($username);
 }
 
 function email_exists($email) 
 {
-    $ci = get_instance();
-    return $ci->auth->email_exists($email);
+    return auth_instance()->email_exists($email);
 }
 
 // ===========================================================
@@ -176,42 +155,42 @@ function email_exists($email)
 
 function add_permission($permission)
 {
-    return $ci->auth->add_permission($permission);
+    return auth_instance()->add_permission($permission);
 }
 
 function remove_permission($permission)
 {
-    return $ci->auth->remove_permission($permission);
+    return auth_instance()->remove_permission($permission);
 }
 
 function add_permission_to_user($permission_id, $user_id)
 {
-    return $ci->auth->add_permission_to_user($permission_id, $user_id);
+    return auth_instance()->add_permission_to_user($permission_id, $user_id);
 }
 
 function remove_permission_from_user($permission_id, $user_id)
 {
-    return $ci->auth->remove_permission_from_user($permission_id, $user_id);
+    return auth_instance()->remove_permission_from_user($permission_id, $user_id);
 }
 
 function add_permission_to_role($permission_id, $role_id)
 {
-    return $ci->auth->add_permission_to_role($permission_id, $role_id);
+    return auth_instance()->add_permission_to_role($permission_id, $role_id);
 }
 
 function remove_permission_from_role($permission_id, $role_id)
 {
-    return $ci->auth->remove_permission_from_role($permission_id, $role_id);
+    return auth_instance()->remove_permission_from_role($permission_id, $role_id);
 }
 
 function add_permission_to_group($permission_id, $group_id)
 {
-    return $ci->auth->add_permission_to_group($permission_id, $group_id);
+    return auth_instance()->add_permission_to_group($permission_id, $group_id);
 }
 
 function remove_permission_from_group($permission_id, $group_id)
 {
-    return $ci->auth->remove_permission_from_group($permission_id, $group_id);
+    return auth_instance()->remove_permission_from_group($permission_id, $group_id);
 }
 
 // ===========================================================
@@ -227,22 +206,22 @@ function remove_permission_from_group($permission_id, $group_id)
 
 function list_users($count = 10000, $offset = 0)
 {
-    return $ci->auth->list_users($count, $offset);
+    return auth_instance()->list_users($count, $offset);
 }
 
 function list_groups($count = 10000, $offset = 0)
 {
-    return $ci->auth->list_groups($count, $offset);
+    return auth_instance()->list_groups($count, $offset);
 }
 
 function list_roles($count = 10000, $offset = 0)
 {
-    return $ci->auth->list_roles($count, $offset);
+    return auth_instance()->list_roles($count, $offset);
 }
 
 function list_permissions($count = 10000, $offset = 0)
 {
-    return $ci->auth->list_permissions($count, $offset);
+    return auth_instance()->list_permissions($count, $offset);
 }
 
 // ===========================================================
