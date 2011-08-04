@@ -150,6 +150,57 @@ function email_exists($email)
 
 
 // ===========================================================
+// Role functions
+// ===========================================================
+
+function add_role_to_group($group_id, $role_id)
+{
+    return auth_instance()->add_role_to_group($group_id, $role_id);
+}
+
+function remove_role_from_group($group_id, $role_id)
+{
+    return auth_instance()->remove_role_from_group($group_id, $role_id);
+}
+
+function get_user_roles($user_id = 0)
+{
+    return auth_instance()->get_user_roles($user_id);
+}
+
+function get_group_roles($group_id)
+{
+    return auth_instance()->get_group_roles($group_id);
+}
+
+// ===========================================================
+// End role functions
+// ===========================================================
+
+
+
+// ===========================================================
+// Group functions
+// ===========================================================
+
+function add_user_to_group($user_id, $group_id)
+{
+   return auth_instance()->add_user_to_group($user_id, $group_id); 
+
+
+function remove_user_from_group($user_id, $group_id)
+{
+   return auth_instance()->remove_user_from_group($user_id, $group_id); 
+}
+
+// ===========================================================
+// End group functions
+// ===========================================================
+
+
+
+
+// ===========================================================
 // Permission functions
 // ===========================================================
 
