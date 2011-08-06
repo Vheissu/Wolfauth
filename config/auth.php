@@ -22,3 +22,11 @@ $config['simpleauth'] = array(
     'auth.login_attempts_expiry' => 900 // 15 minutes
     
 );
+
+$config['facebook'] = array(
+
+    'facebook.api_url'    => 'graph.facebook.com',
+    'facebook.api_key'    => '',
+    'facebook.api_secret' => '',
+
+);
