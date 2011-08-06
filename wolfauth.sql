@@ -4,16 +4,33 @@ Navicat MySQL Data Transfer
 Source Server         : Localhost
 Source Server Version : 50508
 Source Host           : localhost:3306
-Source Database       : loqally
+Source Database       : wolfauth
 
 Target Server Type    : MYSQL
 Target Server Version : 50508
 File Encoding         : 65001
 
-Date: 2011-08-04 15:46:58
+Date: 2011-08-07 07:53:50
 */
 
 SET FOREIGN_KEY_CHECKS=0;
+
+-- ----------------------------
+-- Table structure for `ci_sessions`
+-- ----------------------------
+DROP TABLE IF EXISTS `ci_sessions`;
+CREATE TABLE `ci_sessions` (
+  `session_id` varchar(40) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
+  `ip_address` varchar(16) COLLATE utf8_unicode_ci NOT NULL DEFAULT '0',
+  `user_agent` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `last_activity` int(10) unsigned NOT NULL DEFAULT '0',
+  `user_data` text COLLATE utf8_unicode_ci,
+  PRIMARY KEY (`session_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- ----------------------------
+-- Records of ci_sessions
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for `groups`
@@ -209,6 +226,8 @@ DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `umeta_id` int(11) NOT NULL,
+  `oauth_provider` varchar(40) DEFAULT NULL,
+  `oauth_uid` text,
   `username` varchar(60) NOT NULL,
   `email` varchar(120) NOT NULL,
   `password` varchar(150) NOT NULL,
@@ -228,4 +247,4 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES ('1', '1', 'admin', 'admin@localhost', '06da0b92ad87efda3ec60fd184f7a7cbc672fc00', 'ZroJKXzM', '0', '0', '0', '2011-07-31 08:45:48', '0000-00-00 00:00:00', '', 'active', '', null);
+INSERT INTO `users` VALUES ('1', '1', null, null, 'admin', 'admin@localhost', '06da0b92ad87efda3ec60fd184f7a7cbc672fc00', 'ZroJKXzM', '0', '0', '0', '2011-07-31 08:45:48', '0000-00-00 00:00:00', '', 'active', '', null);
