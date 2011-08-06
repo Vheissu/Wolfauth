@@ -23,6 +23,8 @@ class Auth_Facebook extends CI_Driver {
     protected $auth;
     protected $ci;
     protected $config;
+    
+    protected $facebook;
 
     public function __construct()
     {
@@ -32,6 +34,12 @@ class Auth_Facebook extends CI_Driver {
         $this->ci->config->load('auth');
         
         $this->config = get_item('facebook');
+        
+        $this->facebook = new Facebook(array(  
+            'appId'  => $this->config['facebook.app_id'],  
+            'secret' => $this->config['facebook.api_secret'],  
+            'cookie' => true  
+        ));         
     }
     
 }
