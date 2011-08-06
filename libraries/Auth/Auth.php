@@ -36,6 +36,35 @@ class Auth extends CI_Driver_Library {
             $this->_adapter = $this->ci->config->item('default_driver');
         }
                 
+    }
+    
+    /**
+    * Set Driver
+    * Set what driver we are using
+    * 
+    * @param string $name
+    */
+    public function set_driver($name)
+    {
+        $name = trim($name);
+        
+        // Check the driver is in our valid drivers
+        if ( in_array($name, $this->ci->config->item('valid_drivers')) )
+        {
+            if ( $this->_adapter === $name )
+            {
+                return TRUE;
+            }
+            else
+            {
+                $this->_adapter = $name;
+                return TRUE;
+            }
+        }
+        else
+        {
+            return FALSE;
+        }
     } 
     
     /**
