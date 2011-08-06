@@ -1,13 +1,13 @@
 <?php
 
+$config['default_driver'] = "simpleauth";
+
+$config['valid_drivers']  = array('auth_simpleauth', 'auth_facebook');
+
 $config['admin_email'] = "admin@localhost";
 $config['site_name'] = "Test Auth";
 
 $config['reset_password_link'] = "user/reset_password/";
-
-$config['default_driver'] = "simpleauth";
-
-$config['valid_drivers']  = array('auth_simpleauth', 'auth_facebook');
 
 /**
 * Simpleauth driver config values

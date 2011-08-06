@@ -1,6 +1,6 @@
 <?php
   
-class Testauth extends MY_Controller {
+class Testauth extends CI_Controller {
     
     public function __construct()
     {

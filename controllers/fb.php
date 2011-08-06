@@ -1,6 +1,6 @@
 <?php
   
-class Fb extends MY_Controller {
+class Fb extends CI_Controller {
     
     public function __construct()
     {
