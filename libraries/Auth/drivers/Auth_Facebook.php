@@ -15,6 +15,8 @@
  * @link          http://ilikekillnerds.com
  * @license       http://www.apache.org/licenses/LICENSE-2.0.html
  */
+ 
+require_once APPPATH . 'third_party/Facebook/facebook.php';
 
 class Auth_Facebook extends CI_Driver {
     
