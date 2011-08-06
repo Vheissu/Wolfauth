@@ -24,7 +24,7 @@ class Auth_Facebook extends CI_Driver {
     protected $ci;
     protected $config;
     
-    protected $facebook;
+    protected $fb;
 
     public function __construct()
     {
@@ -35,11 +35,45 @@ class Auth_Facebook extends CI_Driver {
         
         $this->config = get_item('facebook');
         
-        $this->facebook = new Facebook(array(  
+        $this->fb = new Facebook(array(  
             'appId'  => $this->config['facebook.app_id'],  
             'secret' => $this->config['facebook.api_secret'],  
             'cookie' => true  
         ));         
+    }
+    
+    /**
+    * Logged In
+    * Check if a Facebook session exists
+    * 
+    */
+    public function logged_in()
+    {
+        $session = $this->fb->getSession();
+        
+        // We have a Facebook session
+        if ( !empty($session) )
+        {
+            try{  
+                $uid = $this->fb->getUser();  
+                $user = $this->fb->api('/me');  
+            } catch (Exception $e){}
+            
+            if ( !empty($user) )
+            {
+                print_r($user);
+            }
+                    
+        }
+        else
+        {
+            return FALSE;
+        }  
+    }
+    
+    public function login()
+    {
+        
     }
     
 }
