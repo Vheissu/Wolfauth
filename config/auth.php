@@ -25,7 +25,9 @@ $config['simpleauth'] = array(
 
 $config['facebook'] = array(
 
-    'facebook.api_url'    => 'graph.facebook.com',
+    'facebook.authorise_url'    => 'https://graph.facebook.com/oauth/authorize',
+    'facebook.token_url'    => 'https://graph.facebook.com/oauth/access_token',
+    'facebook.profile_url'    => 'https://graph.facebook.com/me',
     'facebook.api_key'    => '',
     'facebook.api_secret' => '',
 
