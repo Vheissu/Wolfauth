@@ -185,7 +185,8 @@ function get_group_roles($group_id)
 
 function add_user_to_group($user_id, $group_id)
 {
-   return auth_instance()->add_user_to_group($user_id, $group_id); 
+   return auth_instance()->add_user_to_group($user_id, $group_id);
+} 
 
 
 function remove_user_from_group($user_id, $group_id)
