@@ -33,7 +33,7 @@ class Auth_Facebook extends CI_Driver {
         
         $this->ci->config->load('auth');
         
-        $this->config = get_item('facebook');
+        $this->config = config_item('facebook');
         
         $this->fb = new Facebook(array(  
             'appId'  => $this->config['facebook.app_id'],  
@@ -49,25 +49,36 @@ class Auth_Facebook extends CI_Driver {
     */
     public function logged_in()
     {
-        $session = $this->fb->getSession();
+        // Get User ID
+        $user = $this->fb->getUser();
         
-        // We have a Facebook session
-        if ( !empty($session) )
+        if ($user) 
         {
-            try{  
-                $uid = $this->fb->getUser();  
-                $user = $this->fb->api('/me');  
-            } catch (Exception $e){}
-            
-            if ( !empty($user) )
+            try 
             {
-                print_r($user);
+                // Proceed knowing you have a logged in user who's authenticated.
+                $user_profile = $this->fb->api('/me');
+                
+                print_r($user_profile);
+                die;
+            } 
+            catch (FacebookApiException $e) 
+            {
+                error_log($e);
+                $user = null;
             }
-                    
+            
+            return TRUE;
         }
-        else
+
+        // Login or logout url will be needed depending on current user state.
+        if ($user) 
         {
-            return FALSE;
+          $logoutUrl = $this->fb->getLogoutUrl();
+        } 
+        else 
+        {
+          $loginUrl = $this->fb->getLoginUrl();
         }  
     }
     
