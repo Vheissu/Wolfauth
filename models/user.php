@@ -2,7 +2,7 @@
 
 class User extends DataMapper {
     
-    public $has_many = array('question', 'answer', 'group', 'role', 'permission');
+    public $has_many = array('group', 'role', 'permission');
     public $has_one  = array('umeta');
     
     public function __construct($id = NULL)
