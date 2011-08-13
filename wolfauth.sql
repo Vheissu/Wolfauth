@@ -106,8 +106,8 @@ CREATE TABLE `login_attempts` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ip_address` varchar(50) NOT NULL,
   `attempts` int(5) NOT NULL DEFAULT '0',
-  `created` varchar(80) NOT NULL,
-  `updated` varchar(80) NOT NULL,
+  `created` int(40) NOT NULL,
+  `updated` int(40) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 
@@ -232,9 +232,9 @@ CREATE TABLE `users` (
   `email` varchar(120) NOT NULL,
   `password` varchar(150) NOT NULL,
   `salt` varchar(120) NOT NULL,
-  `created` varchar(80) NOT NULL,
-  `updated` varchar(80) NOT NULL,
-  `last_login` varchar(80) NOT NULL,
+  `created` in(40) NOT NULL,
+  `updated` int(40) NOT NULL,
+  `last_login` int(40) NOT NULL,
   `last_ip` varchar(60) NOT NULL,
   `status` enum('banned','active','inactive') NOT NULL DEFAULT 'inactive',
   `activation_code` varchar(150) NOT NULL,
@@ -245,4 +245,4 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES ('1', '1', null, null, 'admin', 'admin@localhost', '06da0b92ad87efda3ec60fd184f7a7cbc672fc00', 'ZroJKXzM', '0', '0', '0', '1312511955', '1312511955', '', 'active', '', null);
+INSERT INTO `users` VALUES ('1', '1', null, null, 'admin', 'admin@localhost', '06da0b92ad87efda3ec60fd184f7a7cbc672fc00', 'ZroJKXzM', '1312511955' '0', '0', '127.0.0.1', 'active', '', null);
