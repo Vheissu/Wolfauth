@@ -1053,7 +1053,7 @@ class Auth_Simpleauth extends CI_Driver {
     public function force_login($user_id, $remember = FALSE)
     {
         $this->ci->session->set_userdata(array('userid' => $user_id, 'logged_in' => 'true'));
-        $this->update_user($user_id, array('last_login' => date("Y-m-d H:i:s"), 'last_ip' => $this->ip_address));
+        $this->update_user($user_id, array('last_login' => time(), 'last_ip' => $this->ip_address));
         $this->reset_login_attempts();
         
         if ($remember === TRUE)
