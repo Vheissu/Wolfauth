@@ -6,6 +6,7 @@ class Testauth extends CI_Controller {
     {
         parent::__construct();
         $this->load->driver('auth');
+        $this->load->helper('auth');
     }
     
     public function index()
