@@ -1409,7 +1409,7 @@ class Auth_Simpleauth extends CI_Driver {
     * Logs a user out and destroys session
     * 
     */
-    public function logout()
+    public function logout($redirect = '')
     {
         $user_id = $this->ci->session->userdata('userid');
 
@@ -1420,7 +1420,10 @@ class Auth_Simpleauth extends CI_Driver {
         $u = new User;
         $u->where('id', $user_id);
         
-        return $this->update_user($user_id, array('remember_me' => ''));
+        if ( $redirect != '' )
+            redirect($login);
+        else
+            return $this->update_user($user_id, array('remember_me' => ''));
     }
     
     

@@ -24,9 +24,9 @@ function login($login, $password, $remember = FALSE)
     return auth_instance()->login($login, $password, $remember);
 }
 
-function logout()
+function logout($redirect = '')
 {
-    return auth_instance()->logout(); 
+    return auth_instance()->logout($redirect); 
 }
 
 function create_user($login, $password, $fields = array(), $roles = array(), $groups = array())
