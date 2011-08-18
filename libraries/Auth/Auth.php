@@ -25,15 +25,15 @@ class Auth extends CI_Driver_Library {
         $this->ci->config->load('auth');
         
         // If we have a list of valid drivers
-        if ( $this->ci->config->item('valid_drivers') )
+        if ( $this->ci->config->item('wolfauth.valid_drivers') )
         {
-            $this->valid_drivers = $this->ci->config->item('valid_drivers');
+            $this->valid_drivers = $this->ci->config->item('wolfauth.valid_drivers');
         }
         
         // If we have a default driver set
-        if ( $this->ci->config->item('default_driver') )
+        if ( $this->ci->config->item('wolfauth.default_driver') )
         {
-            $this->_adapter = $this->ci->config->item('default_driver');
+            $this->_adapter = $this->ci->config->item('wolfauth.default_driver');
         }
                 
     }
@@ -79,7 +79,9 @@ class Auth extends CI_Driver_Library {
     */
     public static function auth_instance()
     {
+        static $ci;
         $ci = get_instance();
+        
         return $ci->auth;
     }
     

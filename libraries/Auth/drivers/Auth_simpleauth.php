@@ -1011,13 +1011,12 @@ class Auth_Simpleauth extends CI_Driver {
         $user = $u->get();
         
         if ( $user->exists() AND $a->attempts < $this->config['auth.max_login_attempts'] )
-        {         
+        {                     
             $salted_password = $this->create_password($password, $user->salt);
                         
             if ( $salted_password == $user->password )
             {
-                $user_id = $user->id;
-                
+                $user_id = $user->id;                
                 $this->force_login($user_id, $remember);
                 
                 return TRUE;                
@@ -1168,15 +1167,15 @@ class Auth_Simpleauth extends CI_Driver {
     {
         $data['email']       = $email;
         $data['forgot_code'] = $code;
-        $data['reset_link']  = config_item('reset_password_link');
+        $data['reset_link']  = config_item('wolfauth.reset_password_link');
         
         $message = $this->ci->load->view('emails/reset_password', $data, true);
         
         $this->ci->email->clear();
         $this->ci->email->set_newline("\r\n");
-        $this->ci->email->from(config_item('admin_email'), config_item('site_name'));
+        $this->ci->email->from(config_item('wolfauth.admin_email'), config_item('wolfauth.site_name'));
         $this->ci->email->to($email);
-        $this->ci->email->subject(config_item('site_name') . ' - Forgotten Password Verification');
+        $this->ci->email->subject(config_item('wolfauth.site_name') . ' - Forgotten Password Verification');
         $this->ci->email->message($message);
         
         if ($this->ci->email->send())
@@ -1206,9 +1205,9 @@ class Auth_Simpleauth extends CI_Driver {
         
         $this->ci->email->clear();
         $this->ci->email->set_newline("\r\n");
-        $this->ci->email->from(config_item('admin_email'), config_item('site_name'));
+        $this->ci->email->from(config_item('wolfauth.admin_email'), config_item('wolfauth.site_name'));
         $this->ci->email->to($email);
-        $this->ci->email->subject(config_item('site_name') . ' - Forgotten Password Request');
+        $this->ci->email->subject(config_item('wolfauth.site_name') . ' - Forgotten Password Request');
         $this->ci->email->message($message);
         
         if ($this->ci->email->send())
