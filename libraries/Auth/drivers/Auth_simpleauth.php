@@ -1421,7 +1421,7 @@ class Auth_Simpleauth extends CI_Driver {
         $u->where('id', $user_id);
         
         if ( $redirect != '' )
-            redirect($login);
+            redirect($redirect);
         else
             return $this->update_user($user_id, array('remember_me' => ''));
     }
