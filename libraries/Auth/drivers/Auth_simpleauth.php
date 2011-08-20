@@ -1265,7 +1265,7 @@ class Auth_Simpleauth extends CI_Driver {
             $u = $u->get_copy();
             
             $salt     = $this->generate_random();
-            $password = $this->create_password($this->generate_random(), $salt);
+            $password = $this->create_password($password, $salt);  
             
             $u->{$login_type} = $login;
             $u->salt          = $salt;
