@@ -44,7 +44,6 @@ class Auth_Simpleauth extends CI_Driver {
         $this->ci->load->helper('cookie');
         $this->ci->load->helper('email');
         $this->ci->load->helper('string');
-        $this->ci->load->helper('auth');
         $this->ci->load->library('encrypt');
         $this->ci->load->library('session');
         $this->ci->load->library('datamapper');
@@ -1120,7 +1119,7 @@ class Auth_Simpleauth extends CI_Driver {
             if ( $u->status == 'active' )
             {
                 // Create an activation code
-                $code = $this->generate_random() .$identity;
+                $code = $this->generate_random() . $identity;
                 $u->activation_code = $code;
                 $u->save();
                 
@@ -1142,7 +1141,7 @@ class Auth_Simpleauth extends CI_Driver {
     public function complete_forgotten_password($code)
     {
         $u = new User;
-        $u->get_by_activation_code($code);
+        $u->where('activation_code', $code)->get();
         
         if ( $u->exists() )
         {
@@ -1151,9 +1150,17 @@ class Auth_Simpleauth extends CI_Driver {
             
             $password = $this->create_password($new_pass, $salt);
             
+            $u->salt = $salt;
+            $u->password = $password;
+            $u->save();
+            
             $this->email_new_password($u->email, $new_pass);
             
             return $password;
+        }
+        else
+        {
+            return FALSE;
         }
     }
     
@@ -1179,7 +1186,7 @@ class Auth_Simpleauth extends CI_Driver {
         $this->ci->email->subject(config_item('wolfauth.site_name') . ' - Forgotten Password Verification');
         $this->ci->email->message($message);
         
-        if ($this->ci->email->send())
+        if ( $this->ci->email->send() )
         {
             $this->set_message('Successfully sent forgot password email');
             return TRUE;
@@ -1265,7 +1272,7 @@ class Auth_Simpleauth extends CI_Driver {
             $u = $u->get_copy();
             
             $salt     = $this->generate_random();
-            $password = $this->create_password($password, $salt);  
+            $password = $this->create_password($this->generate_random(), $salt);
             
             $u->{$login_type} = $login;
             $u->salt          = $salt;
