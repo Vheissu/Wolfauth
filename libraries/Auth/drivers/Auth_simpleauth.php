@@ -1120,7 +1120,7 @@ class Auth_Simpleauth extends CI_Driver {
             if ( $u->status == 'active' )
             {
                 // Create an activation code
-                $code = $this->generate_random() . $identity;
+                $code = sha1($this->generate_random() . $identity);
                 $u->activation_code = $code;
                 $u->save();
                 
@@ -1166,7 +1166,7 @@ class Auth_Simpleauth extends CI_Driver {
             
             $this->email_new_password($u->email, $new_pass);
             
-            return $password;
+            return $new_pass;
         }
         else
         {
