@@ -47,6 +47,7 @@ class Auth_Simpleauth extends CI_Driver {
         $this->ci->load->library('encrypt');
         $this->ci->load->library('session');
         $this->ci->load->library('datamapper');
+        $this->ci->load->library('email');
         
         $this->config = config_item('simpleauth');
         
@@ -1111,7 +1112,7 @@ class Auth_Simpleauth extends CI_Driver {
         $type = $this->detect_identity($identity);
         
         $u = new User;
-        $u->get_by_{$type}($identity);
+        $u->where($type, $identity)->get();
         
         if ( $u->exists() )
         {
@@ -1124,12 +1125,20 @@ class Auth_Simpleauth extends CI_Driver {
                 $u->save();
                 
                 // Send user a forgotten password email
-                $this->email_forgot_password($u->email, $code);   
+                $this->email_forgot_password($u->email, $code);
+                
+                return TRUE;   
             }
             else
             {
                 $this->set_error('Only active users can reset their passwords.');
+                return FALSE;
             }
+        }
+        else
+        {
+            $this->set_error('User does not exist');
+            return FALSE;
         } 
     }
     
@@ -1152,6 +1161,7 @@ class Auth_Simpleauth extends CI_Driver {
             
             $u->salt = $salt;
             $u->password = $password;
+            $u->activation_code = '';
             $u->save();
             
             $this->email_new_password($u->email, $new_pass);
