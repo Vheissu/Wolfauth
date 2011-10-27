@@ -182,7 +182,7 @@ class Auth_Simpleauth extends CI_Driver {
         
         // If we aren't checking a specific permission, auto check for the win!
         if ($permission == '')
-            $permission = $this->ci->uri->rsegment(1) . "/" . $this->ci->uri->rsegment(2);
+            $permission = trim($this->ci->uri->uri_string(), '/');
         
         $p->get_by_permission($permission);
         
@@ -621,7 +621,7 @@ class Auth_Simpleauth extends CI_Driver {
         
         // If we aren't checking a specific permission, auto check for the win!
         if ($permission == '')
-            $permission = $this->ci->uri->rsegment(1) . "/" . $this->ci->uri->rsegment(2);
+            $permission = trim($this->ci->uri->uri_string(), '/');
         
         if ( $g->exists() )
         {
@@ -669,7 +669,7 @@ class Auth_Simpleauth extends CI_Driver {
         
         // If we aren't checking a specific permission, auto check for the win!
         if ($permission == '')
-            $permission = $this->ci->uri->rsegment(1) . "/" . $this->ci->uri->rsegment(2);
+            $permission = trim($this->ci->uri->uri_string(), '/');
         
         if ( $r->exists() )
         {
