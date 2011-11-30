@@ -7,6 +7,11 @@ class Testauth extends CI_Controller {
         parent::__construct();
         $this->load->driver('auth');
         $this->load->helper('auth');
+        
+        if( !auth_check() ){
+          // put your code here for example: redirect('Testauth/deny');
+          // don't fotget to make 'Testauth/deny' allowed for all, else you will have infinte loop ;)
+        }
     }
     
     public function index()
@@ -45,6 +50,11 @@ class Testauth extends CI_Controller {
     public function user_info()
     {
         $info = get_user_info(1);
+    }
+    
+    public function deny()
+    {
+        echo "You try to access unauthorized area!";
     }
     
 }
