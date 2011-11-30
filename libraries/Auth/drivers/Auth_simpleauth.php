@@ -712,7 +712,7 @@ class Auth_Simpleauth extends CI_Driver {
         
         if ( $u->exists() )
         {
-            $u->group->get();
+            $u->group->where('id',$group_id)->get();
             return $u->group->exists();
         } 
     }
@@ -733,7 +733,7 @@ class Auth_Simpleauth extends CI_Driver {
         
         if ( $u->exists() )
         {
-            $u->role->get();
+            $u->role->where('id',$role_id)->get();
             return $u->role->exists();
         } 
     }
@@ -751,7 +751,7 @@ class Auth_Simpleauth extends CI_Driver {
         
         if ( $g->exists() )
         {
-            $g->role->get();
+            $g->role->where('id',$role_id)->get();
             return $g->role->exists();
         }
     }
@@ -1739,7 +1739,7 @@ class Auth_Simpleauth extends CI_Driver {
         return (!empty($this->errors)) ? $this->errors : FALSE;
     }
     
-    public function decorate
+    public function decorate() {}
     
     /**
     * Auth check
