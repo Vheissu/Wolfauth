@@ -80,18 +80,7 @@ class Auth_Simpleauth extends CI_Driver {
         
         $u = new User;
         
-        if ($type == 'email')
-        {
-            $u->get_user_by_email($identity);
-        }
-        elseif (is_int($identity))
-        {
-           $u->get_user_by_id($identity); 
-        }
-        else
-        {
-           $u->get_user_by_username($identity); 
-        }
+        $u->where($type,$identity)->get(); 
         
         return ( $u->exists() ) ? $this->get_user_info($u->id) : FALSE;
     }
@@ -107,8 +96,7 @@ class Auth_Simpleauth extends CI_Driver {
         if ($user_id == 0)
             $user_id = $this->user_id;
             
-        $u = new User;
-        $u->get_by_id($user_id);
+        $u = new User($user_id);
         
         foreach ($u->role->get()->all AS $role)
         {
@@ -151,7 +139,7 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function get_group_id($group_name)
     {
-        $g = new User;
+        $g = new Group;
         $g->get_by_name($group_name);
         
         return ( $g->exists() ) ? $g->id : FALSE;
@@ -181,6 +169,7 @@ class Auth_Simpleauth extends CI_Driver {
         $p = new Permission;
         
         // If we aren't checking a specific permission, auto check for the win!
+        // TODO:: we should get the first tow segment only?
         if ($permission == '')
             $permission = trim($this->ci->uri->uri_string(), '/');
         
@@ -197,9 +186,8 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function role_id_exists($role_id)
     {
-        $r = new Role;
-        $r->get_by_id($role_id);
-        
+        $r = new Role($role_id);
+       
         return ( $r->exists() ) ? TRUE : FALSE;
     }
     
@@ -211,8 +199,7 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function group_id_exists($group_id)
     {
-        $g = new Group;
-        $g->get_by_id($group_id);
+        $g = new Group($group_id);
         
         return ( $g->exists() ) ? TRUE : FALSE;
     }
@@ -225,8 +212,7 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function user_id_exists($user_id)
     {
-        $u = new User;
-        $u->get_by_id($user_id);
+        $u = new User($user_id);
         
         return ( $u->exists() ) ? TRUE : FALSE;
     }
@@ -270,19 +256,26 @@ class Auth_Simpleauth extends CI_Driver {
         if ($user_id == 0)
             $user_id = $this->user_id;
         
-        $u = new User();
-        $u->get_by_id($user_id);
-        
-        $groups = $u->group->get()->all;
+        $u = new User($user_id);
         
         $assigned_groups = array();
         
-        foreach ($groups AS $group)
-        {
-            $assigned_groups[$group->id] = $group->name;
+        if ( $u->exists() )
+        {        
+            
+            $groups = $u->group->get()->all;
+            
+            foreach ($groups AS $group)
+	        {
+            	$assigned_groups[$group->id] = $group->name;
+        	}
         }
+       
+        return $assigned_groups;
         
-        return $assigned_groups;  
+        /* TODO: why not using the same group function syntax?
+         * return ( $u->exists() ) ? $u->group->get()->all : FALSE;
+         */
     }
     
     /**
@@ -297,26 +290,26 @@ class Auth_Simpleauth extends CI_Driver {
         {
             $user_id = $this->user_id;
         }
-        $u = new User;
-        $u->get_by_id($user_id);
+        
+        $u = new User($user_id);
+        
+        $assigned_roles = array();
         
         if ( $u->exists() )
-        {        
-            $assigned_roles = array();
-            
+        {      
             $roles = $u->role->get()->all;
             
             foreach ($roles AS $r)
             {
                 $assigned_roles[$r->id] = $r->name;
             }
-            
-            return $assigned_roles;
         }
-        else
-        {
-            return FALSE;
-        }  
+        
+        return $assigned_roles;      
+        
+        /* TODO: why not using the same group function syntax?
+         * return ( $u->exists() ) ? $u->role->get()->all : FALSE;
+         */
     }
     
     /**
@@ -330,8 +323,7 @@ class Auth_Simpleauth extends CI_Driver {
         if ($user_id == 0)
             $user_id = $this->user_id;
             
-        $u = new User;
-        $u->get_by_id($user_id);
+        $u = new User($user_id);
         
         $assigned_permissions = array();
         
@@ -346,6 +338,10 @@ class Auth_Simpleauth extends CI_Driver {
         }
         
         return $assigned_permissions;
+        
+        /* TODO: why not using the same group function syntax?
+         * return ( $u->exists() ) ? $u->permission->get()->all : FALSE;
+         */
     }
     
     /**
@@ -356,8 +352,7 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function get_group_users($group_id)
     {        
-        $g = new Group;
-        $g->get_by_id($group_id);
+        $g = new Group($group_id);
         
         return ( $g->exists() ) ? $g->user->get()->all : FALSE; 
     }
@@ -370,8 +365,7 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function get_group_roles($group_id)
     {
-        $g = new Group;
-        $g->get_by_id($group_id);
+        $g = new Group($group_id);
         
         return ( $g->exists() ) ? $g->role->get()->all : FALSE;
     }
@@ -384,8 +378,7 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function get_group_permissions($group_id)
     {
-        $g = new Group;
-        $g->get_by_id($group_id);
+        $g = new Group($group_id);
         
         return ( $g->exists() ) ? $g->permission->get()->all : FALSE;
     }
@@ -403,6 +396,11 @@ class Auth_Simpleauth extends CI_Driver {
         
         if ( !$p->exists() )
         {
+        	/* TODO:: why copying the old one?
+        	 * can we make it like this?
+        	 * $p->permission = $permission;
+        	 * $p->save();
+        	 */
             $pp = $p->get_copy();
             $pp->permission = $permission;
             $pp->save();
@@ -439,11 +437,8 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function add_permission_to_user($permission_id, $user_id)
     {
-        $p = new Permission;
-        $p->get_by_id($permission_id);
-        
-        $r = new User;
-        $r->get_by_id($user_id);
+        $p = new Permission($permission_id);
+        $r = new User($user_id);
         
         if ( $p->exists() AND $u->exists() )
         {
@@ -460,11 +455,8 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function remove_permission_from_user($permission_id, $user_id)
     {
-        $p = new Permission;
-        $p->get_by_id($permission_id);
-        
-        $u = new User;
-        $u->get_by_id($user_id);
+        $p = new Permission($permission_id);
+        $u = new User($user_id);
         
         if ( $p->exists() AND $u->exists() )
         {
@@ -481,11 +473,8 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function add_permission_to_role($permission_id, $role_id)
     {
-        $p = new Permission;
-        $p->get_by_id($permission_id);
-        
-        $r = new Role;
-        $r->get_by_id($role_id);
+        $p = new Permission($permission_id);
+        $r = new Role($role_id);
         
         if ( $p->exists() AND $r->exists() )
         {
@@ -502,11 +491,8 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function remove_permission_from_role($permission_id, $role_id)
     {
-        $p = new Permission;
-        $p->get_by_id($permission_id);
-        
-        $r = new Role;
-        $r->get_by_id($role_id);
+        $p = new Permission($permission_id);
+        $r = new Role($role_id);
         
         if ( $p->exists() AND $r->exists() )
         {
@@ -523,11 +509,8 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function add_permission_to_group($permission_id, $group_id)
     {
-        $p = new Permission;
-        $p->get_by_id($permission_id);
-        
-        $g = new Group;
-        $g->get_by_id($group_id);
+        $p = new Permission($permission_id);
+        $g = new Group($group_id);
         
         if ( $p->exists() AND $g->exists() )
         {
@@ -545,11 +528,8 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function remove_permission_from_group($permission_id, $group_id)
     {
-        $p = new Permission;
-        $p->get_by_id($permission_id);
-        
-        $g = new Group;
-        $g->get_by_id($group_id);
+        $p = new Permission($permission_id);
+        $g = new Group($group_id);
         
         if ( $p->exists() AND $g->exists() )
         {
@@ -565,41 +545,28 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function user_has_permission($user_id = 0, $permission = '')
     {
-        if ($user_id == 0 OR $user_id == '')
+    	
+        if(empty($user_id))
            $user_id = $this->user_id;   
             
         // If we aren't checking a specific permission, auto check for the win!
         if ($permission == '')
+        	// TODO:: we should get the first tow segment only?
             $permission = trim($this->ci->uri->uri_string(), '/');  
             
-        $u = new User;
-        $u->get_by_id($user_id);
+        $u = new User($user_id);
         
         if ( $u->exists() )
         {
-            $found = false;
-            
-            $permissions = $u->permission->get()->all;
-            
-            foreach ($permissions AS $p)
-            {
-                if ( is_int($permission) )
-                {
-                    if ($p->id == $permission)
-                    {
-                        $found = true;
-                    }
-                }
-                else
-                {
-                    if ($p->permission == $permission)
-                    {
-                        $found = true;
-                    }
-                }
-            }
-            
-            return $found;
+        	$by_type = is_int($permission)? 'id':'permission';
+        	$u->permission->where($by_type,$permission)->get();
+           	if($u->permission->exists())
+           	{
+           		return TRUE;
+           	}
+           	else{
+           		return FALSE;
+           	}
         }
         else
         {
@@ -616,8 +583,7 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function group_has_permission($group_id, $permission = '')
     {
-        $g = new Group;
-        $g->get_by_id($group_id);
+        $g = new Group($group_id);
         
         // If we aren't checking a specific permission, auto check for the win!
         if ($permission == '')
@@ -625,29 +591,15 @@ class Auth_Simpleauth extends CI_Driver {
         
         if ( $g->exists() )
         {
-            $found = false;
-            
-            $permissions = $g->permission->get()->all;
-            
-            foreach($permissions AS $p)
-            {
-                if ( is_int($permission) )
-                {
-                    if ($p->id == $permission)
-                    {
-                        $found = true;
-                    }
-                }
-                else
-                {
-                    if ($p->permission == $permission)
-                    {
-                        $found = true;
-                    }
-                }
-            }
-            
-            return $found;   
+        	$by_type = is_int($permission)? 'id':'permission';
+        	$g->permission->where($by_type,$permission)->get();
+           	if($g->permission->exists())
+           	{
+           		return TRUE;
+           	}
+           	else{
+           		return FALSE;
+           	}   
         }
         else
         {
@@ -664,37 +616,23 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function role_has_permission($role_id, $permission = '')
     {
-        $r = new Role;
-        $r->get_by_id($$role_id);
+        $r = new Role($role_id);
         
         // If we aren't checking a specific permission, auto check for the win!
         if ($permission == '')
             $permission = trim($this->ci->uri->uri_string(), '/');
         
-        if ( $r->exists() )
+    if ( $r->exists() )
         {
-            $found = false;
-            
-            $permissions = $r->permission->get()->all;
-            foreach($permissions AS $p)
-            {
-                if ( is_int($permission) )
-                {
-                    if ($p->id == $permission)
-                    {
-                        $found = true;
-                    }
-                }
-                else
-                {
-                    if ($p->permission == $permission)
-                    {
-                        $found = true;
-                    }
-                }
-            }
-            
-            return $found;   
+        	$by_type = is_int($permission)? 'id':'permission';
+        	$r->permission->where($by_type,$permission)->get();
+           	if($r->permission->exists())
+           	{
+           		return TRUE;
+           	}
+           	else{
+           		return FALSE;
+           	}   
         }
         else
         {
@@ -770,12 +708,12 @@ class Auth_Simpleauth extends CI_Driver {
         if ($user_id == 0)
             $user_id = $this->user_id;
         
-        $u = new User;
-        $u->get_by_id($user_id);
+        $u = new User($user_id);
         
         if ( $u->exists() )
         {
-            $groups = $u->group->get()->all_to_array();
+            $u->group->get();
+            return $u->group->exists();
         } 
     }
     
@@ -791,12 +729,12 @@ class Auth_Simpleauth extends CI_Driver {
         if ($user_id == 0)
             $user_id = $this->user_id;
         
-        $u = new User;
-        $u->get_by_id($user_id);
+        $u = new User($user_id);
         
         if ( $u->exists() )
         {
-            $roles = $u->role->get()->all_to_array();
+            $u->role->get();
+            return $u->role->exists();
         } 
     }
     
@@ -809,22 +747,12 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function group_has_role($group_id, $role_id)
     {
-        $g = new Group;
-        $g->get_by_id($group_id);
+        $g = new Group($group_id);
         
         if ( $g->exists() )
         {
-            $roles = $g->role->get()->all;
-            $found = false;
-            
-            foreach ($roles AS $role)
-            {
-                if ($role->id == $role_id)
-                {
-                    $found = true;
-                }
-            }
-            return $found;
+            $g->role->get();
+            return $g->role->exists();
         }
     }
     
@@ -841,11 +769,9 @@ class Auth_Simpleauth extends CI_Driver {
     public function add_group($name, $description = '')
     {
         $g  = new Group;
+        $g->get_by_name($name);
         
-        $gg = new Group;
-        $gg->get_by_name($name);
-        
-        if ( !$gg->exists() )
+        if ( !$g->exists() )
         {        
             $g->name        = $name;
             $g->description = $description;
@@ -868,8 +794,7 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function update_group($group_id, $name = '', $description = '')
     {
-        $g = new Group;
-        $g->get_by_id($group_id);
+        $g = new Group($group_id);
         
         if ( $g->exists() )
         {
@@ -899,10 +824,12 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function delete_group($group_id)
     {
-        $g = new Group;
-        $g->get_by_id($group_id);
+        $g = new Group($group_id);
         
-        return $g->delete();
+        if( $g->exists() )
+        {
+        	return $g->delete();
+        }
     }
     
     /**
@@ -914,13 +841,13 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function add_user_to_group($user_id, $group_id)
     {
-        $u = new User;
-        $u->get_by_id($user_id);
+        $u = new User($user_id);
+        $g = new Group($group_id);
         
-        $g = new Group;
-        $g->get_by_id($group_id);
-        
-        return $u->save($g);
+        if( $u->exists() AND $g->exists() )
+        {
+        	return $u->save($g);
+        }
     }
     
     /**
@@ -933,13 +860,13 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function remove_user_from_group($user_id, $group_id)
     {
-        $u = new User;
-        $u->get_by_id($user_id);
+        $u = new User($user_id);
+        $g = new Group($group_id);
         
-        $g = new Group;
-        $g->get_by_id($group_id);
-        
-        return $u->delete($g);
+    	if( $u->exists() AND $g->exists() )
+        {
+        	return $u->delete($g);
+        }
     }
     
     /**
@@ -951,11 +878,8 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function add_role_to_group($group_id, $role_id)
     {
-        $g = new Group;
-        $g->get_by_id($group_id);
-        
-        $r = new Role;
-        $r->get_by_id($role_id);
+        $g = new Group($group_id);
+        $r = new Role($role_id);
         
         if ( $g->exists() AND $r->exists() )
         {
@@ -972,11 +896,8 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function remove_role_from_group($group_id, $role_id)
     {
-        $g = new Group;
-        $g->get_by_id($group_id);
-        
-        $r = new Role;
-        $r->get_by_id($role_id);
+        $g = new Group($group_id);
+        $r = new Role($role_id);
         
         if ( $g->exists() AND $r->exists() )
         {
@@ -1000,17 +921,19 @@ class Auth_Simpleauth extends CI_Driver {
         {
             return FALSE;
         }
-        
-        $login_type = $this->detect_identity($login);
 
-        $u = new User();
-        
         $a = new Attempt();
         $a->where('ip_address', $this->ip_address)->get();
         
+        $login_type = $this->detect_identity($login);
+        
+        $u = new User();
         $u->where($login_type, $login);
         $user = $u->get();
         
+        /* TODO: spammer can make a billion try?
+         * should we prevent falier attempts even if the user does not exitsts ?
+         */
         if ( $user->exists() AND $a->attempts < $this->config['auth.max_login_attempts'] )
         {                     
             $salted_password = $this->create_password($password, $user->salt);
@@ -1072,12 +995,9 @@ class Auth_Simpleauth extends CI_Driver {
     public function activate($user_id = 0, $code = '')
     {
         if ($user_id == 0)
-        {
             $user_id = $this->user_id;
-        }
         
-        $u = new User;
-        $u->get_by_id($user_id);
+        $u = new User($user_id);
         
         if ( $u->exists() )
         {
@@ -1262,25 +1182,15 @@ class Auth_Simpleauth extends CI_Driver {
         
         if ($login_type == 'auto')
         {
-            if ( !valid_email($this->config['auth.login_type']) )
-            {
-                $login_type = 'username';
-            }
-            else
-            {
-                $login_type = 'email';
-            }   
+            $login_type = $this->detect_identity($login);   
         }
         
         $u = new User();
-        $u->where($login_type, $login);
-        $u->get();
+        $u->where($login_type, $login)->get();
         
         // Make sure user doesn't exist first
         if ( !$u->exists() )
         {
-            $u = $u->get_copy();
-            
             $salt     = $this->generate_random();
             $password = $this->create_password($password, $salt);
             
@@ -1288,13 +1198,10 @@ class Auth_Simpleauth extends CI_Driver {
             $u->salt          = $salt;
             $u->password      = $password;
             
-            if ( !empty($fields) )
+            if (!empty($fields) )
             {
                 $um = new Umeta();
-                foreach ($fields AS $field => $value)
-                {
-                    $um->{$field} = $value;
-                }
+                $um->from_array($fields);
                 $u->save($um);
             }
             
@@ -1302,19 +1209,20 @@ class Auth_Simpleauth extends CI_Driver {
             {
                 $r = new Role();
                 $r->where_in('id', $roles)->get();
-                
                 return $u->save($r);
             }
-            elseif (!empty($groups))
+            
+            if (!empty($groups))
             {
                 $g = new Group;
                 $g->where_in('id', $groups)->get();
                 return $u->save($g);
             }
-            else
+            
+            if(empty($groups) AND empty($roles) AND empty($fields))
             {
                 return $u->save();
-            }            
+            }
         }
         else
         {
@@ -1332,8 +1240,7 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function update_user($user_id, $fields = array())
     {
-        $u = new User;
-        $u->get_by_id($user_id);
+        $u = new User($user_id);
         
         if ( isset($fields['password']) )
         {
@@ -1354,10 +1261,12 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function delete_user($user_id)
     {
-        $u = new User();
-        $u->get_by_id($user_id);
+        $u = new User($user_id);
         
-        return $u->delete();
+        if($u->exists())
+        {
+        	return $u->delete();
+        }
     }
     
     /**
@@ -1371,8 +1280,7 @@ class Auth_Simpleauth extends CI_Driver {
         if ($user_id == 0)
             $user_id = $this->user_id;
         
-        $u = new User;
-        $u->get_by_id($user_id);
+        $u = new User($user_id);
         
         if ( $u->exists() )
         {
@@ -1409,8 +1317,7 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function update_user_meta($user_id, $fields = array())
     {
-        $u = new User;
-        $u->get_by_id($user_id);
+        $u = new User($user_id);
                  
         $um = new Umeta;
         foreach ($fields AS $field => $value)
@@ -1435,9 +1342,9 @@ class Auth_Simpleauth extends CI_Driver {
 
         delete_cookie('rememberme');
         
-        $u = new User;
-        $u->where('id', $user_id);
-        
+        /* 
+         * TODO: why you did not update before rederect them?
+         */
         if ( $redirect != '' )
             redirect($redirect);
         else
@@ -1453,24 +1360,26 @@ class Auth_Simpleauth extends CI_Driver {
     * 
     * @param mixed $user_id
     */
-    public function get_roles($user_id = null)
+    public function get_roles($user_id = 0)
     {
-        if (!is_null($user_id))
+        if (empty($user_id))
             $user_id = $this->user_id;
         
-        $u = new User();
-        $u->get_by_id($user_id);
-        
-        $roles = $u->role->get()->all;
+        $u = new User($user_id);
         
         $assigned_roles = array();
         
-        foreach ($roles AS $role)
+        foreach ($u->role->get()->all AS $role)
         {
             $assigned_roles[$role->id] = $role->name;
         }
         
         return $assigned_roles;   
+        
+        /*
+         * TODO: why not
+         * return ( $u->exists() ) ? $u->role->get()->all : FALSE;
+         */
     }
     
     /**
@@ -1481,8 +1390,7 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function get_role_permissions($role_id)
     {
-        $r = new Role;
-        $r->get_by_id($role_id);
+        $r = new Role($role_id);
         
         return ( $r->exists() ) ? $r->permission->get()->all : FALSE;
     }
@@ -1524,8 +1432,7 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function update_role($role_id, $name = '', $description = '')
     {
-        $r = new Role;
-        $r->get_by_id($role_id);
+        $r = new Role($role_id);
         
         if ( $r->exists() )
         {
@@ -1573,11 +1480,8 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function add_role_to_user($user_id, $role_id)
     {
-        $u = new User;
-        $u->get_by_id($user_id);
-        
-        $r = new Role;
-        $r->get_by_id($role_id);
+        $u = new User($user_id);
+        $r = new Role($role_id);
         
         if ( $u->exists() AND $r->exists() )
         {
@@ -1594,11 +1498,8 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function remove_role_from_user($user_id, $role_id)
     {
-        $u = new User;
-        $u->get_by_id($user_id);
-        
-        $r = new Role;
-        $r->get_by_id($role_id);
+        $u = new User($user_id);
+        $r = new Role($role_id);
         
         if ( $u->exists() AND $r->exists() )
         {
@@ -1624,24 +1525,29 @@ class Auth_Simpleauth extends CI_Driver {
         if ( $a->exists() )
         {
             $current_time = time();
-            $attempts     = $a->attempts;
             $created      = strtotime($a->created);
             
             // Minutes comparison
             $minutes      = floor($current_time - $created / 60);
             
-            // Increment new attempts
-            $new_attempts = $attempts + 1;
-            
-            // If current time elapsed between creation is greater than the attempts, reset
+	        // If current time elapsed between creation is greater than the attempts, reset
             if (($current_time - $created) > $this->config['auth.login_attempts_expiry'])
             {
                 $this->reset_login_attempts($ip_address);
-            }   
+                // add the first attempt after reset them
+                $a = $a->get_copy();
+                $a->ip_address = $ip_address;
+	            $a->attempts   = 1;
+	            $a->save();
+            }
+            else{
+	            // Increment new attempts
+	            $a->attempts += 1;
+	            $a->save();
+            }
         }
         else
         {
-            $a = $a->get_copy();
             $a->ip_address = $ip_address;
             $a->attempts   = 1;
             $a->save();
@@ -1756,7 +1662,11 @@ class Auth_Simpleauth extends CI_Driver {
     {
         $login_type = $this->config['auth.login_type'];
         
-        if ($login_type == 'auto')
+        if(is_int($identity))
+        {
+        	$login_type = 'id';
+        }
+        elseif ($login_type == 'auto')
         {
             if ( !valid_email($identity) )
             {
@@ -1829,7 +1739,60 @@ class Auth_Simpleauth extends CI_Driver {
         return (!empty($this->errors)) ? $this->errors : FALSE;
     }
     
-    public function decorate() {}
-
-
+    public function decorate
+    
+    /**
+    * Auth check
+    * check if the current user can access the current uri
+    * it check user, user role, user group, and user group role perms
+    * all checks done using DataMapper directly
+	* user can call this function in the Controller constructor or function
+	* it follow the deny all expect allowed concept
+    */
+	public function auth_check()
+    {
+		$controller = $this->ci->uri->rsegment(1);
+		if ($this->ci->uri->rsegment(2) != '')
+		{
+			$action = $controller.'/'.$this->ci->uri->rsegment(2);
+		}
+		else
+		{
+			$action = $controller.'/index';
+		}
+		
+		$allow = false;
+		$user = $this->get_user_info();		
+		$u = new User($user['user']['id']);
+		
+		$p = new Permission();
+		
+		// check user
+		$p->where('permission',$action)->where_related($u)->get();
+		if($p->exists())
+			return TRUE;
+		
+		// check user role
+		$r = new Role();
+		$r->where_related($u)->get();
+		$p->where('permission',$action)->where_in_related($r)->get();
+		if($p->exists())
+			return TRUE;
+		
+		// check user group
+		$g = new Group();
+		$g->where_related($u)->get();
+		$p->where('permission',$action)->where_in_related($g)->get();
+		if($p->exists())
+			return TRUE;
+		
+		// check user group role
+		$r->where_in_related($g)->get();
+		$p->where('permission',$action)->where_in_related($r)->get();
+		if($p->exists())
+			return TRUE;
+		
+		$this->set_error('You have not the permission to do that');
+		return FALSE
+	}
 }
