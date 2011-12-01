@@ -169,9 +169,8 @@ class Auth_Simpleauth extends CI_Driver {
         $p = new Permission;
         
         // If we aren't checking a specific permission, auto check for the win!
-        // TODO:: we should get the first tow segment only?
-        if ($permission == '')
-            $permission = trim($this->ci->uri->uri_string(), '/');
+       if ($permission == '')
+            $permission = $this->current_uri();
         
         $p->get_by_permission($permission);
         
@@ -396,14 +395,8 @@ class Auth_Simpleauth extends CI_Driver {
         
         if ( !$p->exists() )
         {
-        	/* TODO:: why copying the old one?
-        	 * can we make it like this?
-        	 * $p->permission = $permission;
-        	 * $p->save();
-        	 */
-            $pp = $p->get_copy();
-            $pp->permission = $permission;
-            $pp->save();
+            $p->permission = $permission;
+            $p->save();
         }  
         else
         {
@@ -540,38 +533,72 @@ class Auth_Simpleauth extends CI_Driver {
     /**
     * User Has Permission
     * Checks if the currently logged in or out user has permission
-    * 
+    * @param int   $user_id
     * @param mixed $permission
+    * @param mixed $throw ( permission, group, role, all (default) )
     */
-    public function user_has_permission($user_id = 0, $permission = '')
+    public function user_has_permission($user_id = 0, $permission = '', $throw = 'all')
     {
-    	
         if(empty($user_id))
            $user_id = $this->user_id;   
             
         // If we aren't checking a specific permission, auto check for the win!
         if ($permission == '')
-        	// TODO:: we should get the first tow segment only?
-            $permission = trim($this->ci->uri->uri_string(), '/');  
-            
-        $u = new User($user_id);
-        
-        if ( $u->exists() )
+            $permission = $this->current_uri();  
+
+        /*
+         * if Guest ($user_id == 0) get Guest role id from config file
+         * and check using Role not user, since thier is no user with id 0 
+         */
+        if($user_id == 0)
         {
-        	$by_type = is_int($permission)? 'id':'permission';
-        	$u->permission->where($by_type,$permission)->get();
-           	if($u->permission->exists())
-           	{
-           		return TRUE;
-           	}
-           	else{
-           		return FALSE;
-           	}
+    		$r = new Role($this->config['auth.guest_role']);
+			$r->permission->get();
+			if( $r->permission->exists() )
+				return TRUE;
+		}
+        else 
+        {    
+	        $p = new Permission();
+        	$u = new User($user_id);
+			
+			// check user
+			if($throw == 'permission' OR $throw == 'all')
+			{
+				$p->where('permission',$permission)->where_related($u)->get();
+				if($p->exists())
+					return TRUE;
+			}
+			
+			if($throw == 'role' OR $throw == 'all')
+			{
+				// check user role
+				$r = new Role();
+				$r->where_related($u)->get();
+				$p->where('permission',$permission)->where_in_related($r)->get();
+				if($p->exists())
+					return TRUE;
+			}
+			
+			if($throw == 'group' OR $throw == 'all')
+			{
+				// check user group
+				$g = new Group();
+				$g->where_related($u)->get();
+				$p->where('permission',$permission)->where_in_related($g)->get();
+				if($p->exists())
+					return TRUE;
+				
+				// check user group role
+				$r = new Role();
+				$r->where_in_related($g)->get();
+				$p->where('permission',$permission)->where_in_related($r)->get();
+				if($p->exists())
+					return TRUE;
+			}
         }
-        else
-        {
-            return FALSE;
-        }
+		
+        return FALSE;
     }
     
     /**
@@ -587,7 +614,7 @@ class Auth_Simpleauth extends CI_Driver {
         
         // If we aren't checking a specific permission, auto check for the win!
         if ($permission == '')
-            $permission = trim($this->ci->uri->uri_string(), '/');
+            $permission = $this->current_uri();
         
         if ( $g->exists() )
         {
@@ -620,7 +647,7 @@ class Auth_Simpleauth extends CI_Driver {
         
         // If we aren't checking a specific permission, auto check for the win!
         if ($permission == '')
-            $permission = trim($this->ci->uri->uri_string(), '/');
+            $permission = $this->current_uri();
         
     if ( $r->exists() )
         {
@@ -724,18 +751,35 @@ class Auth_Simpleauth extends CI_Driver {
     * @param mixed $user_id
     * @param mixed $role_id
     */
-    public function user_has_role($user_id = 0, $role_id)
+    public function user_has_role($user_id = 0, $role_id, $throw = "all")
     {
         if ($user_id == 0)
             $user_id = $this->user_id;
         
         $u = new User($user_id);
-        
-        if ( $u->exists() )
-        {
-            $u->role->where('id',$role_id)->get();
-            return $u->role->exists();
-        } 
+		
+		// check user has role directly
+		if($throw == 'role' OR $throw == 'all')
+		{
+			$r = new Role();
+			$r->where_related($u)->get();
+			if($r->exists())
+				return TRUE;
+		}
+		
+		// check user has role throw group
+		if($throw == 'group' OR $throw == 'all')
+		{
+			$g = new Group();
+			$g->where_related($u)->get();
+			
+			$r = new Role();
+			$r->where_in_related($g)->get();
+			if($r->exists())
+				return TRUE;
+		}
+		
+		return FALSE;
     }
     
     /**
@@ -1337,18 +1381,13 @@ class Auth_Simpleauth extends CI_Driver {
     public function logout($redirect = '')
     {
         $user_id = $this->ci->session->userdata('userid');
-
         $this->ci->session->sess_destroy();
 
         delete_cookie('rememberme');
+        $this->update_user($user_id, array('remember_me' => ''));
         
-        /* 
-         * TODO: why you did not update before rederect them?
-         */
         if ( $redirect != '' )
             redirect($redirect);
-        else
-            return $this->update_user($user_id, array('remember_me' => ''));
     }
     
     
@@ -1747,52 +1786,40 @@ class Auth_Simpleauth extends CI_Driver {
     * it check user, user role, user group, and user group role perms
     * all checks done using DataMapper directly
 	* user can call this function in the Controller constructor or function
-	* it follow the deny all expect allowed concept
+	* @param mixed $default ( deny : deny all except allowed, allow: allow all except deny ) 
     */
-	public function auth_check()
+	public function auth_check( $default="deny" )
     {
-		$controller = $this->ci->uri->rsegment(1);
-		if ($this->ci->uri->rsegment(2) != '')
-		{
-			$action = $controller.'/'.$this->ci->uri->rsegment(2);
-		}
-		else
-		{
-			$action = $controller.'/index';
-		}
-		
-		$allow = false;
-		$user = $this->get_user_info();		
-		$u = new User($user['user']['id']);
-		
-		$p = new Permission();
-		
-		// check user
-		$p->where('permission',$action)->where_related($u)->get();
-		if($p->exists())
-			return TRUE;
-		
-		// check user role
-		$r = new Role();
-		$r->where_related($u)->get();
-		$p->where('permission',$action)->where_in_related($r)->get();
-		if($p->exists())
-			return TRUE;
-		
-		// check user group
-		$g = new Group();
-		$g->where_related($u)->get();
-		$p->where('permission',$action)->where_in_related($g)->get();
-		if($p->exists())
-			return TRUE;
-		
-		// check user group role
-		$r->where_in_related($g)->get();
-		$p->where('permission',$action)->where_in_related($r)->get();
-		if($p->exists())
-			return TRUE;
-		
-		$this->set_error('You have not the permission to do that');
-		return FALSE
+    	// if super admin, always TRUE
+    	if($this->user_has_role(0,$this->config['auth.super_admin_role']))
+    		return TRUE;
+    	
+    	$found = $this->user_has_permission();
+		return ($default == "deny")? $found : !$found;
 	}
+	
+	
+	public function current_directory(){
+		return $this->ci->router->fetch_directory();
+	}
+	
+	public function current_controller(){
+		return $this->ci->router->fetch_class();
+	}
+	
+	public function current_action(){
+		return $this->ci->router->fetch_method();
+	}
+	
+	public function current_uri(){
+		$directory = $this->current_directory();
+		$controller = $this->current_controller();
+		$action = $this->current_action();
+		
+		if($dir)
+			return $directory.'/'.$controller.'/'.$action;
+		else 
+			return $controller.'/'.$action;
+	}
+	
 }
