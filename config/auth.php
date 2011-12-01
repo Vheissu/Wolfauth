@@ -21,7 +21,9 @@ $config['simpleauth'] = array(
     'auth.min_password_length'   => 8,
     'auth.max_password_length'   => 30,
     'auth.max_login_attempts'    => 4,
-    'auth.login_attempts_expiry' => 900 // 15 minutes
+    'auth.login_attempts_expiry' => 900, // 15 minutes
+    'auth.super_admin_role'      => 5,   // super admin role id
+    'auth.guest_role'            => 1    // guest role id
     
 );
 
