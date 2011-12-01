@@ -622,7 +622,7 @@ class Auth_Simpleauth extends CI_Driver {
         if ($permission == '')
             $permission = trim($this->ci->uri->uri_string(), '/');
         
-    if ( $r->exists() )
+        if ( $r->exists() )
         {
         	$by_type = is_int($permission)? 'id':'permission';
         	$r->permission->where($by_type,$permission)->get();
@@ -1749,7 +1749,7 @@ class Auth_Simpleauth extends CI_Driver {
 	* user can call this function in the Controller constructor or function
 	* it follow the deny all expect allowed concept
     */
-	public function auth_check()
+    public function auth_check()
     {
 		$controller = $this->ci->uri->rsegment(1);
 		if ($this->ci->uri->rsegment(2) != '')
