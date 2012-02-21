@@ -79,13 +79,14 @@
 <body>
 
 <div id="container">
-	<h1>Loqally - Alpha</h1>
+	<h1>WolfAuth Add</h1>
 
 	<div id="body">
 		<p>Add a new user to the site.</p>
         <form action="<?php echo site_url('testauth/add_user'); ?>" name="add-user" method="POST">
             <p><label for="username">Username:</label><br><input class="text" type="text" name="username"></p>
             <p><label for="password">Password:</label><br><input class="text" type="password" name="password"></p>
+            <p><label for="email">Email:</label><br><input class="text" type="text" name="email"></p>
             <p><label for="first_name">First name:</label><br><input class="text" type="text" name="first_name"></p>
             <p><label for="last_name">Last name:</label><br><input class="text" type="text" name="last_name"></p>
             <p><input type="submit" value="Add"></p>

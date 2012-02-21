@@ -79,7 +79,7 @@
 <body>
 
 <div id="container">
-	<h1>Loqally - Alpha</h1>
+	<h1>WolfAuth - Logged In</h1>
 
 	<div id="body">
 		<p>You are now logged in!</p>
