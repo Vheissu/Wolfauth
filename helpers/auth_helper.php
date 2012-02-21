@@ -19,9 +19,9 @@ function get_user_by($identity)
     return auth_instance()->get_user_by($identity);
 }
 
-function login($login, $password, $remember = FALSE)
+function login($identity, $password, $remember = FALSE)
 {
-    return auth_instance()->login($login, $password, $remember);
+    return auth_instance()->login($identity, $password, $remember);
 }
 
 function logout($redirect = '')
@@ -29,9 +29,9 @@ function logout($redirect = '')
     return auth_instance()->logout($redirect); 
 }
 
-function create_user($login, $password, $fields = array(), $roles = array(), $groups = array())
+function register($username, $email, $password, $fields = array())
 {
-    return auth_instance()->create_user($login, $password, $fields, $roles, $groups);
+    return auth_instance()->create_user($username, $email, $password, $fields);
 }
 
 function update_user($user_id, $fields = array())
@@ -57,43 +57,12 @@ function delete_user($user_id)
 
 
 // ===========================================================
-// Has permission helper functions
-// ===========================================================
-
-function user_has_permission($user_id, $permission = '')
-{
-    return auth_instance()->user_has_permission($user_id, $permission);
-}
-
-function group_has_permission($group_id, $permission = '')
-{
-    return auth_instance()->group_has_permission($group_id, $permission);
-}
-
-function role_has_permission($role_id, $permission = '')
-{
-    return auth_instance()->role_has_permission($role_id, $permission);
-}
-
-// ===========================================================
-// End has permission helper functions
-// ===========================================================
-
-
-
-
-// ===========================================================
 // Id Functions
 // ===========================================================
 
 function get_user_id($username)
 {
     return auth_instance()->get_user_id($username); 
-}
-
-function get_group_id($group_name)
-{
-    return auth_instance()->get_group_id($group_name); 
 }
 
 function get_role_id($role_name)
@@ -122,9 +91,9 @@ function role_id_exists($role_id)
     return auth_instance()->role_id_exists($role_id);
 }
 
-function group_id_exists($group_id) 
+function role_name_exists($role_name) 
 {
-    return auth_instance()->group_id_exists($group_id);
+    return auth_instance()->role_name_exists($role_name);
 }
 
 function user_id_exists($user_id) 
@@ -150,120 +119,12 @@ function email_exists($email)
 
 
 // ===========================================================
-// Role functions
-// ===========================================================
-
-function add_role_to_group($group_id, $role_id)
-{
-    return auth_instance()->add_role_to_group($group_id, $role_id);
-}
-
-function remove_role_from_group($group_id, $role_id)
-{
-    return auth_instance()->remove_role_from_group($group_id, $role_id);
-}
-
-function get_user_roles($user_id = 0)
-{
-    return auth_instance()->get_user_roles($user_id);
-}
-
-function get_group_roles($group_id)
-{
-    return auth_instance()->get_group_roles($group_id);
-}
-
-// ===========================================================
-// End role functions
-// ===========================================================
-
-
-
-// ===========================================================
-// Group functions
-// ===========================================================
-
-function add_user_to_group($user_id, $group_id)
-{
-   return auth_instance()->add_user_to_group($user_id, $group_id);
-} 
-
-
-function remove_user_from_group($user_id, $group_id)
-{
-   return auth_instance()->remove_user_from_group($user_id, $group_id); 
-}
-
-// ===========================================================
-// End group functions
-// ===========================================================
-
-
-
-
-// ===========================================================
-// Permission functions
-// ===========================================================
-
-function add_permission($permission)
-{
-    return auth_instance()->add_permission($permission);
-}
-
-function remove_permission($permission)
-{
-    return auth_instance()->remove_permission($permission);
-}
-
-function add_permission_to_user($permission_id, $user_id)
-{
-    return auth_instance()->add_permission_to_user($permission_id, $user_id);
-}
-
-function remove_permission_from_user($permission_id, $user_id)
-{
-    return auth_instance()->remove_permission_from_user($permission_id, $user_id);
-}
-
-function add_permission_to_role($permission_id, $role_id)
-{
-    return auth_instance()->add_permission_to_role($permission_id, $role_id);
-}
-
-function remove_permission_from_role($permission_id, $role_id)
-{
-    return auth_instance()->remove_permission_from_role($permission_id, $role_id);
-}
-
-function add_permission_to_group($permission_id, $group_id)
-{
-    return auth_instance()->add_permission_to_group($permission_id, $group_id);
-}
-
-function remove_permission_from_group($permission_id, $group_id)
-{
-    return auth_instance()->remove_permission_from_group($permission_id, $group_id);
-}
-
-// ===========================================================
-// End permission functions
-// ===========================================================
-
-
-
-
-// ===========================================================
 // List functions functions
 // ===========================================================
 
 function list_users($count = 10000, $offset = 0)
 {
     return auth_instance()->list_users($count, $offset);
-}
-
-function list_groups($count = 10000, $offset = 0)
-{
-    return auth_instance()->list_groups($count, $offset);
 }
 
 function list_roles($count = 10000, $offset = 0)
