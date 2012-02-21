@@ -17,18 +17,31 @@ class Auth_Simpleauth extends CI_Driver {
 	
 	protected $CI;
 	
+	protected $errors   = array();
+	protected $messages = array();
+	
+	protected $login_destination = '/';
+	
 	protected $identity_method;
+	
 	protected $user_model;
+	protected $email_model;
 	
 	public function __construct()
 	{
 		$this->CI =& get_instance();
 		
+		// Clear any messages
+		$this->clear_messages();
+		
 		$this->CI->load->library('session');
 		$this->CI->load->database();
 		$this->CI->load->helper('cookie');
+		$this->ci->load->helper('string');
 		
-		$this->user_model = $this->CI->config->item('model.user', 'wolfauth');
+		$this->user_model      = $this->CI->config->item('model.user', 'wolfauth');
+		$this->email_model     = $this->CI->config->item('model.email', 'wolfauth');
+		$this->attempts_model  = $this->CI->config->item('model.attempts', 'wolfauth');
 		$this->identity_method = $this->CI->config->item('identity_method', 'wolfauth');
 		
 		// Load our ACL driver
@@ -38,6 +51,12 @@ class Auth_Simpleauth extends CI_Driver {
 		$this->CI->load->model($this->user_model);
 		
 		$this->do_you_remember_me();
+	}
+	
+	public function clear_messages()
+	{
+		$this->errors   = array();
+		$this->messages = array();
 	}
 	
 	public function login($identity, $password, $remember = FALSE)
@@ -112,6 +131,18 @@ class Auth_Simpleauth extends CI_Driver {
 		return $identity;					
 	}
 	
+    /**
+    * Reset Login Attempts
+    * Resets login attempts increment value
+    * in the database for a particular IP address.
+    * 
+    * @param mixed $ip_address
+    */
+    public function reset_login_attempts($ip_address = NULL)
+    {
+        $this->attempts_model->reset_login_attempts($ip_address);
+    }
+	
 	private function lets_remember_you($user_id)
 	{
 		$this->CI->load->library('encrypt');
@@ -174,4 +205,50 @@ class Auth_Simpleauth extends CI_Driver {
 			return FALSE;		
 		}
 	}
+	
+    /**
+    * Set Error
+    * Sets an error message
+    * 
+    * @param mixed $error
+    */
+    public function set_error($error)
+    {
+        $this->errors[] = $error;
+        
+        return $error;
+    }
+    
+    /**
+    * Set Message
+    * Sets a message
+    * 
+    * @param mixed $message
+    */
+    public function set_message($message)
+    {
+        $this->messages[] = $message;
+
+        return $message;
+    }
+	
+   /**
+    * Auth Errors
+    * Show any error messages relating to the auth class
+    * 
+    */
+    public function auth_errors()
+    {
+        return (!empty($this->errors)) ? $this->errors : FALSE;
+    }
+	
+   /**
+    * Auth Messages
+    * Show any messages relating to the auth class
+    * 
+    */
+    public function auth_messages()
+    {
+        return (!empty($this->messages)) ? $this->messages : FALSE;
+    }
 }

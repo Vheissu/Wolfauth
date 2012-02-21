@@ -32,7 +32,10 @@ class Auth_Acl extends CI_Driver {
 	
 	public function has_permission($permission)
 	{
-		
+        if ($permission == '') {
+			// The permission string by default is the whole URL string
+            $permission = trim($this->ci->uri->uri_string(), '/');
+		}
 	}
 
 }
