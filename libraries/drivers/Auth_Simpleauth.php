@@ -36,6 +36,7 @@ class Auth_Simpleauth extends CI_Driver {
 		
 		$this->CI->load->library('session');
 		$this->CI->load->database();
+		$this->CI->load->helper('wolfauth/auth');
 		$this->CI->load->helper('cookie');
 		$this->ci->load->helper('string');
 		
