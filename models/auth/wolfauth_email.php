@@ -36,7 +36,7 @@ class Wolfauth_email extends CI_Model {
         $data['forgot_code'] = $code;
         $data['reset_link']  = $this->config->item('reset_password_link', 'wolfauth');
         
-        $message = $this->load->view('wolfauth/emails/reset_password', $data, true);
+        $message = $this->load->view('auth/emails/reset_password', $data, true);
         
         $this->email->clear();
         $this->email->set_newline("\r\n");
@@ -59,7 +59,7 @@ class Wolfauth_email extends CI_Model {
         $data['email']    = $email;
         $data['password'] = $password;
         
-        $message = $this->load->view('wolfauth/emails/new_password', $data, true);
+        $message = $this->load->view('auth/emails/new_password', $data, true);
         
         $this->ci->email->clear();
         $this->ci->email->set_newline("\r\n");

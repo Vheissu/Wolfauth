@@ -65,10 +65,9 @@ class Auth_Simpleauth extends CI_Driver {
 		$user = $this->CI->{$this->user_model}->get($identity, $this->determine_identity($identity));
 		
 		if ( $user ) {
-
-			if ( $user['activated'] ) {
-				if ( $this->check_password($password, $user['password']) ) {
-					unset($user['password']);
+			if ( $user->activated == 'yes' ) {
+				if ( $this->check_password($password, $user->password) ) {
+					unset($user->password);
 					
 					$this->CI->session->set_userdata(array(
 						'user'     => $user,
@@ -76,12 +75,18 @@ class Auth_Simpleauth extends CI_Driver {
 					));
 					
 					if ( $remember ) {
-						$this->lets_remember_you($user['id']);
+						$this->lets_remember_you($user->id);
 					}
 					return TRUE;
 				}
+			} else {
+				$this->set_message('Your account is not activated');
+				return false;
 			}
-		}	
+		} else {
+			$this->set_message('A user matching that username or password could not be found');
+			return false;
+		}		
 	}
 
     public function register($username, $email, $password, $fields = array())
@@ -98,7 +103,7 @@ class Auth_Simpleauth extends CI_Driver {
 		$this->CI->load->helper('cookie');
 		delete_cookie($this->config->item('cookie.name', 'wolfauth'));
 		
-		$this->CI->{$this->user_model}->update_user(array('remember_me' => ''), $user['id']);
+		$this->CI->{$this->user_model}->update_user(array('remember_me' => ''), $user->id);
 		
         $this->CI->session->set_userdata('logged_in', FALSE);
         $this->CI->session->set_userdata('user', FALSE);
@@ -112,7 +117,7 @@ class Auth_Simpleauth extends CI_Driver {
     public function get_user_id() 
     {
         $user = $this->CI->session->userdata('user');
-        return $user['id'];
+        return $user->id;
     }	
 	
 	public function determine_identity($identity)
@@ -141,7 +146,7 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function reset_login_attempts($ip_address = NULL)
     {
-        $this->attempts_model->reset_login_attempts($ip_address);
+        $this->{attempts_model}->reset_login_attempts($ip_address);
     }
 	
 	private function lets_remember_you($user_id)
@@ -149,7 +154,7 @@ class Auth_Simpleauth extends CI_Driver {
 		$this->CI->load->library('encrypt');
 
 		$token = md5(uniqid(rand(), TRUE));
-		$timeout = $this->config->item('cookie.expiry', 'wolfauth'); // One week
+		$timeout = $this->config->item('cookie.expiry', 'wolfauth');
 
 		$remember_me = $this->CI->encrypt->encode($user_id.'//'.$token.'//'.(time() + $timeout));
 
