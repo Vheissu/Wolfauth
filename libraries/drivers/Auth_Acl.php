@@ -23,11 +23,11 @@ class Auth_Acl extends CI_Driver {
 		$this->CI =& get_instance();
 		
 		// Load our helpers for permissions and roles
-		$this->CI->load->helper('wolfauth/auth_permissions');
-		$this->CI->load->helper('wolfauth/auth_roles');
+		$this->CI->load->helper('auth/auth_permissions');
+		$this->CI->load->helper('auth/auth_roles');
 		
-		$this->CI->load->model('wolfauth/wolfauth_permissions');
-		$this->CI->load->model('wolfauth/wolfauth_roles');
+		$this->CI->load->model('auth/wolfauth_permissions');
+		$this->CI->load->model('auth/wolfauth_roles');
 	}
 	
 	public function has_permission($permission)

@@ -39,10 +39,10 @@ $config['cookie.name'] = "wolfauth";
 $config['cookie.expiry'] = 604800;
 
 // Wolfauth models
-$config['model.user']     = "wolfauth/wolfauth_users";
-$config['model.email']    = "wolfauth/wolfauth_email";
-$config['model.attempts'] = "wolfauth/wolfauth_attempts";
-$config['model.acl']      = "wolfauth/wolfauth_acl";
+$config['model.user']     = "auth/wolfauth_users";
+$config['model.email']    = "auth/wolfauth_email";
+$config['model.attempts'] = "auth/wolfauth_attempts";
+$config['model.acl']      = "auth/wolfauth_acl";
 
 // Wolfauth table names
 $config['table.users']       = "users";
