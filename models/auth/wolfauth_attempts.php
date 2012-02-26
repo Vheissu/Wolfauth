@@ -29,41 +29,37 @@ class Wolfauth_attempts extends CI_Model {
     */
     public function update_login_attempts($ip_address = NULL)
     {
-        if (is_null($ip_address))
+        if (is_null($ip_address)) {
             $ip_address = $this->ip_address;
+        }
             
-        $a = new Attempt();
-        $a->where('ip_address', $ip_address)->get();
+        $exists = $this->db->get_where($this->config->item('table.attempts', 'wolfauth'), array('ip_address' => $ip_address));
         
-        if ( $a->exists() )
-        {
+        if ( $exists->num_rows() >= 1 ) {
+            $exists = $exists->row();
             $current_time = time();
-            $created      = strtotime($a->created);
+            $created      = strtotime($exists->created);
             
             // Minutes comparison
             $minutes      = floor($current_time - $created / 60);
             
 	        // If current time elapsed between creation is greater than the attempts, reset
-            if (($current_time - $created) > $this->config['auth.login_attempts_expiry'])
-            {
+            if (($current_time - $created) > $this->config->item('attempts.expiry', 'wolfauth')) {
                 $this->reset_login_attempts($ip_address);
+
                 // add the first attempt after reset them
-                $a = $a->get_copy();
-                $a->ip_address = $ip_address;
-	            $a->attempts   = 1;
-	            $a->save();
-            }
-            else{
+                $insert = $this->db->insert($this->config->item('attempts.expiry', 'wolfauth'), array('ip_address' => $ip_address, 'attempts' => 1));
+
+                return $insert->affected_rows();
+            } else {
 	            // Increment new attempts
-	            $a->attempts += 1;
-	            $a->save();
+                $this->db->set('attempts', 'attempts + 1', FALSE);
+                $this->db->set('ip_address', $ip_address);
+                $insert = $this->db->update($this->config->item('attempts.expiry', 'wolfauth'));
             }
-        }
-        else
-        {
-            $a->ip_address = $ip_address;
-            $a->attempts   = 1;
-            $a->save();
+        } else {
+            $insert = $this->db->insert($this->config->item('attempts.expiry', 'wolfauth'), array('ip_address' => $ip_address, 'attempts' => 1));
+            return $insert->affected_rows();
         }
     }
 	

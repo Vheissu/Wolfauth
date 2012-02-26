@@ -39,23 +39,28 @@ $config['cookie.name'] = "wolfauth";
 $config['cookie.expiry'] = 604800;
 
 // Wolfauth models
-$config['model.user']     = "auth/wolfauth_users";
-$config['model.email']    = "auth/wolfauth_email";
-$config['model.attempts'] = "auth/wolfauth_attempts";
-$config['model.acl']      = "auth/wolfauth_acl";
+$config['model.attempts']    = "auth/wolfauth_attempts";
+$config['model.email']       = "auth/wolfauth_email";
+$config['model.permissions'] = "auth/wolfauth_permissions";
+$config['model.roles']       = "auth/wolfauth_roles";
+$config['model.user']        = "auth/wolfauth_users";
 
 // Wolfauth table names
 $config['table.users']       = "users";
+$config['table.usermeta']    = "user_meta";
 $config['table.roles']       = "roles";
-$config['table.attempts']    = "attempts";
+$config['table.attempts']    = "login_attempts";
 $config['table.permissions'] = "permissions";
-$config['table.sessions']    = "sessions";
+$config['table.sessions']    = "ci_sessions";
 
 // Admin roles by default
-$config['roles.admin'] = array('administrator');
+$config['roles.admin'] = array('admin');
 
 // Roles which identify a guest (should usually only be one)
 $config['roles.guest'] = array('guest');
+
+// Attempts expiry in seconds (15 minutes)
+$config['attempts.expiry'] = 900;
 
 // Require users to activate their accounts via an email link
 $config['require_activation'] = false;

@@ -31,14 +31,19 @@ class Auth extends CI_Driver_Library {
 		
 		$this->valid_drivers = $this->CI->config->item('drivers', 'wolfauth');
 	}
-	
+
+    /*
+     * Set Driver
+     * Sets a driver to use
+     * @param $name
+     */
 	public function set_driver($name)
 	{
 		// Set the driver name, trim whitespace
 		$this->_driver = trim($name);
 	}
 	
-	/**
+	/*
 	 * Login
 	 * Base function for logging in a user
 	 * @param $identity (username or email)
@@ -51,17 +56,16 @@ class Auth extends CI_Driver_Library {
 		return $this->{$this->_driver}->login($identity, $password, $remember);
 	}
 	
-	/**
-	 * Logout
-	 * Destroys the session completely and logs us out
-	 *
-	 */
+    /*
+     * Logout
+     * Logs a user out
+     */
 	public function logout()
 	{
 		return $this->{$this->_driver}->logout();
 	}
 	
-	/**
+	/*
 	 * Logged In
 	 * Is a user currently logged in
 	 *
@@ -71,7 +75,7 @@ class Auth extends CI_Driver_Library {
 		return $this->{$this->_driver}->logged_in();
 	}
 	
-	/**
+	/*
 	 * Get User ID
 	 * Get current user ID
 	 *
@@ -80,14 +84,22 @@ class Auth extends CI_Driver_Library {
 	{
 		return $this->{$this->_driver}->get_user_id();
 	}
-	
+
+    /*
+     * Register
+     * @param $username
+     * @param $email
+     * @param $password
+     * @param array $fields
+     * @return mixed
+     */
 	public function register($username, $email, $password, $fields = array())
 	{
 		// Call the child register function
 		return $this->{$this->_driver}->register($username, $email, $password, $fields);
 	}
 	
-    /**
+    /*
     * Auth Instance
     * Static function wrapper for auth drivers
     * 
@@ -102,11 +114,11 @@ class Auth extends CI_Driver_Library {
 
 }
 
-/**
-* Auth Instance
-* Function shortcut to the proper auth instance
-* 
-*/
+/*
+ * Auth Instance
+ * Function shortcut to the proper auth instance
+ *
+ */
 function auth_instance()
 {
     return Auth::auth_instance();

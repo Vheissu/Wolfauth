@@ -16,7 +16,10 @@
 class Auth_Acl extends CI_Driver {
 	
 	protected $CI;
-	
+
+    protected $permissions_model;
+    protected $roles_model;
+
 	public function __construct()
 	{
 		// Codeigniter instance
@@ -26,16 +29,37 @@ class Auth_Acl extends CI_Driver {
 		$this->CI->load->helper('auth/auth_permissions');
 		$this->CI->load->helper('auth/auth_roles');
 		
-		$this->CI->load->model('auth/wolfauth_permissions');
-		$this->CI->load->model('auth/wolfauth_roles');
+		$this->CI->load->model($this->CI->config->item('model.permissions', 'wolfauth'));
+		$this->CI->load->model($this->CI->config->item('model.roles', 'wolfauth'));
 	}
-	
-	public function has_permission($permission)
+
+    /**
+     * Has Permission
+     * Checks if a user has permission to access the current resource
+     * @param $permission
+     */
+	public function has_permission($permission = '')
 	{
+
+        // If we have no permission check current URL
         if ($permission == '') {
+
 			// The permission string by default is the whole URL string
-            $permission = trim($this->ci->uri->uri_string(), '/');
+            $permission = trim($this->CI->uri->uri_string(), '/');
 		}
+
+        return $this->CI->wolfauth_permissions->has_permission($permission);
 	}
+
+    /**
+     * Add Permission
+     * Adds a permission to a role
+     * @param $role_id
+     * @param $permission
+     */
+    public function add_permission($role_id, $permission)
+    {
+        return $this->CI->wolfauth_permissions->add_permission($role_id, $permission);
+    }
 
 }

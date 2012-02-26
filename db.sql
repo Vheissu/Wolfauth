@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50516
 File Encoding         : 65001
 
-Date: 2012-02-23 23:12:56
+Date: 2012-02-26 21:59:09
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -39,11 +39,27 @@ DROP TABLE IF EXISTS `login_attempts`;
 CREATE TABLE `login_attempts` (
   `id` bigint(50) unsigned NOT NULL AUTO_INCREMENT,
   `ip_address` varchar(120) DEFAULT NULL,
+  `attempts` int(5) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of login_attempts
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for `permissions`
+-- ----------------------------
+DROP TABLE IF EXISTS `permissions`;
+CREATE TABLE `permissions` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `role_id` int(10) NOT NULL,
+  `permission` varchar(120) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- ----------------------------
+-- Records of permissions
 -- ----------------------------
 
 -- ----------------------------
@@ -53,15 +69,21 @@ DROP TABLE IF EXISTS `roles`;
 CREATE TABLE `roles` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `role_id` int(10) NOT NULL,
-  `name` varchar(120) NOT NULL,
-  `slug` varchar(150) NOT NULL,
+  `role_name` varchar(120) NOT NULL,
+  `role_slug` varchar(150) NOT NULL,
   PRIMARY KEY (`id`,`role_id`),
   UNIQUE KEY `Unique Role ID` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of roles
 -- ----------------------------
+INSERT INTO roles VALUES ('1', '0', 'Guest User', 'guest');
+INSERT INTO roles VALUES ('2', '1', 'Standard User', 'user');
+INSERT INTO roles VALUES ('3', '2', 'Editor', 'editor');
+INSERT INTO roles VALUES ('4', '3', 'Super Editor', 'super_editor');
+INSERT INTO roles VALUES ('5', '4', 'Administrator', 'admin');
+INSERT INTO roles VALUES ('6', '5', 'Super Admin', 'super_admin');
 
 -- ----------------------------
 -- Table structure for `users`
