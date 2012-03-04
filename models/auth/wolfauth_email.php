@@ -19,8 +19,8 @@ class Wolfauth_email extends CI_Model {
 	{
 		parent::__construct();
 		
-		$this->ci->load->helper('email');
-		$this->ci->load->library('email');
+		$this->load->helper('email');
+		$this->load->library('email');
 	}
 	
     /**

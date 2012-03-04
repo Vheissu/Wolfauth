@@ -27,9 +27,15 @@ class Auth extends CI_Driver_Library {
 	public function __construct( $params = array() )
 	{
 		$this->CI =& get_instance();
+		
+		$this->CI->load->helper('form');
+		$this->CI->load->helper('url');
+		
 		$this->CI->config->load('wolfauth', TRUE);
 		
 		$this->valid_drivers = $this->CI->config->item('drivers', 'wolfauth');
+		
+		$this->_driver = $this->CI->config->item('default_driver', 'wolfauth');
 	}
 
     /*

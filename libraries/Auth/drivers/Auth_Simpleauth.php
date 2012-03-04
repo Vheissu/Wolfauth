@@ -35,12 +35,9 @@ class Auth_Simpleauth extends CI_Driver {
 		$this->CI->load->database();
 		$this->CI->load->helper('auth/auth');
 		$this->CI->load->helper('cookie');
-		$this->ci->load->helper('string');
+		$this->CI->load->helper('string');
 
 		$this->identity_method = $this->CI->config->item('identity_method', 'wolfauth');
-		
-		// Load our ACL driver
-		$this->CI->load->driver('wolfauth_acl');
 		
 		// Load needed models and stuff
 		$this->CI->load->model($this->CI->config->item('model.user', 'wolfauth'));
@@ -167,7 +164,7 @@ class Auth_Simpleauth extends CI_Driver {
 	{
 		$this->CI->load->library('encrypt');
 		
-		if ( $cookie = get_cookie($this->config->item('cookie.name', 'wolfauth')) ) {
+		if ( $cookie = get_cookie($this->CI->config->item('cookie.name', 'wolfauth')) ) {
 			$user_id = '';
 			$token = '';
 			$timeout = '';

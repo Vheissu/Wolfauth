@@ -95,7 +95,7 @@ class Wolfauth_users extends CI_Model {
 			$fields['password'] = $this->generate_password($fields['password']);
 		}
 		
-		return ($this->db->update($this->config->item('table.users', 'wolfauth'), $fields) ? TRUE : FALSE; 
+		return ($this->db->update($this->config->item('table.users', 'wolfauth'), $fields)) ? TRUE : FALSE; 
 	}
 	
 	public function delete_user($user_id = '')
