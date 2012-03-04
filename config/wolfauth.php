@@ -17,7 +17,7 @@
 $config['drivers'] = array('auth_acl', 'auth_simpleauth');
 
 // Default driver to use
-$config['default_driver'] = "auth_simpleauth";
+$config['default_driver'] = "simpleauth";
 
 // Identity to valid by; 'username', 'email' or 'auto' - auto will determine if a username or email
 $config['identity_method'] = "auto";
