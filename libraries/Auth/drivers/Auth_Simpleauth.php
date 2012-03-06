@@ -81,12 +81,13 @@ class Auth_Simpleauth extends CI_Driver {
 		}		
 	}
 
-    public function register($username, $email, $password, $fields = array())
+    public function register($fields, $extra_fields = array())
     {
     	// Check the user doesn't exist already
-		if ( ! $this->CI->wolfauth_users->user_exists($username) )
+		if ( ! $this->CI->wolfauth_users->user_exists($fields['username']) )
 		{
-			
+            // Insert the user
+            return $this->CI->wolfauth_users->insert_user($fields, $extra_fields);
 		}
 		
 		$this->set_message('A user with that username already exists');

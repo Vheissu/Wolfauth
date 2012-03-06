@@ -93,16 +93,14 @@ class Auth extends CI_Driver_Library {
 
     /*
      * Register
-     * @param $username
-     * @param $email
-     * @param $password
-     * @param array $fields
+     * @param $fields
+     * @param array $extra_fields
      * @return mixed
      */
-	public function register($username, $email, $password, $fields = array())
+	public function register($fields, $extra_fields = array())
 	{
 		// Call the child register function
-		return $this->{$this->_driver}->register($username, $email, $password, $fields);
+		return $this->{$this->_driver}->register($fields, $extra_fields);
 	}
 	
     /*

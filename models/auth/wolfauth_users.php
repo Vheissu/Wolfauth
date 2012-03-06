@@ -75,14 +75,17 @@ class Wolfauth_users extends CI_Model {
 
 	}
 	
-	public function insert_user($user_data = array())
+	public function insert_user($fields, $extra_fields)
 	{
-		if ( isset($user_data['password']) )
+		if ( isset($fields['password']) )
 		{
-			$user_data['password'] = $this->generate_password($user_data['password']);
+            $fields['password'] = $this->generate_password($fields['password']);
 		}
 
-		return ($this->db->insert($this->config->item('table.users', 'wolfauth'), $user_data)) ? $this->db->insert_id() : FALSE;
+        // Merge the arrays
+        $fields = array_merge($fields, $extra_fields);
+
+		return ($this->db->insert($this->config->item('table.users', 'wolfauth'), $fields)) ? $this->db->insert_id() : FALSE;
 	}
 	
 	public function update_user($fields = array(), $user_id)
