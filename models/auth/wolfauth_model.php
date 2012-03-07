@@ -41,7 +41,7 @@ class Wolfauth_model extends CI_Model {
      */
     public function user_exists($username)
     {
-        return ( $this->get_user($username, 'username') ) ? TRUE : FALSE;
+        return ( $this->get_user_by_username($username) ) ? TRUE : FALSE;
     }
 
     /**
@@ -53,25 +53,55 @@ class Wolfauth_model extends CI_Model {
      */
     public function email_exists($email)
     {
-        return ( $this->get_user($email, 'email') ) ? TRUE : FALSE;
+        return ( $this->get_user_by_email($email) ) ? TRUE : FALSE;
     }
 
     /**
-     * GetUser
-     * Gets a user object
+     * Count Users
+     * Count the number of users in the database
      *
-     * @param string $needle
-     * @param string $haystack
-     * @return bool
+     * @return mixed
      */
-	public function get_user($needle = '', $haystack = 'email')
-	{
-		$this->db->where($haystack, $needle);
+    public function count_users()
+    {
+        return $this->db->count_all($this->config->item('table.users', 'wolfauth'));
+    }
 
-		$user = $this->db->get($this->config->item('table.users', 'wolfauth'));
+    /**
+     * Get User By Username
+     * Gets a user from the database via their username
+     *
+     * @param string $username
+     * @return mixed
+     */
+    public function get_user_by_username($username = '')
+    {
+        return $this->_get_user($username, 'username');
+    }
 
-        return ( $user->num_rows() >= 1 ) ? $user->result() : FALSE;
-	}
+    /**
+     * Get User By ID
+     * Gets a user from the database via their user ID
+     *
+     * @param string $id
+     * @return mixed
+     */
+    public function get_user_by_id($id = '')
+    {
+        return $this->_get_user($id, 'id');
+    }
+
+    /**
+     * Get User By Email
+     * Get a user via their email
+     *
+     * @param string $email
+     * @return mixed
+     */
+    public function get_user_by_email($email = '')
+    {
+        return $this->_get_user($email, 'email');
+    }
 
     /**
      * Insert User
@@ -87,16 +117,7 @@ class Wolfauth_model extends CI_Model {
             $fields['password'] = $this->generate_password($fields['password']);
 		}
 
-		$insert = $this->db->insert($this->config->item('table.users', 'wolfauth'), $fields)->insert_id();
-
-        // If the user inserted okay and no extra fields to add
-        if ($insert)
-        {
-            // Return user ID
-            return $insert;
-        }
-
-        return FALSE;
+		return ($this->db->insert($this->config->item('table.users', 'wolfauth'), $fields)) ? $this->db->insert_id() : FALSE;
 	}
 
     /**
@@ -113,7 +134,8 @@ class Wolfauth_model extends CI_Model {
 		$this->db->where('id', $user_id);
 		
 		// If we have a password to update!
-		if ($fields['password']) {
+		if ($fields['password'])
+        {
 			$fields['password'] = $this->generate_password($fields['password']);
 		}
 		
@@ -326,5 +348,22 @@ class Wolfauth_model extends CI_Model {
 
 		return do_hash($password);
 	}
+
+    /**
+     * _Get User
+     * Protected utility function for getting user info
+     *
+     * @param string $needle
+     * @param string $haystack
+     * @return mixed
+     */
+    protected function _get_user($needle = '', $haystack = 'username')
+    {
+        $this->db->where($haystack, $needle);
+
+        $user = $this->db->get($this->config->item('table.users', 'wolfauth'));
+
+        return ($user->num_rows() == 1) ? $user : FALSE;
+    }
 
 }
