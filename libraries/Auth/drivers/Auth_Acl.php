@@ -29,8 +29,7 @@ class Auth_Acl extends CI_Driver {
 		$this->CI->load->helper('auth/auth_permissions');
 		$this->CI->load->helper('auth/auth_roles');
 		
-		$this->CI->load->model($this->CI->config->item('model.permissions', 'wolfauth'));
-		$this->CI->load->model($this->CI->config->item('model.roles', 'wolfauth'));
+		$this->CI->load->model('auth/acl_m');
 	}
 
     /**
@@ -48,7 +47,7 @@ class Auth_Acl extends CI_Driver {
             $permission = trim($this->CI->uri->uri_string(), '/');
 		}
 
-        return $this->CI->wolfauth_permissions->has_permission($permission);
+        return $this->CI->acl_m->has_permission($permission);
 	}
 
     /**
@@ -59,7 +58,7 @@ class Auth_Acl extends CI_Driver {
      */
     public function add_permission($role_id, $permission)
     {
-        return $this->CI->wolfauth_permissions->add_permission($role_id, $permission);
+        return $this->CI->acl_m->add_permission($role_id, $permission);
     }
 
 }

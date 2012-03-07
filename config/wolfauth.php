@@ -38,13 +38,6 @@ $config['cookie.name'] = "wolfauth";
 // Default is 7 days
 $config['cookie.expiry'] = 604800;
 
-// Wolfauth models
-$config['model.attempts']    = "auth/wolfauth_attempts";
-$config['model.email']       = "auth/wolfauth_email";
-$config['model.permissions'] = "auth/wolfauth_permissions";
-$config['model.roles']       = "auth/wolfauth_roles";
-$config['model.user']        = "auth/wolfauth_users";
-
 // Wolfauth table names
 $config['table.users']       = "users";
 $config['table.usermeta']    = "user_meta";

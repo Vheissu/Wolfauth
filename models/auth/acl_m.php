@@ -13,7 +13,7 @@
  * @version   2.0
  */
 
-class Wolfauth_permissions extends CI_Model {
+class Acl_m extends CI_Model {
 	
 	public function __construct()
 	{

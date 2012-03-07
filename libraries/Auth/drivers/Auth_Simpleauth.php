@@ -40,8 +40,7 @@ class Auth_Simpleauth extends CI_Driver {
 		$this->identity_method = $this->CI->config->item('identity_method', 'wolfauth');
 		
 		// Load needed models and stuff
-		$this->CI->load->model($this->CI->config->item('model.user', 'wolfauth'));
-		$this->CI->load->model($this->CI->config->item('model.email', 'wolfauth'));
+		$this->CI->load->model('auth/core_m');
 
 		$this->do_you_remember_me();
 	}
@@ -54,7 +53,7 @@ class Auth_Simpleauth extends CI_Driver {
 	
 	public function login($identity, $password, $remember = FALSE)
 	{
-		$user = $this->CI->wolfauth_users->get($identity, $this->determine_identity($identity));
+		$user = $this->CI->core_m->get($identity, $this->determine_identity($identity));
 		
 		if ( $user ) {
 			if ( $user->activated == 'yes' ) {
@@ -84,10 +83,10 @@ class Auth_Simpleauth extends CI_Driver {
     public function register($fields, $extra_fields = array())
     {
     	// Check the user doesn't exist already
-		if ( ! $this->CI->wolfauth_users->user_exists($fields['username']) )
+		if ( ! $this->CI->core_m->user_exists($fields['username']) )
 		{
             // Insert the user
-            return $this->CI->wolfauth_users->insert_user($fields, $extra_fields);
+            return $this->CI->core_m->insert_user($fields, $extra_fields);
 		}
 		
 		$this->set_message('A user with that username already exists');
@@ -104,7 +103,7 @@ class Auth_Simpleauth extends CI_Driver {
 		$this->CI->load->helper('cookie');
 		delete_cookie($this->config->item('cookie.name', 'wolfauth'));
 		
-		$this->CI->wolfauth_users->update_user(array('remember_me' => ''), $user->id);
+		$this->CI->core_m->update_user(array('remember_me' => ''), $user->id);
 		
         $this->CI->session->set_userdata('logged_in', FALSE);
         $this->CI->session->set_userdata('user', FALSE);
@@ -147,7 +146,7 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function reset_login_attempts($ip_address = NULL)
     {
-        $this->{attempts_model}->reset_login_attempts($ip_address);
+        $this->core_m->reset_login_attempts($ip_address);
     }
 	
 	private function lets_remember_you($user_id)
@@ -166,7 +165,7 @@ class Auth_Simpleauth extends CI_Driver {
 		);
 
 		set_cookie($cookie);
-		$this->CI->wolfauth_users->update_user(array('remember_me' => $remember_me), $user_id);
+		$this->CI->core_m->update_user(array('remember_me' => $remember_me), $user_id);
 	}
 	
 	private function do_you_remember_me()
@@ -194,7 +193,7 @@ class Auth_Simpleauth extends CI_Driver {
 					return FALSE;
 				}
 				
-				if ( $user = $this->CI->wolfauth_users->get($user_id, 'id') ) {
+				if ( $user = $this->CI->core_m->get($user_id, 'id') ) {
 					// Fill the session and renew the remember me cookie
 					$this->CI->session->set_userdata(array(
 						'user'		=> $user,

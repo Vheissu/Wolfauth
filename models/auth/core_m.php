@@ -13,11 +13,13 @@
  * @version   2.0
  */
 
-class Wolfauth_users extends CI_Model {
+class Core_m extends CI_Model {
 	
 	public function __construct()
 	{
-		parent::__construct();	
+		parent::__construct();
+		$this->load->helper('email');
+		$this->load->library('email');		
 	}
 	
 	public function get_user_password_reset($id = '', $passkey = '')
@@ -176,6 +178,110 @@ class Wolfauth_users extends CI_Model {
 
 		return ($this->db->affected_rows() > 0) ? TRUE : FALSE;
 	}
+	
+    /**
+    * Update Login Attempts
+    * Used by the login function when a user attempts to login
+    * unsuccessfully.
+    * 
+    * @param mixed $ip_address
+    */
+    public function update_login_attempts($ip_address = NULL)
+    {
+        if (is_null($ip_address)) {
+            $ip_address = $this->ip_address;
+        }
+            
+        $exists = $this->db->get_where($this->config->item('table.attempts', 'wolfauth'), array('ip_address' => $ip_address));
+        
+        if ( $exists->num_rows() >= 1 ) {
+            $exists = $exists->row();
+            $current_time = time();
+            $created      = strtotime($exists->created);
+            
+            // Minutes comparison
+            $minutes      = floor($current_time - $created / 60);
+            
+	        // If current time elapsed between creation is greater than the attempts, reset
+            if (($current_time - $created) > $this->config->item('attempts.expiry', 'wolfauth')) {
+                $this->reset_login_attempts($ip_address);
+
+                // add the first attempt after reset them
+                $insert = $this->db->insert($this->config->item('attempts.expiry', 'wolfauth'), array('ip_address' => $ip_address, 'attempts' => 1));
+
+                return $insert->affected_rows();
+            } else {
+	            // Increment new attempts
+                $this->db->set('attempts', 'attempts + 1', FALSE);
+                $this->db->set('ip_address', $ip_address);
+                $insert = $this->db->update($this->config->item('attempts.expiry', 'wolfauth'));
+            }
+        } else {
+            $insert = $this->db->insert($this->config->item('attempts.expiry', 'wolfauth'), array('ip_address' => $ip_address, 'attempts' => 1));
+            return $insert->affected_rows();
+        }
+    }
+	
+    /**
+    * Reset Login Attempts
+    * Resets login attempts increment value
+    * in the database for a particular IP address.
+    * 
+    * @param mixed $ip_address
+    */
+    public function reset_login_attempts($ip_address)
+    {
+		$this->db->where('ip_address', $ip_address);
+		$this->db->delete($this->config->item('table.attempts', 'wolfauth'));
+    }
+	
+    /**
+    * Email Forgot Password
+    * If a user forgets their password, they can send themselves
+    * an email to reset their password.
+    * 
+    * @param mixed $email
+    */
+    public function email_forgot_password($email, $code)
+    {
+        $data['email']       = $email;
+        $data['forgot_code'] = $code;
+        $data['reset_link']  = $this->config->item('reset_password_link', 'wolfauth');
+        
+        $message = $this->load->view('auth/emails/reset_password', $data, true);
+        
+        $this->email->clear();
+        $this->email->set_newline("\r\n");
+        $this->email->from($this->config->item('admin_email', 'wolfauth'), $this->config->item('site_name', 'wolfauth'));
+        $this->email->to($email);
+        $this->email->subject($this->config->item('site_name', 'wolfauth') . ' - Forgotten Password Verification');
+        $this->email->message($message);
+		
+		return ( $this->email->send() ) ? TRUE : FALSE;  
+    }
+	
+    /**
+    * Email New Password
+    * Send a newly generated password to the user
+    * 
+    * @param mixed $email
+    */
+    public function email_new_password($email, $password)
+    {
+        $data['email']    = $email;
+        $data['password'] = $password;
+        
+        $message = $this->load->view('auth/emails/new_password', $data, true);
+        
+        $this->ci->email->clear();
+        $this->ci->email->set_newline("\r\n");
+        $this->ci->email->from($this->config->item('admin_email', 'wolfauth'), $this->config->item('site_name', 'wolfauth'));
+        $this->ci->email->to($email);
+        $this->ci->email->subject($this->config->item('site_name', 'wolfauth') . ' - Forgotten Password Request');
+        $this->ci->email->message($message);
+		
+		return ( $this->ci->email->send() ) ? TRUE : FALSE; 
+    }
 
     /**
      * Generate Password
