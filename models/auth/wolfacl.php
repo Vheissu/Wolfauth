@@ -13,7 +13,7 @@
  * @version   2.0
  */
 
-class Acl_m extends CI_Model {
+class Wolfacl extends CI_Model {
 	
 	public function __construct()
 	{

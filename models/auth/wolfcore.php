@@ -13,7 +13,7 @@
  * @version   2.0
  */
 
-class Core_m extends CI_Model {
+class Wolfcore extends CI_Model {
 	
 	public function __construct()
 	{

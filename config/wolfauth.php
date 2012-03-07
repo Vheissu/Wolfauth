@@ -14,7 +14,7 @@
  */
 
 // Valid drivers for Wolfauth, add in 3rd party driver names here
-$config['drivers'] = array('auth_acl', 'auth_simpleauth');
+$config['drivers'] = array('auth_simpleauth');
 
 // Default driver to use
 $config['default_driver'] = "simpleauth";
