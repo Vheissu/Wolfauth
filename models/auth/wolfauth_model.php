@@ -325,6 +325,7 @@ class Wolfauth_model extends CI_Model {
      * Has the current user got permission to access this resource?
      *
      * @param $permission
+     * @return bool
      */
     public function has_permission($permission = '')
     {
@@ -335,7 +336,11 @@ class Wolfauth_model extends CI_Model {
             $permission = trim($this->uri->uri_string(), '/');
         }
 
-        $this->db->select('');
+        $user = $this->get_user();
+
+        $this->db->select('permissions.permission')->where('role_id', $user->role_id)->get($this->config->item('table.permissions', 'wolfauth'));
+
+        return ($this->db->num_rows() == 1) ? TRUE : FALSE;
     }
 
     /**
