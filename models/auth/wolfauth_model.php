@@ -104,7 +104,32 @@ class Wolfauth_model extends CI_Model {
     }
 
     /**
+     * Get Users
+     *
+     * Returns all users
+     *
+     * @param	$limit mixed
+     * @param	$offset int
+     * @return	object
+     */
+    public function get_users($limit = 10, $offset = 0)
+    {
+        $fields = 'users.id, users.email, users.first_name, users.last_name, users.activated, users.joined, roles.id AS role_id, roles.role_name, roles.role_slug';
+
+        if ($limit != '*')
+        {
+            $this->db->limit($limit, $offset);
+        }
+
+        $this->db->select($fields);
+        $this->db->join($this->config->item('table.roles', 'wolfauth'), 'users.role_id = roles.id');
+
+        return $this->db->get($this->config->item('table.users', 'wolfauth'));
+    }
+
+    /**
      * Insert User
+     *
      * Inserts a user and any meta into the database
      *
      * @param $fields
