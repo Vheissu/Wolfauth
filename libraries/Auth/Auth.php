@@ -103,6 +103,19 @@ class Auth extends CI_Driver_Library {
 		return $this->{$this->_driver}->register($fields, $extra_fields);
 	}
 	
+	/**
+	* Redirect all method calls not in this class to the child class
+	* set in the variable _adapter which is the default class.
+	*
+	* @param mixed $child
+	* @param mixed $arguments
+	* @return mixed
+	*/
+    public function __call($child, $arguments)
+    {
+        return call_user_func_array(array($this->{$this->_driver}, $child), $arguments);
+    }
+	
     /*
     * Auth Instance
     * Static function wrapper for auth drivers
