@@ -21,6 +21,26 @@ class Wolfauth_model extends CI_Model {
 		$this->load->helper('email');
 		$this->load->library('email');		
 	}
+
+    /**
+     * Logout
+     *
+     * Logs a user out
+     */
+    public function logout()
+    {
+        $user = $this->get_user();
+
+        $this->session->sess_destroy();
+
+        $this->load->helper('cookie');
+        delete_cookie($this->config->item('cookie.name', 'wolfauth'));
+
+        $this->update_user(array('remember_me' => ''), $user->id);
+
+        $this->session->set_userdata('logged_in', FALSE);
+        $this->session->set_userdata('user', FALSE);
+    }
 	
 	public function get_user_password_reset($id = '', $passkey = '')
 	{
@@ -242,6 +262,31 @@ class Wolfauth_model extends CI_Model {
             return $insert->affected_rows();
         }
     }
+
+    /**
+     * Set Login
+     *
+     * Sets login session info
+     *
+     * @param $user
+     * @param bool $remember
+     * @return bool
+     */
+    public function set_login($user, $remember = false)
+    {
+        unset($user->password);
+
+        $this->session->set_userdata(array(
+            'user'     => $user,
+            'logged_in' => TRUE
+        ));
+
+        if ($remember)
+        {
+            $this->set_remember_me($user->id);
+        }
+        return TRUE;
+    }
 	
     /**
      * Reset Login Attempts
@@ -274,6 +319,24 @@ class Wolfauth_model extends CI_Model {
         return ($this->db->num_rows() == 1) ? TRUE : FALSE;
     }
 
+    /**
+     * Has Permission
+     *
+     * Has the current user got permission to access this resource?
+     *
+     * @param $permission
+     */
+    public function has_permission($permission = '')
+    {
+        // If we have no permission check current URL
+        if ($permission == '')
+        {
+            // The permission string by default is the whole URL string
+            $permission = trim($this->uri->uri_string(), '/');
+        }
+
+        $this->db->select('');
+    }
 
     /**
       * Add Permission
@@ -386,9 +449,41 @@ class Wolfauth_model extends CI_Model {
     }
 
     /**
+     * Check Password
+     *
+     * Checks a password and salt to ensure it matches
+     *
+     * @param $password
+     * @param $old_password
+     * @param $salt
+     * @return bool
+     */
+    public function check_password($password, $old_password, $salt)
+    {
+        $salted = $this->generate_password($password.$salt);
+
+        return ($salted == $old_password) ? TRUE : FALSE;
+    }
+
+    /**
+     * Generate Salt
+     *
+     * Generate a password salt value
+     *
+     * @param int $length
+     * @return mixed
+     */
+    public function generate_salt($length = 8)
+    {
+        $this->load->helper('string');
+
+        return random_string('alnum', $length);
+    }
+
+    /**
      * Generate Password
      *
-     * Generates a password
+     * Generates a random password or hashes one
      *
      * @param string $password
      * @return mixed
@@ -406,6 +501,143 @@ class Wolfauth_model extends CI_Model {
 
 		return do_hash($password);
 	}
+
+    /**
+     * Logged In
+     *
+     * Is a user logged in?
+     *
+     * @return mixed
+     */
+    public function logged_in()
+    {
+        return $this->session->userdata('logged_in');
+    }
+
+    /**
+     * Get User
+     *
+     * Get the current user session info
+     *
+     * @return mixed
+     */
+    public function get_user()
+    {
+        return $this->session->userdata('user');
+    }
+
+    /**
+     * Get User ID
+     *
+     * Get the user ID of the currently logged in user
+     *
+     * @return bool
+     */
+    public function get_user_id()
+    {
+        $user = $this->get_user();
+
+        return ($user) ? $user->id : FALSE;
+    }
+
+    /**
+     * Determine Identity
+     *
+     * Is the supplied value an email address or username
+     *
+     * @param $identity
+     * @return string
+     */
+    public function determine_identity($identity)
+    {
+        $this->load->helper('email');
+
+        if ( $identity == 'auto' )
+        {
+            if ( valid_email($identity) )
+            {
+                $identity = "email";
+            }
+            else
+            {
+                $identity = "username";
+            }
+        }
+
+        return $identity;
+    }
+
+    public function get_remember_me()
+    {
+        $this->load->library('encrypt');
+
+        if ( $cookie = get_cookie($this->config->item('cookie.name', 'wolfauth')) )
+        {
+            $user_id = '';
+            $token = '';
+            $timeout = '';
+
+            $cookie_data = $this->encrypt->decode($cookie);
+
+            if (strpos($cookie_data, '//') !== FALSE)
+            {
+                $cookie_data = explode('//', $cookie_data);
+
+                if (count($cookie_data) == 3)
+                {
+                    list($user_id, $token, $timeout) = $cookie_data;
+                }
+
+                if ( (int) $timeout < time() )
+                {
+                    return FALSE;
+                }
+
+                if ( $user = $this->get_user_by_id($user_id) )
+                {
+                    // Fill the session and renew the remember me cookie
+                    $this->session->set_userdata(array(
+                        'user'		=> $user,
+                        'logged_in'	=> true
+                    ));
+
+                    $this->set_remember_me($user_id);
+
+                    return TRUE;
+                }
+
+                delete_cookie($this->config->item('cookie.name', 'wolfauth'));
+            }
+
+            return FALSE;
+        }
+    }
+
+    /**
+     * Set Remember Me
+     *
+     * Sets a remember me cookie and stores data
+     *
+     * @param $user_id
+     */
+    public function set_remember_me($user_id)
+    {
+        $this->load->library('encrypt');
+
+        $token = md5(uniqid(rand(), TRUE));
+        $timeout = $this->config->item('cookie.expiry', 'wolfauth');
+
+        $remember_me = $this->encrypt->encode($user_id.'//'.$token.'//'.(time() + $timeout));
+
+        $cookie = array(
+            'name'		=> $this->config->item('cookie.name', 'wolfauth'),
+            'value'		=> $remember_me,
+            'expire'	=> $timeout
+        );
+
+        set_cookie($cookie);
+        $this->update_user(array('remember_me' => $remember_me), $user_id);
+    }
 
     /**
      * _Get User

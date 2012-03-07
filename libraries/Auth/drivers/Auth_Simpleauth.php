@@ -113,40 +113,36 @@ class Auth_Simpleauth extends CI_Driver {
      */
 	public function login($identity, $password, $remember = FALSE)
 	{
-		$user = $this->wolfauth_model->get_user($identity, $this->determine_identity($identity));
+        $identity_type = $this->determine_identity($identity);
+
+		$user = $this->wolfauth_model->get_user_by_{$identity_type}($identity);
 
         // If we have a user
-		if ( $user )
+		if ($user)
         {
 			if ( $user->activated == 'yes' )
             {
-				if ( $this->check_password($password, $user->password) )
+                if ($this->wolfauth_model->check_password($password, $user->password, $user->salt))
                 {
-					unset($user->password);
-					
-					$this->CI->session->set_userdata(array(
-						'user'     => $user,
-						'logged_in' => TRUE 
-					));
-					
-					if ( $remember )
-                    {
-						$this->lets_remember_you($user->id);
-					}
-					return TRUE;
-				}
+                    $this->set_message('user_logged_in');
+                    return $this->wolfauth_model->set_login($user->id, $remember);
+                }
+                else
+                {
+                    $this->set_error('password_incorrect');
+                    return FALSE;
+                }
 			}
             else
             {
-				$this->set_message('Your account is not activated');
-				return false;
+				$this->set_error('account_inactive');
+				return FALSE;
 			}
 		}
-        else
-        {
-			$this->set_message('A user matching that username or password could not be found');
-			return false;
-		}		
+
+        $this->set_error('user_not_found');
+        return FALSE;
+
 	}
 
     /**
@@ -183,7 +179,6 @@ class Auth_Simpleauth extends CI_Driver {
     {
         if ($this->CI->wolfauth_model->change_password($identity, $old_password, $new_password))
         {
-
             $this->set_message('password_change_successful');
 
             return TRUE;
@@ -194,20 +189,17 @@ class Auth_Simpleauth extends CI_Driver {
 
         return FALSE;
     }
-	
+
+    /**
+     * Logout
+     *
+     * Logs a currently logged in user out
+     *
+     * @return mixed
+     */
     public function logout() 
     {
-		$user = $this->CI->session->userdata('user');
-		
-        $this->CI->session->sess_destroy();
-        
-		$this->CI->load->helper('cookie');
-		delete_cookie($this->config->item('cookie.name', 'wolfauth'));
-		
-		$this->CI->wolfauth_model->update_user(array('remember_me' => ''), $user->id);
-		
-        $this->CI->session->set_userdata('logged_in', FALSE);
-        $this->CI->session->set_userdata('user', FALSE);
+        return $this->CI->wolfauth_model->logout();
     }
 
     /**
@@ -218,7 +210,7 @@ class Auth_Simpleauth extends CI_Driver {
      */
     public function logged_in() 
     {
-        return $this->CI->session->userdata('logged_in');
+        return $this->CI->wolfauth_model->logged_in();
     }
 
     /**
@@ -229,8 +221,7 @@ class Auth_Simpleauth extends CI_Driver {
      */
     public function get_user_id() 
     {
-        $user = $this->CI->session->userdata('user');
-        return $user->id;
+        return $this->CI->wolfauth_model->get_user_id();
     }
 
     /**
@@ -241,7 +232,7 @@ class Auth_Simpleauth extends CI_Driver {
      */
     public function get_user()
     {
-        return $this->CI->session->userdata('user');
+        return $this->CI->wolfauth_model->get_user();
     }
 
     /**
@@ -253,21 +244,7 @@ class Auth_Simpleauth extends CI_Driver {
      */
 	public function determine_identity($identity)
 	{
-		$this->CI->load->helper('email');
-		
-		if ( $identity == 'auto' )
-        {
-			if ( valid_email($identity) )
-            {
-				$identity = "email";
-			}
-            else
-            {
-				$identity = "username";
-			}
-		}
-		
-		return $identity;					
+        return $this->CI->wolfauth_model->determine_identity($identity);
 	}
 	
     /**
@@ -291,13 +268,6 @@ class Auth_Simpleauth extends CI_Driver {
      */
 	public function has_permission($permission = '')
 	{
-        // If we have no permission check current URL
-        if ($permission == '')
-        {
-			// The permission string by default is the whole URL string
-            $permission = trim($this->CI->uri->uri_string(), '/');
-		}
-
         return $this->CI->wolfauth_model->has_permission($permission);
 	}
 
@@ -315,28 +285,15 @@ class Auth_Simpleauth extends CI_Driver {
     }
 
     /**
-     * Lets Remember You
-     * Sets remember me info
+     * Do You Remember Me
+     * Sets a remember me cookie if the user is remembered
      *
      * @param $user_id
+     * @return bool
      */
 	private function lets_remember_you($user_id)
 	{
-		$this->CI->load->library('encrypt');
-
-		$token = md5(uniqid(rand(), TRUE));
-		$timeout = $this->config->item('cookie.expiry', 'wolfauth');
-
-		$remember_me = $this->CI->encrypt->encode($user_id.'//'.$token.'//'.(time() + $timeout));
-
-		$cookie = array(
-			'name'		=> $this->config->item('cookie.name', 'wolfauth'),
-			'value'		=> $remember_me,
-			'expire'	=> $timeout
-		);
-
-		set_cookie($cookie);
-		$this->CI->wolfauth_model->update_user(array('remember_me' => $remember_me), $user_id);
+		return $this->CI->wolfauth_model->set_remember_me($user_id);
 	}
 
     /**
@@ -347,48 +304,7 @@ class Auth_Simpleauth extends CI_Driver {
      */
 	private function do_you_remember_me()
 	{
-		$this->CI->load->library('encrypt');
-		
-		if ( $cookie = get_cookie($this->CI->config->item('cookie.name', 'wolfauth')) )
-        {
-			$user_id = '';
-			$token = '';
-			$timeout = '';
-			
-			$cookie_data = $this->CI->encrypt->decode($cookie);
-			
-			if (strpos($cookie_data, '//') !== FALSE)
-			{
-				$cookie_data = explode('//', $cookie_data);
-				
-				if (count($cookie_data) == 3)
-				{
-					list($user_id, $token, $timeout) = $cookie_data;
-				}
-				
-				if ( (int) $timeout < time() )
-				{
-					return FALSE;
-				}
-				
-				if ( $user = $this->CI->wolfauth_model->get($user_id, 'id') )
-                {
-					// Fill the session and renew the remember me cookie
-					$this->CI->session->set_userdata(array(
-						'user'		=> $user,
-						'logged_in'	=> true
-					));
-					
-					$this->lets_remember_you($user_id);
-					
-					return TRUE;
-				}
-
-				delete_cookie($this->config->item('cookie.name', 'wolfauth'));				
-			}
-			
-			return FALSE;		
-		}
+		return $this->CI->wolfauth_model->get_remember_me();
 	}
 	
     /**
