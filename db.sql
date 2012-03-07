@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50516
 File Encoding         : 65001
 
-Date: 2012-02-26 21:59:09
+Date: 2012-03-07 21:33:48
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -68,22 +68,21 @@ CREATE TABLE `permissions` (
 DROP TABLE IF EXISTS `roles`;
 CREATE TABLE `roles` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `role_id` int(10) NOT NULL,
   `role_name` varchar(120) NOT NULL,
   `role_slug` varchar(150) NOT NULL,
-  PRIMARY KEY (`id`,`role_id`),
+  PRIMARY KEY (`id`),
   UNIQUE KEY `Unique Role ID` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of roles
 -- ----------------------------
-INSERT INTO roles VALUES ('1', '0', 'Guest User', 'guest');
-INSERT INTO roles VALUES ('2', '1', 'Standard User', 'user');
-INSERT INTO roles VALUES ('3', '2', 'Editor', 'editor');
-INSERT INTO roles VALUES ('4', '3', 'Super Editor', 'super_editor');
-INSERT INTO roles VALUES ('5', '4', 'Administrator', 'admin');
-INSERT INTO roles VALUES ('6', '5', 'Super Admin', 'super_admin');
+INSERT INTO roles VALUES ('1', 'Guest User', 'guest');
+INSERT INTO roles VALUES ('2', 'Standard User', 'user');
+INSERT INTO roles VALUES ('3', 'Editor', 'editor');
+INSERT INTO roles VALUES ('4', 'Super Editor', 'super_editor');
+INSERT INTO roles VALUES ('5', 'Administrator', 'admin');
+INSERT INTO roles VALUES ('6', 'Super Admin', 'super_admin');
 
 -- ----------------------------
 -- Table structure for `users`
@@ -94,30 +93,16 @@ CREATE TABLE `users` (
   `role_id` int(10) NOT NULL DEFAULT '0',
   `username` varchar(120) NOT NULL,
   `email` varchar(150) NOT NULL,
+  `salt` varchar(50) NOT NULL,
   `password` varchar(250) NOT NULL,
+  `first_name` varchar(125) DEFAULT NULL,
+  `last_name` varchar(125) DEFAULT NULL,
   `activated` enum('no','yes') NOT NULL DEFAULT 'no',
+  `joined` int(11) NOT NULL,
   `remember_me` text NOT NULL,
   PRIMARY KEY (`id`,`username`,`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of users
--- ----------------------------
-
--- ----------------------------
--- Table structure for `user_meta`
--- ----------------------------
-DROP TABLE IF EXISTS `user_meta`;
-CREATE TABLE `user_meta` (
-  `id` bigint(50) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint(50) NOT NULL,
-  `first_name` varchar(120) DEFAULT NULL,
-  `last_name` varchar(120) DEFAULT NULL,
-  `country` varchar(250) DEFAULT NULL,
-  `phone` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`id`,`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- ----------------------------
--- Records of user_meta
 -- ----------------------------
