@@ -34,6 +34,7 @@ class Wolfauth_model extends CI_Model {
 
     /**
      * User Exists
+     *
      * Returns true or false if the user already exists
      *
      * @param $username
@@ -46,6 +47,7 @@ class Wolfauth_model extends CI_Model {
 
     /**
      * Email Exists
+     *
      * Does an email address exist in the database?
      *
      * @param $email
@@ -58,6 +60,7 @@ class Wolfauth_model extends CI_Model {
 
     /**
      * Count Users
+     *
      * Count the number of users in the database
      *
      * @return mixed
@@ -69,6 +72,7 @@ class Wolfauth_model extends CI_Model {
 
     /**
      * Get User By Username
+     *
      * Gets a user from the database via their username
      *
      * @param string $username
@@ -81,6 +85,7 @@ class Wolfauth_model extends CI_Model {
 
     /**
      * Get User By ID
+     *
      * Gets a user from the database via their user ID
      *
      * @param string $id
@@ -93,6 +98,7 @@ class Wolfauth_model extends CI_Model {
 
     /**
      * Get User By Email
+     *
      * Get a user via their email
      *
      * @param string $email
@@ -147,6 +153,7 @@ class Wolfauth_model extends CI_Model {
 
     /**
      * Update User
+     *
      * Update a users details
      *
      * @param array $fields
@@ -169,6 +176,7 @@ class Wolfauth_model extends CI_Model {
 
     /**
      * Delete User
+     *
      * Deletes a user
      *
      * @param string $user_id
@@ -185,6 +193,7 @@ class Wolfauth_model extends CI_Model {
 	
     /**
      * Update Login Attempts
+     *
      * Used by the login function when a user attempts to login
      * unsuccessfully.
      *
@@ -236,6 +245,7 @@ class Wolfauth_model extends CI_Model {
 	
     /**
      * Reset Login Attempts
+     *
      * Resets login attempts increment value in the database
      * for a particular IP address.
      *
@@ -247,9 +257,27 @@ class Wolfauth_model extends CI_Model {
 		$this->db->delete($this->config->item('table.attempts', 'wolfauth'));
     }
 
+    /**
+     * Has Role
+     *
+     * Does a user have a particular role?
+     *
+     * @param $role_slug
+     * @return bool
+     */
+    public function has_role($role_slug)
+    {
+        $this->db->select('roles.role_name, roles.role_slug')->where('roles.role_slug', $role_slug)->join($this->config->item('table.roles', 'wolfauth'), 'users.role_id = roles.id');
+
+        $this->db->get($this->config->item('table.users', 'wolfauth'));
+
+        return ($this->db->num_rows() == 1) ? TRUE : FALSE;
+    }
+
 
     /**
       * Add Permission
+     *
       * Adds a permission to a role
       *
       * @param $role_id
@@ -267,6 +295,7 @@ class Wolfauth_model extends CI_Model {
 
     /**
      * Edit Permission
+     *
      * Allows you to edit a permission via the admin area
      *
      * @param int $permission_id
@@ -287,6 +316,7 @@ class Wolfauth_model extends CI_Model {
 
     /**
      * Delete Permission
+     *
      * Delete a permission from the permissions table
      *
      * @param int $permission_id
@@ -303,6 +333,7 @@ class Wolfauth_model extends CI_Model {
 	
     /**
     * Email Forgot Password
+     *
     * If a user forgets their password, they can send themselves
     * an email to reset their password.
     * 
@@ -330,6 +361,7 @@ class Wolfauth_model extends CI_Model {
 	
     /**
     * Email New Password
+     *
     * Send a newly generated password to the user
     * 
     * @param mixed $email
@@ -355,6 +387,7 @@ class Wolfauth_model extends CI_Model {
 
     /**
      * Generate Password
+     *
      * Generates a password
      *
      * @param string $password
@@ -376,6 +409,7 @@ class Wolfauth_model extends CI_Model {
 
     /**
      * _Get User
+     *
      * Protected utility function for getting user info
      *
      * @param string $needle
