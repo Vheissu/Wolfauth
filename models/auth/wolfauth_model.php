@@ -13,7 +13,7 @@
  * @version   2.0
  */
 
-class Wolfcore extends CI_Model {
+class Wolfauth_model extends CI_Model {
 	
 	public function __construct()
 	{
@@ -41,7 +41,7 @@ class Wolfcore extends CI_Model {
      */
     public function user_exists($username)
     {
-        return ( $this->get($username, 'username') ) ? TRUE : FALSE;
+        return ( $this->get_user($username, 'username') ) ? TRUE : FALSE;
     }
 
     /**
@@ -53,31 +53,24 @@ class Wolfcore extends CI_Model {
      */
     public function email_exists($email)
     {
-        return ( $this->get($email, 'email') ) ? TRUE : FALSE;
+        return ( $this->get_user($email, 'email') ) ? TRUE : FALSE;
     }
 
     /**
-     * Get
+     * GetUser
      * Gets a user object
      *
      * @param string $needle
      * @param string $haystack
      * @return bool
      */
-	public function get($needle = '', $haystack = 'email')
+	public function get_user($needle = '', $haystack = 'email')
 	{
 		$this->db->where($haystack, $needle);
 
 		$user = $this->db->get($this->config->item('table.users', 'wolfauth'));
 
-        if ( $user->num_rows() == 1 ) {
-            return $user->row();
-        } elseif ( $user->num_rows() > 1 ) {
-            return $user->result();
-        } else {
-            return FALSE;
-        }
-
+        return ( $user->num_rows() >= 1 ) ? $user->result() : FALSE;
 	}
 
     /**
@@ -85,46 +78,26 @@ class Wolfcore extends CI_Model {
      * Inserts a user and any meta into the database
      *
      * @param $fields
-     * @param $extra_fields
      * @return bool
      */
-	public function insert_user($fields, $extra_fields)
+	public function insert_user($fields)
 	{
 		if ( isset($fields['password']) )
 		{
             $fields['password'] = $this->generate_password($fields['password']);
 		}
 
-		$insert = $this->db->insert($this->config->item('table.users', 'wolfauth'), $fields)->db->insert_id();
+		$insert = $this->db->insert($this->config->item('table.users', 'wolfauth'), $fields)->insert_id();
 
         // If the user inserted okay and no extra fields to add
-        if ($insert AND empty($extra_fields))
+        if ($insert)
         {
             // Return user ID
             return $insert;
         }
 
-        // User inserted okay and we have extra fields to add
-        if ($insert AND ! empty($extra_fields))
-        {
-            return $this->insert_usermeta($insert, $extra_fields);
-        }
-
         return FALSE;
 	}
-
-    /**
-     * Insert Usermeta
-     * Inserts metadata for a user
-     *
-     * @param $user_id
-     * @param $usermeta
-     * @return bool
-     */
-    public function insert_usermeta($user_id, $usermeta)
-    {
-        return ($this->db->insert($this->config->item('table.usermeta', 'wolfauth'), $usermeta)) ? TRUE : FALSE;
-    }
 
     /**
      * Update User
@@ -148,22 +121,6 @@ class Wolfcore extends CI_Model {
 	}
 
     /**
-     * Update Usermeta
-     * Update a users meta details
-     *
-     * @param array $fields
-     * @param $user_id
-     * @return bool
-     */
-	public function update_usermeta($fields = array(), $user_id)
-	{
-		// Find the user ID
-		$this->db->where('user_id', $user_id);
-
-		return ($this->db->update($this->config->item('table.usermeta', 'wolfauth'), $fields)) ? TRUE : FALSE;
-	}
-
-    /**
      * Delete User
      * Deletes a user
      *
@@ -180,21 +137,24 @@ class Wolfcore extends CI_Model {
 	}
 	
     /**
-    * Update Login Attempts
-    * Used by the login function when a user attempts to login
-    * unsuccessfully.
-    * 
-    * @param mixed $ip_address
-    */
+     * Update Login Attempts
+     * Used by the login function when a user attempts to login
+     * unsuccessfully.
+     *
+     * @param mixed $ip_address
+     * @return mixed
+     */
     public function update_login_attempts($ip_address = NULL)
     {
-        if (is_null($ip_address)) {
+        if (is_null($ip_address))
+        {
             $ip_address = $this->ip_address;
         }
             
         $exists = $this->db->get_where($this->config->item('table.attempts', 'wolfauth'), array('ip_address' => $ip_address));
         
-        if ( $exists->num_rows() >= 1 ) {
+        if ( $exists->num_rows() >= 1 )
+        {
             $exists = $exists->row();
             $current_time = time();
             $created      = strtotime($exists->created);
@@ -203,37 +163,96 @@ class Wolfcore extends CI_Model {
             $minutes      = floor($current_time - $created / 60);
             
 	        // If current time elapsed between creation is greater than the attempts, reset
-            if (($current_time - $created) > $this->config->item('attempts.expiry', 'wolfauth')) {
+            if (($current_time - $created) > $this->config->item('attempts.expiry', 'wolfauth'))
+            {
                 $this->reset_login_attempts($ip_address);
 
                 // add the first attempt after reset them
                 $insert = $this->db->insert($this->config->item('attempts.expiry', 'wolfauth'), array('ip_address' => $ip_address, 'attempts' => 1));
 
                 return $insert->affected_rows();
-            } else {
+            }
+            else
+            {
 	            // Increment new attempts
                 $this->db->set('attempts', 'attempts + 1', FALSE);
                 $this->db->set('ip_address', $ip_address);
                 $insert = $this->db->update($this->config->item('attempts.expiry', 'wolfauth'));
             }
-        } else {
+        }
+        else
+        {
             $insert = $this->db->insert($this->config->item('attempts.expiry', 'wolfauth'), array('ip_address' => $ip_address, 'attempts' => 1));
             return $insert->affected_rows();
         }
     }
 	
     /**
-    * Reset Login Attempts
-    * Resets login attempts increment value
-    * in the database for a particular IP address.
-    * 
-    * @param mixed $ip_address
-    */
+     * Reset Login Attempts
+     * Resets login attempts increment value in the database
+     * for a particular IP address.
+     *
+     * @param mixed $ip_address
+     */
     public function reset_login_attempts($ip_address)
     {
 		$this->db->where('ip_address', $ip_address);
 		$this->db->delete($this->config->item('table.attempts', 'wolfauth'));
     }
+
+
+    /**
+      * Add Permission
+      * Adds a permission to a role
+      *
+      * @param $role_id
+      * @param $permission
+      * @return bool
+      */
+    public function add_permission($role_id, $permission)
+    {
+        $data['role_id'] = $role_id;
+        $data['permission'] = $permission;
+        $this->db->insert($this->CI->config->item('table.permissions', 'wolfauth'), $data);
+
+        return ($this->db->affected_rows() == 1) ? TRUE : FALSE;
+    }
+
+    /**
+     * Edit Permission
+     * Allows you to edit a permission via the admin area
+     *
+     * @param int $permission_id
+     * @param $data
+     * @return bool
+     */
+    public function edit_permission($permission_id, $data)
+    {
+        // Make sure we have some data
+        if (isset($data['id']) AND isset($data['permission']))
+        {
+            $this->db->where('id', $data['id']);
+            $this->db->update($this->CI->config->item('table.permissions', 'wolfauth'), array('permission' => $data['permission']));
+
+            return ($this->db->affected_rows() == 1) ? TRUE : FALSE;
+        }
+    }
+
+    /**
+     * Delete Permission
+     * Delete a permission from the permissions table
+     *
+     * @param int $permission_id
+     * @return bool
+     */
+    public function delete_permission($permission_id)
+    {
+        $this->db->where('id', $permission_id);
+        $this->db->delete($this->CI->config->item('table.permissions', 'wolfauth'));
+
+        return ($this->db->affected_rows() == 1) ? TRUE : FALSE;
+    }
+
 	
     /**
     * Email Forgot Password
@@ -241,6 +260,8 @@ class Wolfcore extends CI_Model {
     * an email to reset their password.
     * 
     * @param mixed $email
+    * @param mixed $code
+    * @return bool
     */
     public function email_forgot_password($email, $code)
     {
@@ -265,6 +286,8 @@ class Wolfcore extends CI_Model {
     * Send a newly generated password to the user
     * 
     * @param mixed $email
+    * @param mixed $password
+    * @return bool
     */
     public function email_new_password($email, $password)
     {

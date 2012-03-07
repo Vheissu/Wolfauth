@@ -41,6 +41,7 @@ class Auth extends CI_Driver_Library {
     /*
      * Set Driver
      * Sets a driver to use
+     *
      * @param $name
      */
 	public function set_driver($name)
@@ -52,9 +53,11 @@ class Auth extends CI_Driver_Library {
 	/*
 	 * Login
 	 * Base function for logging in a user
+	 *
 	 * @param $identity (username or email)
 	 * @param $password
 	 * @param (bool) $remeber
+	 * @return int
 	 */
 	public function login($identity, $password, $remember = false)
 	{
@@ -75,22 +78,36 @@ class Auth extends CI_Driver_Library {
 	 * Logged In
 	 * Is a user currently logged in
 	 *
+	 * @return bool
+	 *
 	 */
 	public function logged_in()
 	{
 		return $this->{$this->_driver}->logged_in();
 	}
 
-    /*
-     * Register
-     * @param $fields
-     * @param array $extra_fields
+    /**
+     * Get User
+     * Get the currently logged in user info
+     *
      * @return mixed
      */
-	public function register($fields, $extra_fields = array())
+    public function get_user()
+    {
+        return $this->{$this->_driver}->get_user();
+    }
+
+    /*
+     * Register
+     * Register a user account
+     *
+     * @param $fields
+     * @return mixed
+     */
+	public function register($fields)
 	{
 		// Call the child register function
-		return $this->{$this->_driver}->register($fields, $extra_fields);
+		return $this->{$this->_driver}->register($fields);
 	}
 	
 	/**
