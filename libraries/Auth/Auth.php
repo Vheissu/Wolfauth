@@ -80,16 +80,6 @@ class Auth extends CI_Driver_Library {
 	{
 		return $this->{$this->_driver}->logged_in();
 	}
-	
-	/*
-	 * Get User ID
-	 * Get current user ID
-	 *
-	 */
-	public function get_user_id()
-	{
-		return $this->{$this->_driver}->get_user_id();
-	}
 
     /*
      * Register
