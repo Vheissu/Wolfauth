@@ -154,6 +154,35 @@ class Wolfauth_model extends CI_Model {
     }
 
     /**
+     * Force Login
+     *
+     * Forces a user to be logged in without a password
+     * @param $identity (username or email)
+     * @return bool
+     *
+     */
+    public function force_login($identity)
+    {
+        // Detect if we have an email or username
+        $identity = $this->determine_identity($identity);
+        $user     = '';
+
+        if ($identity == 'email')
+        {
+            // Fetch the user by email address
+            $user = $this->get_user_by_email($identity);
+        }
+        else
+        {
+            // Fetch the user by username
+            $user = $this->get_user_by_username($identity);
+        }
+
+        // Always will return true
+        return $this->set_login($user);
+    }
+
+    /**
      * Insert User
      *
      * Inserts a user and any meta into the database

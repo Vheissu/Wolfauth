@@ -33,6 +33,7 @@ class Auth_Simpleauth extends CI_Driver {
 		// Clear any messages
 		$this->clear_messages();
 		
+        // Load needed Codeigniter libraries, helpers and models.
 		$this->CI->load->library('session');
 		$this->CI->load->database();
 		$this->CI->load->helper('auth/auth');
@@ -45,6 +46,7 @@ class Auth_Simpleauth extends CI_Driver {
         // The identity method is the means to validate a users login by
 		$this->identity_method = $this->CI->config->item('identity_method', 'wolfauth');
 
+        // Are we logged in already?
         if ($this->logged_in())
         {
             // Get the current user
@@ -74,14 +76,25 @@ class Auth_Simpleauth extends CI_Driver {
     }
 
 
+    /**
+     * Clear Messages
+     *
+     * Clear all errors and messages
+     *
+     *
+     */
 	public function clear_messages()
 	{
+        // Set error and message arrays to be empty
 		$this->errors   = array();
 		$this->messages = array();
+
+        return TRUE;
 	}
 
     /**
      * Activate
+     *
      * Activates a user
      *
      * @param $user_id
@@ -90,6 +103,7 @@ class Auth_Simpleauth extends CI_Driver {
      */
     public function activate($user_id, $code)
     {
+        // If activation was successful
         if ($this->wolfauth_model->activate($user_id, $code))
         {
             $this->set_message('activate_successful');
@@ -104,6 +118,7 @@ class Auth_Simpleauth extends CI_Driver {
 
     /**
      * Login
+     *
      * Logs a user into our beautiful auth system
      *
      * @param $identity
@@ -113,20 +128,25 @@ class Auth_Simpleauth extends CI_Driver {
      */
 	public function login($identity, $password, $remember = FALSE)
 	{
+        // Determine if we have an email or username
         $identity_type = $this->determine_identity($identity);
 
+        // Get the user by their identity type
 		$user = $this->wolfauth_model->get_user_by_{$identity_type}($identity);
 
         // If we have a user
 		if ($user)
         {
+            // Is the user activated?
 			if ( $user->activated == 'yes' )
             {
+                // If the passwords match, log the user in
                 if ($this->wolfauth_model->check_password($password, $user->password, $user->salt))
                 {
                     $this->set_message('user_logged_in');
                     return $this->wolfauth_model->set_login($user->id, $remember);
                 }
+                // Login details incorrect
                 else
                 {
                     $this->set_error('password_incorrect');
@@ -142,11 +162,24 @@ class Auth_Simpleauth extends CI_Driver {
 
         $this->set_error('user_not_found');
         return FALSE;
-
 	}
 
     /**
+     * Force Login
+     *
+     * Forces a user to be logged in without a password
+     *
+     * @param $identity (username or email)
+     * @return bool
+     */
+    public function force_login($identity)
+    {
+        return $this->CI->wolfauth_model->force_login();
+    }
+
+    /**
      * Register
+     *
      * Register a user with option for extra fields
      *
      * @param $fields
@@ -168,6 +201,7 @@ class Auth_Simpleauth extends CI_Driver {
 
     /**
      * Change Password
+     *
      * Changes a users password
      *
      * @param $identity
@@ -177,12 +211,12 @@ class Auth_Simpleauth extends CI_Driver {
      */
     public function change_password($identity, $old_password, $new_password)
     {
+        // If the old password matches the current password, allow the change
         if ($this->CI->wolfauth_model->change_password($identity, $old_password, $new_password))
         {
             $this->set_message('password_change_successful');
 
             return TRUE;
-
         }
 
         $this->set_error('password_change_unsuccessful');
@@ -204,6 +238,7 @@ class Auth_Simpleauth extends CI_Driver {
 
     /**
      * Logged In
+     *
      * Is someone logged in?
      *
      * @return bool
@@ -215,6 +250,7 @@ class Auth_Simpleauth extends CI_Driver {
 
     /**
      * Get User ID
+     *
      * Get the user ID of the currently logged in user
      *
      * @return mixed
@@ -226,6 +262,7 @@ class Auth_Simpleauth extends CI_Driver {
 
     /**
      * Get User
+     *
      * Gets the current logged in user and returns the info
      *
      * @return mixed
@@ -237,6 +274,7 @@ class Auth_Simpleauth extends CI_Driver {
 
     /**
      * Determine Identity
+     *
      * Determine whether or not a user has supplied a username or email
      *
      * @param $identity
@@ -249,6 +287,7 @@ class Auth_Simpleauth extends CI_Driver {
 	
     /**
     * Reset Login Attempts
+    *
     * Resets login attempts increment value
     * in the database for a particular IP address.
     * 
@@ -256,11 +295,12 @@ class Auth_Simpleauth extends CI_Driver {
     */
     public function reset_login_attempts($ip_address = NULL)
     {
-        $this->wolfauth_model->reset_login_attempts($ip_address);
+        return $this->wolfauth_model->reset_login_attempts($ip_address);
     }
 	
     /**
      * Has Permission
+     *
      * Checks if a user has permission to access the current resource
      *
      * @param $permission
@@ -273,6 +313,7 @@ class Auth_Simpleauth extends CI_Driver {
 
     /**
      * Add Permission
+     *
      * Adds a permission to a role
      * 
      * @param $role_id
@@ -286,6 +327,7 @@ class Auth_Simpleauth extends CI_Driver {
 
     /**
      * Do You Remember Me
+     *
      * Sets a remember me cookie if the user is remembered
      *
      * @param $user_id
@@ -298,6 +340,7 @@ class Auth_Simpleauth extends CI_Driver {
 
     /**
      * Do You Remember Me
+     *
      * Sets a remember me cookie if the user is remembered
      *
      * @return bool
@@ -309,6 +352,7 @@ class Auth_Simpleauth extends CI_Driver {
 	
     /**
     * Set Error
+    *
     * Sets an error message
     * 
     * @param mixed $error
@@ -323,6 +367,7 @@ class Auth_Simpleauth extends CI_Driver {
     
     /**
     * Set Message
+    *
     * Sets a message
     * 
     * @param mixed $message
@@ -337,6 +382,7 @@ class Auth_Simpleauth extends CI_Driver {
 	
    /**
     * Auth Errors
+    *
     * Show any error messages relating to the auth class
     *
     * @return mixed
@@ -349,6 +395,7 @@ class Auth_Simpleauth extends CI_Driver {
 	
    /**
     * Auth Messages
+    *
     * Show any messages relating to the auth class
     *
     * @return mixed

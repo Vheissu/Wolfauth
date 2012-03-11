@@ -40,6 +40,7 @@ class Auth extends CI_Driver_Library {
 
     /*
      * Set Driver
+     *
      * Sets a driver to use
      *
      * @param $name
@@ -52,6 +53,7 @@ class Auth extends CI_Driver_Library {
 	
 	/*
 	 * Login
+	 *
 	 * Base function for logging in a user
 	 *
 	 * @param $identity (username or email)
@@ -64,10 +66,27 @@ class Auth extends CI_Driver_Library {
 		// Call the child driver login method
 		return $this->{$this->_driver}->login($identity, $password, $remember);
 	}
+
+	/*
+	 * Force Login
+	 *
+	 * Force login for a particular username or email
+	 *
+	 * @param $identity (username or email)
+	 * @return bool
+	 *
+	 */
+	public function force_login($identity)
+	{
+		return $this->{$this->_driver}->force_login();
+	}
 	
     /*
      * Logout
+     *
      * Logs a user out
+     *
+     * @return bool
      */
 	public function logout()
 	{
@@ -76,6 +95,7 @@ class Auth extends CI_Driver_Library {
 	
 	/*
 	 * Logged In
+	 *
 	 * Is a user currently logged in
 	 *
 	 * @return bool
@@ -88,6 +108,7 @@ class Auth extends CI_Driver_Library {
 
     /**
      * Get User
+     *
      * Get the currently logged in user info
      *
      * @return mixed
@@ -99,6 +120,7 @@ class Auth extends CI_Driver_Library {
 
     /*
      * Register
+     *
      * Register a user account
      *
      * @param $fields
@@ -111,6 +133,8 @@ class Auth extends CI_Driver_Library {
 	}
 	
 	/**
+	* __call magic function
+	*
 	* Redirect all method calls not in this class to the child class
 	* set in the variable _adapter which is the default class.
 	*
@@ -125,7 +149,10 @@ class Auth extends CI_Driver_Library {
 	
     /*
     * Auth Instance
+    *
     * Static function wrapper for auth drivers
+    *
+    * @return object
     * 
     */
     public static function auth_instance()
@@ -140,7 +167,10 @@ class Auth extends CI_Driver_Library {
 
 /*
  * Auth Instance
+ *
  * Function shortcut to the proper auth instance
+ *
+ * @return object
  *
  */
 function auth_instance()
