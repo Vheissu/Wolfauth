@@ -13,396 +13,128 @@
  * @version   2.0
  */
 
-class Auth_Simpleauth extends CI_Driver {
-	
-	protected $CI;
-	
-	protected $errors   = array();
-	protected $messages = array();
-	
-	protected $login_destination = '/';
-	
-	protected $identity_method;
+class Auth_simpleauth extends CI_Driver {
 
-    public $user;
-	
+	// Codeigniter session
+	public $_session;
+
+	// User object
+	public $_user;
+
+	/**
+	 * Constructor
+	 *
+	 */
 	public function __construct()
 	{
-		$this->CI =& get_instance();
-		
-		// Clear any messages
-		$this->clear_messages();
-		
-        // Load needed Codeigniter libraries, helpers and models.
-		$this->CI->load->library('session');
-		$this->CI->load->database();
-		$this->CI->load->helper('auth/auth');
-		$this->CI->load->helper('auth/auth_permissions');
-		$this->CI->load->helper('auth/auth_roles');
-		$this->CI->load->helper('cookie');
-		$this->CI->load->helper('string');
-        $this->CI->load->model('auth/wolfauth_model');
-
-        // The identity method is the means to validate a users login by
-		$this->identity_method = $this->CI->config->item('identity_method', 'wolfauth');
-
-        // Are we logged in already?
-        if ($this->logged_in())
-        {
-            // Get the current user
-            $this->user = $this->get_user();
-        }
-
-        // Check if the user has a remember me cookie set
-		$this->do_you_remember_me();
+		// Load needed libraries, models and helpers
+		$this->ci->load->library('session');		
+		$this->ci->load->model('wolfauth_users');
+		$this->ci->load->model('wolfauth_roles');
+		$this->ci->load->model('wolfauth_permissions');	
 	}
 
-    /**
-     * Acts as a shortcut to calling Wolfauth model functions
-     *
-     * @param $method
-     * @param $arguments
-     * @return mixed
-     * @throws Exception
-     */
-    public function __call($method, $arguments)
-    {
-        if ( ! method_exists( $this->CI->wolfauth_model, $method) )
-        {
-            throw new Exception('Undefined method ' . $method . '() called');
-        }
-
-        return call_user_func_array( array($this->CI->wolfauth_model, $method), $arguments);
-    }
-
-
-    /**
-     * Clear Messages
-     *
-     * Clear all errors and messages
-     *
-     *
-     */
-	public function clear_messages()
-	{
-        // Set error and message arrays to be empty
-		$this->errors   = array();
-		$this->messages = array();
-
-        return TRUE;
-	}
-
-    /**
-     * Activate
-     *
-     * Activates a user
-     *
-     * @param $user_id
-     * @param $code
-     * @return bool
-     */
-    public function activate($user_id, $code)
-    {
-        // If activation was successful
-        if ($this->wolfauth_model->activate($user_id, $code))
-        {
-            $this->set_message('activate_successful');
-
-            return TRUE;
-        }
-
-        $this->set_error('activate_unsuccessful');
-
-        return FALSE;
-    }
-
-    /**
-     * Login
-     *
-     * Logs a user into our beautiful auth system
-     *
-     * @param $identity
-     * @param $password
-     * @param bool $remember
-     * @return bool
-     */
+	/**
+	 * Login
+	 *
+	 * Logs a user in if their login details are correct
+	 *
+	 * @param $identity - Username or email address
+	 * @param $password - Password to validate with
+	 * @param $remember - True or false to remember user
+	 * @return bool
+	 *
+	 */
 	public function login($identity, $password, $remember = FALSE)
 	{
-        // Determine if we have an email or username
-        $identity_type = $this->determine_identity($identity);
-
-        // Get the user by their identity type
-		$user = $this->wolfauth_model->get_user_by_{$identity_type}($identity);
-
-        // If we have a user
-		if ($user)
-        {
-            // Is the user activated?
-			if ( $user->activated == 'yes' )
-            {
-                // If the passwords match, log the user in
-                if ($this->wolfauth_model->check_password($password, $user->password, $user->salt))
-                {
-                    $this->set_message('user_logged_in');
-                    return $this->wolfauth_model->set_login($user->id, $remember);
-                }
-                // Login details incorrect
-                else
-                {
-                    $this->set_error('password_incorrect');
-                    return FALSE;
-                }
-			}
-            else
-            {
-				$this->set_error('account_inactive');
-				return FALSE;
-			}
-		}
-
-        $this->set_error('user_not_found');
-        return FALSE;
+		// Get the identity field type from the config
+		$identity_field = $this->config['identity'];
 	}
 
-    /**
-     * Force Login
-     *
-     * Forces a user to be logged in without a password
-     *
-     * @param $identity (username or email)
-     * @return bool
-     */
-    public function force_login($identity)
-    {
-        return $this->CI->wolfauth_model->force_login();
-    }
-
-    /**
-     * Register
-     *
-     * Register a user with option for extra fields
-     *
-     * @param $fields
-     * @return bool
-     */
-    public function register($fields)
-    {
-    	// Check the user doesn't exist already
-		if (!$this->CI->wolfauth_model->user_exists($fields['username']))
-		{
-            // Insert the user
-            return $this->CI->wolfauth_model->insert_user($fields);
-		}
-		
-		$this->set_message('username_exists');
-		
-		return FALSE;
-    }
-
-    /**
-     * Change Password
-     *
-     * Changes a users password
-     *
-     * @param $identity
-     * @param $old_password
-     * @param $new_password
-     * @return bool
-     */
-    public function change_password($identity, $old_password, $new_password)
-    {
-        // If the old password matches the current password, allow the change
-        if ($this->CI->wolfauth_model->change_password($identity, $old_password, $new_password))
-        {
-            $this->set_message('password_change_successful');
-
-            return TRUE;
-        }
-
-        $this->set_error('password_change_unsuccessful');
-
-        return FALSE;
-    }
-
-    /**
-     * Logout
-     *
-     * Logs a currently logged in user out
-     *
-     * @return mixed
-     */
-    public function logout() 
-    {
-        return $this->CI->wolfauth_model->logout();
-    }
-
-    /**
-     * Logged In
-     *
-     * Is someone logged in?
-     *
-     * @return bool
-     */
-    public function logged_in() 
-    {
-        return $this->CI->wolfauth_model->logged_in();
-    }
-
-    /**
-     * Get User ID
-     *
-     * Get the user ID of the currently logged in user
-     *
-     * @return mixed
-     */
-    public function get_user_id() 
-    {
-        return $this->CI->wolfauth_model->get_user_id();
-    }
-
-    /**
-     * Get User
-     *
-     * Gets the current logged in user and returns the info
-     *
-     * @return mixed
-     */
-    public function get_user()
-    {
-        return $this->CI->wolfauth_model->get_user();
-    }
-
-    /**
-     * Determine Identity
-     *
-     * Determine whether or not a user has supplied a username or email
-     *
-     * @param $identity
-     * @return string
-     */
-	public function determine_identity($identity)
+	/**
+	 * Force Login
+	 *
+	 * Log a user in via their username or email without a password
+	 *
+	 * @param $identity - Username or email address
+	 * @return int - The user ID
+	 *
+	 */
+	public function force_login($identity)
 	{
-        return $this->CI->wolfauth_model->determine_identity($identity);
+
 	}
-	
-    /**
-    * Reset Login Attempts
-    *
-    * Resets login attempts increment value
-    * in the database for a particular IP address.
-    * 
-    * @param mixed $ip_address
-    */
-    public function reset_login_attempts($ip_address = NULL)
-    {
-        return $this->wolfauth_model->reset_login_attempts($ip_address);
-    }
-	
-    /**
-     * Has Permission
-     *
-     * Checks if a user has permission to access the current resource
-     *
-     * @param $permission
-     * @return mixed
-     */
-	public function has_permission($permission = '')
+
+	/**
+	 * Logout
+	 *
+	 * Logs a user out and then checks to make sure the session was destroyed
+	 *
+	 * @return bool
+	 *
+	 */
+	public function logout()
 	{
-        return $this->CI->wolfauth_model->has_permission($permission);
+		// Destroy the session
+		$this->ci->session->session_destroy();
+
+		// Check we're definitely not logged in now
+		return !$this->logged_in();
 	}
 
-    /**
-     * Add Permission
-     *
-     * Adds a permission to a role
-     * 
-     * @param $role_id
-     * @param $permission
-     * @return bool
-     */
-    public function add_permission($role_id, $permission)
-    {
-        return $this->CI->wolfauth_model->add_permission($role_id, $permission);
-    }
-
-    /**
-     * Do You Remember Me
-     *
-     * Sets a remember me cookie if the user is remembered
-     *
-     * @param $user_id
-     * @return bool
-     */
-	private function lets_remember_you($user_id)
+	/**
+	 * Logged In
+	 *
+	 * Will return true or false if a user is logged in or out
+	 *
+	 * @return bool (true if logged in, false if not logged in)
+	 *
+	 */
+	public function logged_in()
 	{
-		return $this->CI->wolfauth_model->set_remember_me($user_id);
+		return ($this->get_user() !== NULL);
 	}
 
-    /**
-     * Do You Remember Me
-     *
-     * Sets a remember me cookie if the user is remembered
-     *
-     * @return bool
-     */
-	private function do_you_remember_me()
+	/**
+	 * Get User
+	 *
+	 * Get a users session values
+	 *
+	 * @return mixed (will return session object if user exists, otherwise NULL)
+	 *
+	 */
+	public function get_user()
 	{
-		return $this->CI->wolfauth_model->get_remember_me();
-	}
-	
-    /**
-    * Set Error
-    *
-    * Sets an error message
-    * 
-    * @param mixed $error
-    * @return string
-    */
-    public function set_error($error)
-    {
-        $this->errors[] = $error;
-        
-        return $error;
-    }
-    
-    /**
-    * Set Message
-    *
-    * Sets a message
-    * 
-    * @param mixed $message
-    * @return string
-    */
-    public function set_message($message)
-    {
-        $this->messages[] = $message;
 
-        return $message;
-    }
-	
-   /**
-    * Auth Errors
-    *
-    * Show any error messages relating to the auth class
-    *
-    * @return mixed
-    * 
-    */
-    public function auth_errors()
-    {
-        return (!empty($this->errors)) ? $this->errors : FALSE;
-    }
-	
-   /**
-    * Auth Messages
-    *
-    * Show any messages relating to the auth class
-    *
-    * @return mixed
-    * 
-    */
-    public function auth_messages()
-    {
-        return (!empty($this->messages)) ? $this->messages : FALSE;
-    }
+	}
+
+	/**
+	 * Hash Password
+	 *
+	 * Hashes a password using the hash function sha256 by default
+	 *
+	 * @param $password - The password to hash
+	 * @return string
+	 *
+	 */
+	public function hash_password($password)
+	{
+		return $this->hash($password);
+	}
+
+	/**
+	 * Hash
+	 *
+	 * Will hash a string using sha256 by default and then return it
+	 *
+	 * @param $string - The string to be hashed
+	 * @return string
+	 *
+	 */
+	public function hash($string)
+	{
+		return hash_hmac('sha256', $string, NULL);
+	}
+
+
 }
