@@ -13,49 +13,61 @@
  * @version   2.0
  */
 
-// Valid drivers for Wolfauth, add in 3rd party driver names here
-$config['drivers'] = array('auth_simpleauth');
+$config['wolfauth'] = array(
 
-// Default driver to use
-$config['default_driver'] = "simpleauth";
+	// Valid drivers for the Auth class
+	'drivers' => array('auth_simpleauth'),
+	
+	// The default auth driver to use
+	'driver'   => 'simpleauth',
 
-// Identity to valid by; 'username', 'email' or 'auto' - auto will determine if a username or email
-$config['identity_method'] = "auto";
+	// Require users to activate their accounts
+	'site.require_activation' => false,
 
-// The name of the site
-$config['site_name'] = "WolfAuth";
+	// The default login identity method to use (username or email)
+	'identity' => 'username',
 
-// The email of the site administrator
-$config['admin_email'] = "test@domain.com";
+	// The name of your site used for emails
+	'site.name' => 'WolfAuth',
 
-// The location of the password reset link
-$config['reset_password_link'] = "testauth/resetpassword";
+	// The email address of the site administrator
+	'site.admin_email' => 'test@domain.com',
 
-// Name of our auth cookie
-$config['cookie.name'] = "wolfauth";
+	// The password reset link sans the http://www part
+	'reset_password_link' => 'testauth/resetpassword',
 
-// How long in seconds this cookie will last until expiry
-// Default is 7 days
-$config['cookie.expiry'] = 604800;
+	// The name to use for session cookies
+	'cookie.name' => 'wolfauth',
 
-// Wolfauth table names
-$config['table.users']       = "users";
-$config['table.usermeta']    = "user_meta";
-$config['table.roles']       = "roles";
-$config['table.attempts']    = "login_attempts";
-$config['table.permissions'] = "permissions";
-$config['table.sessions']    = "ci_sessions";
+	// Expiry of site cookies. Default is 7 days
+	'cookie.expiry' => 604800,
 
-// Admin roles by default
-$config['roles.admin'] = array('admin');
 
-// Roles which identify a guest (should usually only be one)
-$config['roles.guest'] = array('guest');
 
-// Attempts expiry in seconds (15 minutes)
-$config['attempts.expiry'] = 900;
+	// Table names
 
-// Require users to activate their accounts via an email link
-$config['require_activation'] = false;
+	'table.users'       => 'table.users',
+	'table.roles'       => 'roles',
+	'table.attempts'    => 'attempts',
+	'table.permissions' => 'permissions',
+	'table.sessions'    => 'ci_sessions',
 
-?>
+
+
+	// Default roles
+
+	// Define admin roles here
+	'roles.admin' => array('admin'),
+	'roles.guest' => array('guest'),
+
+
+
+	// Attempts
+
+	// Time between max allowed tries (15 minutes)
+	'attempts.expiry'  => 900,
+
+	// Number of tries allowed before blocked for above time
+	'attempts.maximum' => 3
+
+);

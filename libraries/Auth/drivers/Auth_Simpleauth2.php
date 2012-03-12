@@ -1,9 +1,19 @@
-<?php
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+/**
+ * WolfAuth
+ *
+ * An open source driver based authentication library for Codeigniter
+ *
+ * @package   WolfAuth
+ * @author    Dwayne Charrington
+ * @copyright Copyright (c) 2012 Dwayne Charrington.
+ * @link      http://ilikekillnerds.com
+ * @license   http://www.apache.org/licenses/LICENSE-2.0.html
+ * @version   2.0
+ */
 
 class Auth_simpleauth extends CI_Driver {
-	
-	// Codeigniter instance
-	public $_ci;
 
 	// Codeigniter session
 	public $_session;
@@ -11,29 +21,17 @@ class Auth_simpleauth extends CI_Driver {
 	// User object
 	public $_user;
 
-	// Config values array
-	public $_config;
-
 	/**
 	 * Constructor
 	 *
 	 */
 	public function __construct()
 	{
-		// Get the Codeigniter instance
-		$this->_ci =& get_instance();
-
-		// Load the basic auth config file
-		$this->_ci->load->config('wolfauth');
-
-		// Get the basic config
-		$this->_config = config_item('wolfauth');
-
 		// Load needed libraries, models and helpers
-		$this->_ci->load->library('session');		
-		$this->_ci->load->model('wolfauth_users');
-		$this->_ci->load->model('wolfauth_roles');
-		$this->_ci->load->model('wolfauth_permissions');	
+		$this->ci->load->library('session');		
+		$this->ci->load->model('wolfauth_users');
+		$this->ci->load->model('wolfauth_roles');
+		$this->ci->load->model('wolfauth_permissions');	
 	}
 
 	/**
@@ -78,7 +76,7 @@ class Auth_simpleauth extends CI_Driver {
 	public function logout()
 	{
 		// Destroy the session
-		$this->_ci->session->session_destroy();
+		$this->ci->session->session_destroy();
 
 		// Check we're definitely not logged in now
 		return !$this->logged_in();
