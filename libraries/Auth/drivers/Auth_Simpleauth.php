@@ -92,7 +92,7 @@ class Auth_simpleauth extends CI_Driver {
 	 */
 	public function logged_in()
 	{
-		return ($this->get_user() !== NULL);
+		return $this->session->userdata('logged_in');
 	}
 
 	/**
