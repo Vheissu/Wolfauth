@@ -1,0 +1,3 @@
+Installing and using WolfAuth is as easy as riding a bike, only without knowing how to ride a bike. After you have downloaded the files. extract the folder 'application' into your Codeigniter application root directory. Nothing should be overwritten as Wolf uses folder name spacing where possible and namespaces with WolfAuth in variable and file names where possible.
+
+Codeigniter currently does not have support for autoloading drivers (yet), so to load WolfAuth you can do it two different ways. Create a My_Controller.php file in your application/core directory and then add a $this->load->driver('auth'); into a constructor. Then in each controller of your project extend the MY_Controller class.
