@@ -1,10 +1,10 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-// Include user defined roles
-include 'wolfauth_roles.php';
+// Valid drivers
+$config['drivers'] = array('auth_simpleauth');
 
-// File defined permissions for accessing things
-include 'wolfauth_permissions.php';
+// Set the default driver to use
+$config['default_driver'] = 'simpleauth';
 
 // The config for Wolfauth
 $config['wolfauth'] = array(
@@ -24,10 +24,13 @@ $config['wolfauth'] = array(
 	// How do users login; via a username or email address? Default: 'username'
 	'login.identity' => 'username',
 	
-	// To add new default roles, please edit the file wolfauth_roles.php in the same directory as this file
-	'roles.user'   => $user_roles,
-	'roles.guest'  => $guest_roles,
-	'roles.editor' => $editor_roles,
-	'roles.admin'  = $admin_roles
+	// User roles
+	'roles.user'   => array(),
+
+	// Admin roles
+	'roles.admin'  => array(),
+
+	// Super admin roles
+	'roles.sadmin' => array()
 	
 );
