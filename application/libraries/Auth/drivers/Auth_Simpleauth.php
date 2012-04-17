@@ -2,19 +2,11 @@
 
 class Auth_Simpleauth extends CI_Driver {
 
+	// Codeigniter instance
 	public $CI;
 
-	// Role slugs for administrators
-	protected $admin_roles     = array('admin', 'super_admin');
-
-	// Role slugs for editors
-	protected $editor_roles    = array('editor', 'super_editor');
-
-	// Role slugs for standard users
-	protected $user_roles      = array('user');
-
-	// Roles slugs for guests (should usually only be the one slug)
-	protected $guest_roles     = array('guest');
+	// Group ID for current user - 0 means guest
+	protected $group_id = 0;
 	
 	public function __construct()
 	{
@@ -24,11 +16,28 @@ class Auth_Simpleauth extends CI_Driver {
 		// Load needed Codeigniter Goodness
 		$this->CI->load->database();
 		$this->CI->load->library('session');
-		$this->CI->load->model('user_model');
+		$this->CI->load->model('simpleauth_model');
 		$this->CI->load->helper('cookie');
+
+		// Store the group ID for easier reference
+		$this->group_id = $this->CI->session->userdata('group_id');
 
 		// Check for a rememberme me cookie
 		$this->_check_remember_me();
+	}
+
+
+	/**
+	 * Is Super Admin
+	 *
+	 * Is the currently logged in user a super administrator?
+	 *
+	 * @return bool
+	 *
+	 */	
+	public function is_super_admin()
+	{
+		return (in_array($this->group_id, $this->_config['roles.sadmin'])) ? TRUE : FALSE;
 	}
 
 	/**
@@ -41,46 +50,27 @@ class Auth_Simpleauth extends CI_Driver {
 	 */
 	public function is_admin()
 	{
-		return (in_array($this->CI->session->userdata('role_slug'), $this->admin_roles)) ? TRUE : FALSE;
+		return (in_array($this->group_id, $this->_config['roles.admin']) OR in_array($this->group_id, $this->_config['roles.sadmin'])) ? TRUE : FALSE;
 	}
 
-	/**
-	 * Is Editor
-	 *
-	 * Is the currently logged in user an editor?
-	 *
-	 * @return bool
-	 *
-	 */
-	public function is_editor()
-	{
-		return (in_array($this->CI->session->userdata('role_slug'), $this->editor_roles)) ? TRUE : FALSE;
-	}
-
-	/**
-	 * Is User
-	 *
-	 * Is the currently logged in user a user?
-	 *
-	 * @return bool
-	 *
-	 */
 	public function is_user()
 	{
-		return (in_array($this->CI->session->userdata('role_slug'), $this->user_roles)) ? TRUE : FALSE;
+		return (in_array($this->group_id, $this->_config['roles.user'])) ? TRUE : FALSE;
 	}
 
 	/**
-	 * Is Guest
+	 * Is Group
 	 *
-	 * Is the current user a guest?
+	 * Does the currently logged in user belong to a
+	 * particular group?
 	 *
-	 * @return bool
+	 * @param int $id
+	 * @return bool - true if yes, false if no	 
 	 *
 	 */
-	public function is_guest()
+	public function is_group($id)
 	{
-		return (in_array($this->CI->session->userdata('role_slug'), $this->guest_roles)) ? TRUE : FALSE;
+		return ($id == $this->group_id) ? TRUE : FALSE;
 	}
 
 	/**
@@ -109,6 +99,11 @@ class Auth_Simpleauth extends CI_Driver {
 		return ($this->CI->session->userdata('user_id')) ? $this->CI->session->userdata('user_id') : FALSE;
 	}
 
+	public function group()
+	{
+		return $this->group_id;
+	}
+
 	/**
 	 * Login
 	 *
@@ -124,6 +119,7 @@ class Auth_Simpleauth extends CI_Driver {
 		// Get the user from the database
 		$user = $this->CI->user_model->get_user($username);
 
+		// The user was found
 		if ($user)
 		{
 			// Compare the user and pass
@@ -134,13 +130,15 @@ class Auth_Simpleauth extends CI_Driver {
 				$role_slug = $user->row('role_slug');
 				$user_id   = $user->row('id');
 				$user_name = $user->row('username');
+				$email     = $user->row('email');
 
 				$this->CI->session->set_userdata(array(
 					'user_id'	=> $user_id,
 					'role_id'	=> $role_id,
 					'role_name' => $role_name,
 					'role_slug' => $role_slug,
-					'username'	=> $user_name
+					'username'	=> $user_name,
+					'email'     => $email
 				));
 
 				// Do we rememberme them?
@@ -179,34 +177,6 @@ class Auth_Simpleauth extends CI_Driver {
 		);
 
 		$this->CI->user_model->update_user($user_data);
-	}
-
-	/**
-	 * Has Permission
-	 *
-	 * Does the current user have permission to access this resource?
-	 *
-	 * @param mixed $permission
-	 * @return bool (TRUE if user is allowed to access, FALSE if not allowed access)
-	 *
-	 *
-	 */
-	public function has_permission($permission = '')
-	{
-		// If no permission supplied
-		if ($permission == '')
-		{
-			// Permission is the first URL segment
-			$permission = $this->CI->uri->segment(1); 
-		}
-
-		// Get the current user ID
-		$user_id = $this->user_id();
-
-		// Return boolean value of TRUE or FALSE
-		return $this->user_model->has_permission($user_id, $permission);
-
-
 	}
 
 	/**

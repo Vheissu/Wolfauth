@@ -39,9 +39,9 @@ class Auth extends CI_Driver_Library {
 		// Get and store Wolfauth configuration values
 		$this->_config = config_item('wolfauth');
 		
-		$this->valid_drivers = $this->CI->config->item('drivers', 'wolfauth');
+		$this->valid_drivers = config_item('drivers');
 		
-		$this->_driver = $this->CI->config->item('default_driver', 'wolfauth');
+		$this->_driver = config_item('default_driver');
 	}
 
     /*
