@@ -48,41 +48,25 @@ CREATE TABLE `login_attempts` (
 -- ----------------------------
 
 -- ----------------------------
--- Table structure for `permissions`
+-- Table structure for `groups`
 -- ----------------------------
-DROP TABLE IF EXISTS `permissions`;
-CREATE TABLE `permissions` (
+DROP TABLE IF EXISTS `groups`;
+CREATE TABLE `groups` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `permission` varchar(120) NOT NULL,
-  `permission_description` text NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- ----------------------------
--- Records of permissions
--- ----------------------------
-
--- ----------------------------
--- Table structure for `roles`
--- ----------------------------
-DROP TABLE IF EXISTS `roles`;
-CREATE TABLE `roles` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `role_name` varchar(120) NOT NULL,
-  `role_slug` varchar(150) NOT NULL,
+  `group_name` varchar(120) NOT NULL,
+  `group_slug` varchar(150) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `Unique Role ID` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+  UNIQUE KEY `Unique Group ID` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
--- Records of roles
+-- Records of Groups
 -- ----------------------------
-INSERT INTO roles VALUES ('1', 'Guest User', 'guest');
-INSERT INTO roles VALUES ('2', 'Standard User', 'user');
-INSERT INTO roles VALUES ('3', 'Editor', 'editor');
-INSERT INTO roles VALUES ('4', 'Super Editor', 'super_editor');
-INSERT INTO roles VALUES ('5', 'Administrator', 'admin');
-INSERT INTO roles VALUES ('6', 'Super Admin', 'super_admin');
+INSERT INTO groups VALUES ('1', 'Standard Users', 'users');
+INSERT INTO groups VALUES ('2', 'Editors', 'editors');
+INSERT INTO groups VALUES ('3', 'Super Editors', 'super_editors');
+INSERT INTO groups VALUES ('4', 'Administrators', 'admins');
+INSERT INTO groups VALUES ('5', 'Super Admins', 'super_admins');
 
 -- ----------------------------
 -- Table structure for `users`
@@ -90,7 +74,7 @@ INSERT INTO roles VALUES ('6', 'Super Admin', 'super_admin');
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` bigint(50) unsigned NOT NULL AUTO_INCREMENT,
-  `role_id` int(10) NOT NULL DEFAULT '0',
+  `group_id` int(10) NOT NULL DEFAULT '0',
   `username` varchar(120) NOT NULL,
   `email` varchar(150) NOT NULL,
   `password` varchar(250) NOT NULL,
@@ -100,19 +84,4 @@ CREATE TABLE `users` (
 
 -- ----------------------------
 -- Records of users
--- ----------------------------
-
--- ----------------------------
--- Table structure for `users_permissions`
--- ----------------------------
-DROP TABLE IF EXISTS `users_permissions`;
-CREATE TABLE `users_permissions` (
-  `id` bigint(10) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(10) NOT NULL,
-  `permission_id` int(10) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- ----------------------------
--- Records of users_permissions
 -- ----------------------------
