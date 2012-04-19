@@ -213,6 +213,36 @@ class Simpleauth_model extends CI_Model {
 	}
 
 	/**
+	 * Adds a capability to a user role to allow access to thing
+	 *
+	 * @param string $role - The role slug name
+	 * @param string $capability - The name of the capability we're adding
+	 *
+	 *
+	 */
+	public function add_capability_to_role($role, $capability)
+	{
+		// Get a role by its role slug
+		$role_info = $this->get_role($role, 'role');
+
+		// If we have info about this role, it exists and continue
+		if ($role_info)
+		{
+			// The role ID
+			$data['role_id'] = $role_info->id;
+
+			// The capability ID
+			$data['capability_id'] = $this->get_capability_id($capability);
+
+			// Store the info in the database
+			$this->db->insert('roles_capabilities', $data);
+
+			// Was the capability added to the role?
+			return ($this->db->affected_rows() > 0) ? TRUE : FALSE;
+		}
+	}
+
+	/**
 	 * Deletes role <> capability relationships
 	 *
 	 * @param	string $name
@@ -293,7 +323,95 @@ class Simpleauth_model extends CI_Model {
 	}
 
 	/**
-	 * Generate Password
+	 * Adds a new role to the roles database
+	 *
+	 * @param string $role - The role slug to add
+	 * @param string $display_name - Human readable name of the role
+	 * @return bool - True if the role was added, False if it wasn't
+	 *
+	 */
+	public function add_role($role, $display_name)
+	{
+		// Prep the role before inserting into the database
+		$data['role'] = trim($role);
+		$data['display_name'] = trim($display_name);
+
+		// Insert the role into the database
+		$this->db->insert('roles', $data);
+
+		// Was the role added into the database?
+		return ($this->db->affected_rows() > 0) ? TRUE : FALSE;
+	}
+
+	/**
+	 * Updates an already existent role in the roles table
+	 *
+	 * @param string $role - The role slug to identify by
+	 * @param array $data - The array of new data values to add
+	 * @return bool - Returns True if update was success of False if it wasn't
+	 *
+	 */
+	public function update_role($role, $data = array())
+	{
+		// Make sure we have data to actually update in the database
+		if (!empty($data))
+		{
+			// Look for the role we're updating
+			$this->db->where('role', $role);
+
+			// Return True if the update was successfull or False if unsuccessful
+			return ( ! $this->db->update('roles', $data)) ? FALSE : TRUE;	
+		}
+	}
+
+	/**
+	 * Deletes a role from the database
+	 *
+	 * @param string $role - The role slug we're removing
+	 * @param bool $delete_relationships - Delete all role > capability relationships too?
+	 *
+	 */
+	public function delete_role($role, $delete_relationships = TRUE)
+	{
+		// Find this role...
+		$this->db->where('role', $role);
+
+		// Delete the role, yeowww
+		$this->db->delete('roles');
+
+		// If we're deleting the role relationships in our mapping table
+		if ($delete_relationships === TRUE)
+		{
+			$this->delete_role_relationships($role;)
+		}
+
+		// If we have deleted a row, return True otherwise return False
+		return ($this->db->affected_rows() > 0) ? TRUE : FALSE;
+	}
+
+	/**
+	 * Deletes role <> capability relationships
+	 *
+	 * @param	string $name
+	 * @return	bool
+	 */
+	public function delete_role_relationships($name)
+	{
+		// Get the role info
+		$role_info = $this->get_role($name, 'role');
+
+		// Find the mapping entries in the database
+		$this->db->where('role_id', $role_info->id);
+
+		// Delete the capability
+		$this->db->delete('roles_capabilities');
+
+		// Was the capability relationship deleted?
+		return ($this->db->affected_rows() > 0) ? TRUE : FALSE;
+	}
+
+	/**
+	 * Generates a hashed password
 	 *
 	 * @param	string	password
 	 * @return	string
@@ -301,7 +419,7 @@ class Simpleauth_model extends CI_Model {
 	public function generate_password($password)
 	{
 		// Return sha256 encrypted password
-		return hash_hmac('sha256', $password, NULL);
+		return hash_hmac($this->_config['hash.method'], $password, $this->_config['hash.key']);
 	}
 
 }

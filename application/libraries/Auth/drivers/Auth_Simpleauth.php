@@ -104,32 +104,6 @@ class Auth_Simpleauth extends CI_Driver {
 	}
 
 	/**
-	 * Does the current user have permission to access this resource?
-	 *
-	 * @param mixed $permission
-	 * @return bool (TRUE if user is allowed to access, FALSE if not allowed access)
-	 *
-	 *
-	 */
-	public function has_permission($permission = '')
-	{
-		// If no permission supplied
-		if ($permission == '')
-		{
-			// Permission is the first URL segment
-			$permission = $this->CI->uri->segment(1); 
-		}
-
-		// Get the current user ID
-		$user_id = $this->user_id();
-
-		// Return boolean value of TRUE or FALSE
-		return $this->user_model->has_permission($user_id, $permission);
-
-
-	}
-
-	/**
 	 * Updates the remember me cookie and database information
 	 *
 	 * @param	string unique identifier

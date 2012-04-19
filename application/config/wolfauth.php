@@ -4,10 +4,10 @@
 $config['wolfauth'] = array(
 
 	// Password hashing method
-	'hash_method' => 'sha256',
+	'hash.method' => 'sha256',
 
 	// Hash key
-	'hash_key' => 'kjldf983jj0284378383@#',
+	'hash.key' => 'kjldf983jj0284378383@#',
 	
 	// The name of the site (used for emails, etc)
 	'site.name' => 'Wolfauth Test',
