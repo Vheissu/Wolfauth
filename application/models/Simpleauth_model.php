@@ -1,46 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class User_model extends CI_Model {
-
-	/**
-	 * Get Role Name
-	 *
-	 * Gets a role name
-	 *
-	 * @param	int
-	 * @return	mixed (string on success, FALSE on fail)
-	 */
-	public function get_role_name($role_id)
-	{
-		$this->db->select('role_name');
-		$this->db->where('id', $role_id);
-		$role = $this->db->get('roles');
-
-		return ($role->num_rows == 1) ? $role->row('role_name') : FALSE;
-	}
-
-	/**
-	 * Insert Role
-	 *
-	 * Inserts a new role
-	 *
-	 * @param	string $role_name
-	 * @param   string $role_slug (optional) 
-	 * @return	mixed (int on success, FALSE on fail)
-	 */
-	public function insert_role($role_name = '', $role_slug = '')
-	{
-		$this->db->set('role_name', $role_name);
-
-		// If no role slug supplied, create one
-		if ($role_slug == '') {
-			$role_slug = url_title($role_name, 'underscore');
-		}
-
-		$this->db->set('role_slug', $role_slug);
-
-		return ($this->db->insert('roles')) ? $this->db->insert_id() : FALSE;
-	}
+class Simpleauth_model extends CI_Model {
 
 	/**
 	 * Get Users
@@ -53,7 +13,7 @@ class User_model extends CI_Model {
 	 */
 	public function get_users($limit = 10, $offset = 0)
 	{
-		$fields = 'users.id, users.username, users.email, users.password, users.role_id, roles.role_name, roles.role_slug';
+		$fields = 'users.id, users.username, users.email, users.password, users.role_id, roles.role, roles.display_name AS role_name';
 
 		// If we don't have a return all users value, use the limit and offset values
 		if ($limit != '*')
@@ -81,14 +41,28 @@ class User_model extends CI_Model {
 	/**
 	 * Get User
 	 *
-	 * Returns all user information based on username
+	 * Returns all user information based on username or email
 	 *
-	 * @param	string
+	 * @param	string $email
 	 * @return	mixed
 	 */
-	public function get_user($username)
+	public function get_user($identity)
 	{
-		return $this->_get_user($username);
+		// This will be populated with the user info
+		$user = '';
+		
+		// If the default login method is username
+		if ($this->auth->_config['login.method'] == 'username')
+		{
+			$user = $this->_get_user($identity);
+		}
+		else
+		{
+			$this->_get_user($identity, 'email');
+		}
+
+		// Return the user
+		return $user;
 	}
 
 	/**
@@ -96,12 +70,12 @@ class User_model extends CI_Model {
 	 *
 	 * Returns all user information based on user id
 	 *
-	 * @param	int $id - User ID
+	 * @param	int $user_id - User ID
 	 * @return	mixed
 	 */
-	public function get_user_by_id($id)
+	public function get_user_by_id($user_id)
 	{
-		return $this->_get_user($id, 'id');
+		return $this->_get_user($user_id, 'id');
 	}
 
 	/**
@@ -181,9 +155,7 @@ class User_model extends CI_Model {
 	}
 
 	/**
-	 * Delete User
-	 *
-	 * Deletes a user
+	 * Delete a user
 	 *
 	 * @param	integer $user_id
 	 * @return	bool
@@ -198,31 +170,126 @@ class User_model extends CI_Model {
 	}
 
 	/**
-	 * Has Permission
+	 * Adds a capability to the database
 	 *
-	 * Does the user have a particular permission
+	 * @param	integer $user_id
+	 * @return	bool
+	 */
+	public function add_capability($name)
+	{
+		// Insert the capability
+		$data['capability'] = $name;
+
+		// Insert the new capability
+		$this->db->insert('capabilities', $data);
+
+		// Was the capability added in
+		return ($this->db->affected_rows() > 0) ? TRUE : FALSE;
+	}
+
+	/**
+	 * Deletes a capability from the database
 	 *
-	 * @param  int   $user_id
-	 * @param  mixed $permission
-	 * @return bool
+	 * @param	string $name
+	 * @param	bool $delete_relationships - Should all relationships be severed as well?
+	 * @return	bool
+	 */
+	public function delete_capability($name, $delete_relationships = TRUE)
+	{
+		// Find the capability
+		$this->db->where('capability', $name);
+
+		// Delete the capability
+		$this->db->delete('capabilities');
+
+		if ($delete_relationships === TRUE)
+		{
+			// Delete the relationships
+			$this->delete_capability_relationships($name);
+		}
+
+		// Was the capability deleted?
+		return ($this->db->affected_rows() > 0) ? TRUE : FALSE;
+	}
+
+	/**
+	 * Deletes role <> capability relationships
 	 *
+	 * @param	string $name
+	 * @return	bool
+	 */
+	public function delete_capability_relationships($name)
+	{
+		// Get the ID of our capability
+		$capability_id = $this->get_capability_id($name);
+
+		$this->db->where('capability_id', $capability_id);
+
+		// Delete the capability
+		$this->db->delete('roles_capabilities');
+
+		// Was the capability relationship deleted?
+		return ($this->db->affected_rows() > 0) ? TRUE : FALSE;
+	}
+
+	/**
+	 * Get a list of capabilities for a particular role
+	 *
+	 * @param string $role - The role name to get capabilities from
 	 *
 	 */
-	public function has_permission($user_id, $permission)
+	public function get_capabilities($role)
 	{
-		$this->db->select('users.id, users.username, users_permissions.id, permissions.permission_string');
-		$this->db->where('users.id', $user_id);
-		
-		// Join our joining table and permissions
-		$this->db->join('users_permissions', 'users_permissions.user_id = users.id');
-		$this->db->join('permissions', 'users_permissions.user_id = users.id');
+		// Get the role meta via the $role slug
+		$role_info = $this->get_role($role, 'role');
 
-		// Find out if the user has the position
-		$this->db->where('permissions.permission_string', $permission);
-		$this->db->get('users');
+		$this->db->select('capabilities.id, capabilities.capability');
+		$this->db->where('role', $role_info->role);
+		$this->db->join('roles_capabilities', 'capabilities.id = roles_capabilities.capability_id');
 
-		// Does the user have permission? 
-		return ($this->db->num_rows() == 1) ? TRUE : FALSE;
+		// Get the results
+		$result = $this->db->get('roles');
+
+		// Return the results if capabilities were found
+		return ($result->num_rows() > 0) ? $result->result() : FALSE;
+	}
+
+	/**
+	 * Get the ID of a capability based on its name
+	 *
+	 * @param string $name - The capability name
+	 *
+	 */
+	public function get_capability_id($name)
+	{
+		$this->db->select('id');
+		$this->db->where('capability', $name);
+
+		// Get the capabilities
+		$result = $this->db->get('capabilities');
+
+		// Return the row
+		return ($result->num_rows() == 1) ? $result->row() : FALSE;
+	}
+
+	/**
+	 * Get a role based on criteria
+	 *
+	 * @param string|int $needle - The value to find
+	 * @param string $haystack - The type of value we're searching
+	 * @return object on Success or false on Failure
+	 *
+	 */
+	public function get_role($needle, $haystack = 'id')
+	{
+		// Fetch
+		$this->db->where($haystack, $needle);
+
+		// Search the roles table
+		$result = $this->db->get('roles');
+
+		// Return the database row if successful or FALSE on failure
+		return ( $result->num_rows() == 1 ) ? $result->row() : FALSE;
 	}
 
 	/**

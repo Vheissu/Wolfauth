@@ -10,10 +10,35 @@ Target Server Type    : MYSQL
 Target Server Version : 50516
 File Encoding         : 65001
 
-Date: 2012-03-12 21:33:12
+Date: 2012-04-19 23:32:33
 */
 
 SET FOREIGN_KEY_CHECKS=0;
+-- ----------------------------
+-- Table structure for `capabilities`
+-- ----------------------------
+DROP TABLE IF EXISTS `capabilities`;
+CREATE TABLE `capabilities` (
+  `id` bigint(10) unsigned NOT NULL AUTO_INCREMENT,
+  `capability` varchar(120) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
+
+-- ----------------------------
+-- Records of capabilities
+-- ----------------------------
+INSERT INTO capabilities VALUES ('1', 'read');
+INSERT INTO capabilities VALUES ('2', 'edit_users');
+INSERT INTO capabilities VALUES ('3', 'edit_pages');
+INSERT INTO capabilities VALUES ('4', 'edit_listings');
+INSERT INTO capabilities VALUES ('5', 'add_listing');
+INSERT INTO capabilities VALUES ('6', 'delete_listing');
+INSERT INTO capabilities VALUES ('7', 'edit_others_listings');
+INSERT INTO capabilities VALUES ('8', 'edit_published_listings');
+INSERT INTO capabilities VALUES ('9', 'ban_user');
+INSERT INTO capabilities VALUES ('10', 'unban_user');
+INSERT INTO capabilities VALUES ('11', 'god_power');
+
 -- ----------------------------
 -- Table structure for `ci_sessions`
 -- ----------------------------
@@ -40,7 +65,6 @@ CREATE TABLE `login_attempts` (
   `id` bigint(50) unsigned NOT NULL AUTO_INCREMENT,
   `ip_address` varchar(120) DEFAULT NULL,
   `attempts` int(5) NOT NULL DEFAULT '0',
-  `last_attempt` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -49,25 +73,51 @@ CREATE TABLE `login_attempts` (
 -- ----------------------------
 
 -- ----------------------------
--- Table structure for `groups`
+-- Table structure for `roles`
 -- ----------------------------
-DROP TABLE IF EXISTS `groups`;
-CREATE TABLE `groups` (
+DROP TABLE IF EXISTS `roles`;
+CREATE TABLE `roles` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `group_name` varchar(120) NOT NULL,
-  `group_slug` varchar(150) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `Unique Group ID` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+  `role` varchar(150) NOT NULL,
+  `display_name` varchar(120) NOT NULL,
+  PRIMARY KEY (`id`,`display_name`),
+  UNIQUE KEY `Unique Role ID` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
--- Records of Groups
+-- Records of roles
 -- ----------------------------
-INSERT INTO groups VALUES ('1', 'Standard Users', 'users');
-INSERT INTO groups VALUES ('2', 'Editors', 'editors');
-INSERT INTO groups VALUES ('3', 'Super Editors', 'super_editors');
-INSERT INTO groups VALUES ('4', 'Administrators', 'admins');
-INSERT INTO groups VALUES ('5', 'Super Admins', 'super_admins');
+INSERT INTO roles VALUES ('1', 'guest', 'Guest User');
+INSERT INTO roles VALUES ('2', 'user', 'Standard User');
+INSERT INTO roles VALUES ('3', 'editor', 'Editor');
+INSERT INTO roles VALUES ('4', 'super_editor', 'Super Editor');
+INSERT INTO roles VALUES ('5', 'admin', 'Administrator');
+INSERT INTO roles VALUES ('6', 'super_admin', 'Super Admin');
+
+-- ----------------------------
+-- Table structure for `roles_capabilities`
+-- ----------------------------
+DROP TABLE IF EXISTS `roles_capabilities`;
+CREATE TABLE `roles_capabilities` (
+  `id` bigint(10) unsigned NOT NULL AUTO_INCREMENT,
+  `role_id` int(10) unsigned NOT NULL,
+  `capability_id` int(10) NOT NULL,
+  PRIMARY KEY (`id`,`role_id`,`capability_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+
+-- ----------------------------
+-- Records of roles_capabilities
+-- ----------------------------
+INSERT INTO roles_capabilities VALUES ('1', '6', '11');
+INSERT INTO roles_capabilities VALUES ('2', '0', '2');
+INSERT INTO roles_capabilities VALUES ('3', '0', '3');
+INSERT INTO roles_capabilities VALUES ('4', '0', '4');
+INSERT INTO roles_capabilities VALUES ('5', '0', '5');
+INSERT INTO roles_capabilities VALUES ('6', '0', '6');
+INSERT INTO roles_capabilities VALUES ('7', '0', '7');
+INSERT INTO roles_capabilities VALUES ('8', '0', '8');
+INSERT INTO roles_capabilities VALUES ('9', '0', '9');
+INSERT INTO roles_capabilities VALUES ('10', '0', '10');
 
 -- ----------------------------
 -- Table structure for `users`
@@ -75,16 +125,15 @@ INSERT INTO groups VALUES ('5', 'Super Admins', 'super_admins');
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` bigint(50) unsigned NOT NULL AUTO_INCREMENT,
-  `group_id` int(10) NOT NULL DEFAULT '1',
+  `role_id` int(10) NOT NULL DEFAULT '0',
   `username` varchar(120) NOT NULL,
   `email` varchar(150) NOT NULL,
   `password` varchar(250) NOT NULL,
-  `user_status` enum('pending', 'active', 'banned') NOT NULL DEFAULT 'pending',
-  `activation_code` varchar(250) NOT NULL,
   `remember_me` text NOT NULL,
   PRIMARY KEY (`id`,`username`,`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of users
 -- ----------------------------
+INSERT INTO users VALUES ('1', '6', 'admin', 'admin@localhost', '', '');

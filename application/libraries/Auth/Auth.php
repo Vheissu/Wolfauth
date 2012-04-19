@@ -16,7 +16,7 @@
 class Auth extends CI_Driver_Library {
 	
 	// Valid drivers to use with Wolfauth (defined in config/wolfauth.php)
-	public $valid_drivers = array();
+	public $_valid_drivers = array();
 	
 	// Codeigniter instance
 	public $CI;
@@ -27,21 +27,25 @@ class Auth extends CI_Driver_Library {
 	// The currently in use driver
 	public $_driver;
 	
-	public function __construct( $params = array() )
+	public function __construct()
 	{
 		$this->CI =& get_instance();
 		
+		// Load needed helpers
 		$this->CI->load->helper('form');
 		$this->CI->load->helper('url');
 		
+		// Load the auth config file
 		$this->CI->config->load('wolfauth');
 		
 		// Get and store Wolfauth configuration values
 		$this->_config = config_item('wolfauth');
 		
-		$this->valid_drivers = config_item('drivers');
+		// Set the drivers defined in the auth config file
+		$this->_valid_drivers = $this->CI->config->item('drivers', 'wolfauth');
 		
-		$this->_driver = config_item('default_driver');
+		// Set the default driver
+		$this->_driver = $this->CI->config->item('default_driver', 'wolfauth');
 	}
 
     /*
@@ -62,15 +66,15 @@ class Auth extends CI_Driver_Library {
 	 *
 	 * Base function for logging in a user
 	 *
-	 * @param $identity (username or email)
+	 * @param $email
 	 * @param $password
-	 * @param (bool) $remeber
+	 * @param (bool) $remember
 	 * @return int
 	 */
-	public function login($identity, $password, $remember = false)
+	public function login($email, $password, $remember = false)
 	{
 		// Call the child driver login method
-		return $this->{$this->_driver}->login($identity, $password, $remember);
+		return $this->{$this->_driver}->login($email, $password, $remember);
 	}
 
 	/*
@@ -82,7 +86,7 @@ class Auth extends CI_Driver_Library {
 	 * @return bool
 	 *
 	 */
-	public function force_login($identity)
+	public function force_login($email)
 	{
 		return $this->{$this->_driver}->force_login();
 	}
