@@ -193,7 +193,7 @@ class Auth_Simpleauth extends CI_Driver {
 	 */
 	public function hash($str)
 	{
-		return hash_hmac($this->_config['hash_method'], $str, $this->_config['hash_key']);
+		return hash_hmac($this->_config['hash.method'], $str, $this->_config['hash.key']);
 	}
 
 

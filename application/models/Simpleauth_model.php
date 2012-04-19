@@ -128,7 +128,7 @@ class Simpleauth_model extends CI_Model {
 	{
 		if (isset($user_data['password']))
 		{
-			$user_data['password'] = $this->generate_password($user_data['password']);
+			$user_data['password'] = $this->auth->hash($user_data['password']);
 		}
 
 		return ($this->db->insert('users', $user_data)) ? $this->db->insert_id() : FALSE;
@@ -148,7 +148,7 @@ class Simpleauth_model extends CI_Model {
 
 		if (isset($user_data['password']))
 		{
-			$user_data['password'] = $this->generate_password($user_data['password']);
+			$user_data['password'] = $this->auth->hash($user_data['password']);
 		}
 
 		return ( ! $this->db->update('users', $user_data)) ? FALSE : TRUE;
@@ -408,18 +408,6 @@ class Simpleauth_model extends CI_Model {
 
 		// Was the capability relationship deleted?
 		return ($this->db->affected_rows() > 0) ? TRUE : FALSE;
-	}
-
-	/**
-	 * Generates a hashed password
-	 *
-	 * @param	string	password
-	 * @return	string
-	 */
-	public function generate_password($password)
-	{
-		// Return sha256 encrypted password
-		return hash_hmac($this->_config['hash.method'], $password, $this->_config['hash.key']);
 	}
 
 }
