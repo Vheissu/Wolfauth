@@ -40,6 +40,7 @@ CREATE TABLE `login_attempts` (
   `id` bigint(50) unsigned NOT NULL AUTO_INCREMENT,
   `ip_address` varchar(120) DEFAULT NULL,
   `attempts` int(5) NOT NULL DEFAULT '0',
+  `last_attempt` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
