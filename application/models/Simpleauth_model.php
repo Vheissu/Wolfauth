@@ -43,7 +43,7 @@ class Simpleauth_model extends CI_Model {
 	 *
 	 * Returns all user information based on username or email
 	 *
-	 * @param	string $email
+	 * @param	string $identity
 	 * @return	mixed
 	 */
 	public function get_user($identity)
@@ -58,7 +58,7 @@ class Simpleauth_model extends CI_Model {
 		}
 		else
 		{
-			$this->_get_user($identity, 'email');
+			$user = $this->_get_user($identity, 'email');
 		}
 
 		// Return the user

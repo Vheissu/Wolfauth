@@ -2,7 +2,14 @@
 
 class Auth_Simpleauth extends CI_Driver {
 
+	// Codeigniter instance
 	public $CI;
+
+	// Where our user role is stored
+	protected $role = array();
+
+	// Currently logged in user capabilities
+	protected $capabilities = array();
 	
 	public function __construct()
 	{
@@ -12,8 +19,11 @@ class Auth_Simpleauth extends CI_Driver {
 		// Load needed Codeigniter Goodness
 		$this->CI->load->database();
 		$this->CI->load->library('session');
-		$this->CI->load->model('user_model');
+		$this->CI->load->model('simpleauth_model');
 		$this->CI->load->helper('cookie');
+
+		$this->role['role'] = 
+		$this->capabilities = $this->CI->simpleauth_model->get_capabilities();
 
 		// Check for a rememberme me cookie
 		$this->_check_remember_me();
@@ -42,6 +52,40 @@ class Auth_Simpleauth extends CI_Driver {
 	}
 
 	/**
+	 * Return current user info
+	 *
+	 * @return object if user logged in or false if logged out
+	 *
+	 */
+	public function get_user()
+	{
+		// Empty user variable
+		$user = "";
+
+		// Make sure we're logged in
+		if ($this->logged_in())
+		{
+			if ($this->auth->_config['login.method'] == 'username')
+			{
+				$user = $this->CI->user_model->_get_user($identity);
+			}
+			else
+			{
+				$user = $this->CI->user_model->_get_user($identity, 'email');
+			}
+		}
+		else
+		{
+			$user = new StdClass;
+			$user->user_id = 0;
+			$user->role    = "guest";
+		}
+
+		// Return the user
+		return $user;
+	}
+
+	/**
 	 * Logs a user in, you guessed it!
 	 *
 	 * @param $identity
@@ -59,12 +103,16 @@ class Auth_Simpleauth extends CI_Driver {
 			// Compare the user and pass
 			if ($this->CI->user_model->generate_password($password) == $user->row('password'))
 			{
-				$user_id = $user->row('id');
-				$email   = $user->row('email');
+				$user_id  = $user->row('id');
+				$username = $user->row('username');
+				$email    = $user->row('email');
+				$role     = $user->row('role');
 
 				$this->CI->session->set_userdata(array(
-					'user_id' => $user_id,
-					'email'	  => $email
+					'user_id'  => $user_id,
+					'username' => $username,
+					'email'	   => $email,
+					'role'     => $role
 				));
 
 				// Do we rememberme them?
