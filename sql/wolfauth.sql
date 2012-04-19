@@ -74,10 +74,12 @@ INSERT INTO groups VALUES ('5', 'Super Admins', 'super_admins');
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` bigint(50) unsigned NOT NULL AUTO_INCREMENT,
-  `group_id` int(10) NOT NULL DEFAULT '0',
+  `group_id` int(10) NOT NULL DEFAULT '1',
+  `user_status` enum('pending', 'active', 'banned') NOT NULL DEFAULT 'pending',
   `username` varchar(120) NOT NULL,
   `email` varchar(150) NOT NULL,
   `password` varchar(250) NOT NULL,
+  `activation_code` varchar(250) NOT NULL,
   `remember_me` text NOT NULL,
   PRIMARY KEY (`id`,`username`,`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
