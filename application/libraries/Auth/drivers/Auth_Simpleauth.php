@@ -81,9 +81,8 @@ class Auth_Simpleauth extends CI_Driver {
 		}
 		else
 		{
-			$user = new StdClass;
-			$user->user_id = 0;
-			$user->role    = "guest";
+			// Get the guest user details
+			$user = $this->get_guest();
 		}
 
 		// Return the user
