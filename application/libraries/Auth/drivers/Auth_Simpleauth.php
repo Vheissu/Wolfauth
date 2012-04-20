@@ -22,8 +22,13 @@ class Auth_Simpleauth extends CI_Driver {
 		$this->CI->load->model('simpleauth_model');
 		$this->CI->load->helper('cookie');
 
-		$this->role['role'] = 
-		$this->capabilities = $this->CI->simpleauth_model->get_capabilities();
+		$user = $this->get_user();
+
+		// Get the user role slug and store it for easier reference
+		$this->role['role'] = $user->role;
+
+		// Get capabilities for this role
+		$this->capabilities = $this->CI->simpleauth_model->get_capabilities($user->role);
 
 		// Check for a rememberme me cookie
 		$this->_check_remember_me();
