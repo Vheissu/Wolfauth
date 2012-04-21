@@ -25,6 +25,9 @@ $config['wolfauth'] = array(
 	'login.max_attempts' => 3,
 	
 	// How do users login; via a username or email address? Default: 'username'
-	'login.identity' => 'username'
+	'login.identity' => 'username',
+
+    // The name of the guest role (the slug not display name)
+    'role.guest' => 'guest'
 	
 );

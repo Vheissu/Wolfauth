@@ -8,6 +8,9 @@ class Auth_Simpleauth extends CI_Driver {
 	// Where our user role is stored
 	protected $role = array();
 
+    // The current user ID
+    protected $user_id;
+
 	// Currently logged in user capabilities
 	protected $capabilities = array();
 	
@@ -22,10 +25,14 @@ class Auth_Simpleauth extends CI_Driver {
 		$this->CI->load->model('simpleauth_model');
 		$this->CI->load->helper('cookie');
 
+        // Get the current user
 		$user = $this->get_user();
 
 		// Get the user role slug and store it for easier reference
 		$this->role['role'] = $user->role;
+
+        // Store the user ID
+        $this->user_id = $user->id;
 
 		// Get capabilities for this role
 		$this->capabilities = $this->CI->simpleauth_model->get_capabilities($user->role);
@@ -42,7 +49,7 @@ class Auth_Simpleauth extends CI_Driver {
 	 */
 	public function logged_in()
 	{
-		return $this->CI->session->userdata('user_id');
+		return $this->user_id();
 	}
 
 	/**
@@ -65,29 +72,42 @@ class Auth_Simpleauth extends CI_Driver {
 	public function get_user()
 	{
 		// Empty user variable
-		$user = "";
+		$user = new StdClass;
 
 		// Make sure we're logged in
 		if ($this->logged_in())
 		{
-			if ($this->auth->_config['login.method'] == 'username')
-			{
-				$user = $this->CI->user_model->_get_user($identity);
-			}
-			else
-			{
-				$user = $this->CI->user_model->_get_user($identity, 'email');
-			}
-		}
+            // Get the user by ID
+		    $user = $this->CI->user_model->_get_user($this->user_id(), 'id');
+        }
 		else
 		{
-			// Get the guest user details
-			$user = $this->get_guest();
+            // Guests don't get a user ID because they're fools
+            $user->id = 0;
+
+            // Set the user to be a guest
+			$user->role = $this->_config['role.guest'];
 		}
 
 		// Return the user
 		return $user;
 	}
+
+    /**
+     * Does the user have a particular capability to do something?
+     *
+     * @param $capability
+     * @param int $user_id
+     */
+    public function user_can($capability, $user_id = 0)
+    {
+        // No user, then default to the current one
+        if ($user_id == 0)
+        {
+            // Get the current user ID
+            $user_id = $this->user_id;
+        }
+    }
 
 	/**
 	 * Logs a user in, you guessed it!
