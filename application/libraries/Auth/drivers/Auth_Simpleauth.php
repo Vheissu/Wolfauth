@@ -188,7 +188,7 @@ class Auth_simpleauth extends CI_Driver {
         $data['password'] = $password;
         $data['role_id']  = $role;
 
-        return $this->simpleauth_model->insert_user();
+        return $this->simpleauth_model->insert_user($data);
     }
 
 	/**
