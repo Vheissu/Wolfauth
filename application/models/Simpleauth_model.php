@@ -2,7 +2,7 @@
 
 class Simpleauth_model extends CI_Model {
 
-	/**
+    /**
 	 * Get Users
 	 *
 	 * Returns all users, allows for pagination
@@ -109,7 +109,7 @@ class Simpleauth_model extends CI_Model {
 	 */
 	protected function _get_user($needle, $haystack = 'username')
 	{
-        $this->select('users.*, roles.role, .roles.display_name AS role_display_name');
+        $this->db->select('users.*, roles.role, roles.display_name AS role_display_name');
 		$this->db->where($haystack, $needle);
         $this->db->join('roles', 'roles.id = users.role_id');
 
@@ -276,11 +276,11 @@ class Simpleauth_model extends CI_Model {
 		$role_info = $this->get_role($role, 'role');
 
 		$this->db->select('capabilities.id, capabilities.capability');
-		$this->db->where('role', $role_info->role);
-		$this->db->join('roles_capabilities', 'capabilities.id = roles_capabilities.capability_id');
+		$this->db->where('role_id', $role_info->id);
+		$this->db->join('capabilities', 'capabilities.id = roles_capabilities.capability_id');
 
 		// Get the results
-		$result = $this->db->get('roles');
+		$result = $this->db->get('roles_capabilities');
 
 		// Return the results if capabilities were found
 		return ($result->num_rows() > 0) ? $result->result() : FALSE;
@@ -290,6 +290,7 @@ class Simpleauth_model extends CI_Model {
 	 * Get the ID of a capability based on its name
 	 *
 	 * @param string $name - The capability name
+     * @return object on success or bool FALSE on failure
 	 *
 	 */
 	public function get_capability_id($name)
@@ -321,7 +322,7 @@ class Simpleauth_model extends CI_Model {
 		$result = $this->db->get('roles');
 
 		// Return the database row if successful or FALSE on failure
-		return ( $result->num_rows() == 1 ) ? $result->row() : FALSE;
+		return ( $result->num_rows() == 1 ) ? $result->row() : new StdClass;
 	}
 
 	/**
@@ -384,7 +385,7 @@ class Simpleauth_model extends CI_Model {
 		// If we're deleting the role relationships in our mapping table
 		if ($delete_relationships === TRUE)
 		{
-			$this->delete_role_relationships($role;)
+			$this->delete_role_relationships($role);
 		}
 
 		// If we have deleted a row, return True otherwise return False

@@ -3,6 +3,12 @@
 // The config for Wolfauth
 $config['wolfauth'] = array(
 
+    // Valid WolfAuth drivers
+    'allowed_drivers' => array('auth_simpleauth'),
+
+    // Default WolfAuth driver to use
+    'default_driver' => 'simpleauth',
+
 	// Password hashing method
 	'hash.method' => 'sha256',
 

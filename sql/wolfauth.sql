@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50516
 File Encoding         : 65001
 
-Date: 2012-04-19 23:32:33
+Date: 2012-04-21 12:17:58
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -103,21 +103,13 @@ CREATE TABLE `roles_capabilities` (
   `role_id` int(10) unsigned NOT NULL,
   `capability_id` int(10) NOT NULL,
   PRIMARY KEY (`id`,`role_id`,`capability_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of roles_capabilities
 -- ----------------------------
 INSERT INTO roles_capabilities VALUES ('1', '6', '11');
-INSERT INTO roles_capabilities VALUES ('2', '0', '2');
-INSERT INTO roles_capabilities VALUES ('3', '0', '3');
-INSERT INTO roles_capabilities VALUES ('4', '0', '4');
-INSERT INTO roles_capabilities VALUES ('5', '0', '5');
-INSERT INTO roles_capabilities VALUES ('6', '0', '6');
-INSERT INTO roles_capabilities VALUES ('7', '0', '7');
-INSERT INTO roles_capabilities VALUES ('8', '0', '8');
-INSERT INTO roles_capabilities VALUES ('9', '0', '9');
-INSERT INTO roles_capabilities VALUES ('10', '0', '10');
+INSERT INTO roles_capabilities VALUES ('11', '1', '1');
 
 -- ----------------------------
 -- Table structure for `users`

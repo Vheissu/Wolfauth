@@ -15,9 +15,6 @@
  
 class Auth extends CI_Driver_Library {
 	
-	// Valid drivers to use with Wolfauth (defined in config/wolfauth.php)
-	public $_valid_drivers = array();
-	
 	// Codeigniter instance
 	public $CI;
 	
@@ -36,16 +33,16 @@ class Auth extends CI_Driver_Library {
 		$this->CI->load->helper('url');
 		
 		// Load the auth config file
-		$this->CI->config->load('wolfauth');
+		$this->CI->config->load('auth');
 		
 		// Get and store Wolfauth configuration values
 		$this->_config = config_item('wolfauth');
 		
 		// Set the drivers defined in the auth config file
-		$this->_valid_drivers = $this->CI->config->item('drivers', 'wolfauth');
+		$this->valid_drivers = $this->_config['allowed_drivers'];
 		
 		// Set the default driver
-		$this->_driver = $this->CI->config->item('default_driver', 'wolfauth');
+		$this->_driver = $this->_config['default_driver'];
 	}
 
     /*

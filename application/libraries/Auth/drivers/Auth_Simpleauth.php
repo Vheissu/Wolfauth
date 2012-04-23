@@ -1,9 +1,15 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Auth_Simpleauth extends CI_Driver {
+class Auth_simpleauth extends CI_Driver {
 
 	// Codeigniter instance
 	public $CI;
+
+    protected $_errors   = array();
+    protected $_messages = array();
+
+    // Empty config array
+    protected $_config = array();
 
 	// Where our user role is stored
 	protected $role = array();
@@ -24,6 +30,12 @@ class Auth_Simpleauth extends CI_Driver {
 		$this->CI->load->library('session');
 		$this->CI->load->model('simpleauth_model');
 		$this->CI->load->helper('cookie');
+
+        // Load the auth config file
+        $this->CI->config->load('auth');
+
+        // Get and store Wolfauth configuration values
+        $this->_config = config_item('wolfauth');
 
         // Get the current user
 		$user = $this->get_user();
@@ -71,17 +83,17 @@ class Auth_Simpleauth extends CI_Driver {
 	 */
 	public function get_user()
 	{
-		// Empty user variable
-		$user = new StdClass;
-
 		// Make sure we're logged in
 		if ($this->logged_in())
 		{
             // Get the user by ID
-		    $user = $this->CI->user_model->_get_user($this->user_id(), 'id');
+		    $user = $this->CI->simpleauth_model->_get_user($this->user_id(), 'id');
         }
 		else
 		{
+            // Empty user variable
+            $user = new stdClass;
+
             // Guests don't get a user ID because they're fools
             $user->id = 0;
 
@@ -120,12 +132,12 @@ class Auth_Simpleauth extends CI_Driver {
 	public function login($identity, $password)
 	{
 		// Get the user from the database
-		$user = $this->CI->user_model->get_user($identity);
+		$user = $this->CI->simpleauth_model->get_user($identity);
 
 		if ($user)
 		{
 			// Compare the user and pass
-			if ($this->CI->user_model->generate_password($password) == $user->row('password'))
+			if ($this->hash($password) == $user->row('password'))
 			{
 				$user_id  = $user->row('id');
 				$username = $user->row('username');
@@ -147,6 +159,10 @@ class Auth_Simpleauth extends CI_Driver {
 
 				return $user_id;
 			}
+            else
+            {
+                $this->set_error('Username and or password was incorrect');
+            }
 		}
 
 		// Looks like the user doesn't exist
@@ -172,7 +188,7 @@ class Auth_Simpleauth extends CI_Driver {
 			'remember_me' => ''
 		);
 
-		$this->CI->user_model->update_user($user_data);
+		$this->CI->simpleauth_model->update_user($user_data);
 	}
 
 	/**
@@ -199,7 +215,7 @@ class Auth_Simpleauth extends CI_Driver {
 		);
 
 		set_cookie($cookie);
-		$this->CI->user_model->update_user(array('id' => $user_id, 'remember_me' => $remember_me));
+		$this->CI->simpleauth_model->update_user(array('id' => $user_id, 'remember_me' => $remember_me));
 	}
 
 	/**
@@ -237,7 +253,7 @@ class Auth_Simpleauth extends CI_Driver {
 				return FALSE;
 			}
 
-			if ($data = $this->CI->user_model->get_user_by_id($user_id))
+			if ($data = $this->CI->simpleauth_model->get_user_by_id($user_id))
 			{
 				// Set session values
 				$this->CI->session->set_userdata(array(
@@ -267,6 +283,45 @@ class Auth_Simpleauth extends CI_Driver {
 	{
 		return hash_hmac($this->_config['hash.method'], $str, $this->_config['hash.key']);
 	}
+
+    /**
+     * Sets an error message
+     *
+     * @param $error
+     */
+    public function set_error($error)
+    {
+        $this->_errors[] = $error;
+    }
+
+    /**
+     * Set a message
+     *
+     * @param $message
+     */
+    public function set_message($message)
+    {
+        $this->_messages[] = $message;
+    }
+
+    /**
+     * Returns the array of auth errors (if any)
+     *
+     * @return string
+     */
+    public function auth_errors()
+    {
+        $output = '';
+        foreach($this->_errors AS $error)
+        {
+            $output .= "<p class='error-msg'>".$error."</p>";
+        }
+
+        // Set the Flashdata
+        $this->CI->session->set_flashdata('errors', $output);
+
+        return $this->CI->session->flashdata('errors');
+    }
 
 
 }
