@@ -34,6 +34,9 @@ $config['wolfauth'] = array(
 	'login.identity' => 'username',
 
     // The name of the guest role (the slug not display name)
-    'role.guest' => 'guest'
+    'role.guest' => 'guest',
+
+    // The human readable spelling of the guest role
+    'role.guest.display_name' => 'Guest'
 	
 );

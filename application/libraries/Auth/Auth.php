@@ -45,9 +45,7 @@ class Auth extends CI_Driver_Library {
 		$this->_driver = $this->_config['default_driver'];
 	}
 
-    /*
-     * Set Driver
-     *
+    /**
      * Sets a driver to use
      *
      * @param $name
@@ -58,39 +56,33 @@ class Auth extends CI_Driver_Library {
 		$this->_driver = trim($name);
 	}
 	
-	/*
-	 * Login
-	 *
+	/**
 	 * Base function for logging in a user
 	 *
-	 * @param $email
+	 * @param $identity
 	 * @param $password
 	 * @param (bool) $remember
 	 * @return int
 	 */
-	public function login($email, $password, $remember = false)
+	public function login($identity, $password, $remember = false)
 	{
 		// Call the child driver login method
-		return $this->{$this->_driver}->login($email, $password, $remember);
+		return $this->{$this->_driver}->login($identity, $password, $remember);
 	}
 
-	/*
-	 * Force Login
-	 *
+	/**
 	 * Force login for a particular username or email
 	 *
 	 * @param $identity (username or email)
 	 * @return bool
 	 *
 	 */
-	public function force_login($email)
+	public function force_login($identity)
 	{
 		return $this->{$this->_driver}->force_login();
 	}
 	
-    /*
-     * Logout
-     *
+    /**
      * Logs a user out
      *
      * @return bool
@@ -100,9 +92,7 @@ class Auth extends CI_Driver_Library {
 		return $this->{$this->_driver}->logout();
 	}
 	
-	/*
-	 * Logged In
-	 *
+	/**
 	 * Is a user currently logged in
 	 *
 	 * @return bool
@@ -114,8 +104,6 @@ class Auth extends CI_Driver_Library {
 	}
 
     /**
-     * Get User
-     *
      * Get the currently logged in user info
      *
      * @return mixed
@@ -125,9 +113,7 @@ class Auth extends CI_Driver_Library {
         return $this->{$this->_driver}->get_user();
     }
 
-    /*
-     * Register
-     *
+    /**
      * Register a user account
      *
      * @param $fields
@@ -140,28 +126,24 @@ class Auth extends CI_Driver_Library {
 	}
 	
 	/**
-	* __call magic function
-	*
-	* Redirect all method calls not in this class to the child class
-	* set in the variable _adapter which is the default class.
-	*
-	* @param mixed $child
-	* @param mixed $arguments
-	* @return mixed
-	*/
+	 * Redirect all method calls not in this class to the child class
+	 * set in the variable _adapter which is the default class.
+	 *
+	 * @param mixed $child
+	 * @param mixed $arguments
+	 * @return mixed
+	 */
     public function __call($child, $arguments)
     {
         return call_user_func_array(array($this->{$this->_driver}, $child), $arguments);
     }
 	
-    /*
-    * Auth Instance
-    *
-    * Static function wrapper for auth drivers
-    *
-    * @return object
-    * 
-    */
+    /**
+     * Static function wrapper for auth drivers
+     *
+     * @return object
+     * 
+     */
     public static function auth_instance()
     {
         static $ci;
@@ -172,10 +154,9 @@ class Auth extends CI_Driver_Library {
 
 }
 
-/*
- * Auth Instance
- *
- * Function shortcut to the proper auth instance
+/**
+ * A pointer to the auth class for easier use, mimicks Codeigniter's
+ * get_instance() function which effectively does the same thing
  *
  * @return object
  *

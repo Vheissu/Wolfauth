@@ -37,11 +37,12 @@ class Auth_simpleauth extends CI_Driver {
         // Get and store Wolfauth configuration values
         $this->_config = config_item('wolfauth');
 
-        // Get the current user
+        // Get the current user (returns guest if no user is logged in)
 		$user = $this->get_user();
 
-		// Get the user role slug and store it for easier reference
+		// Store the current user role and display name
 		$this->role['role'] = $user->role;
+		$this->role['display_name'] = $user->role_display_name;
 
         // Store the user ID
         $this->user_id = $user->id;
@@ -83,22 +84,24 @@ class Auth_simpleauth extends CI_Driver {
 	 */
 	public function get_user()
 	{
-		// Make sure we're logged in
+		// If there is a logged in user, then return their info as an object
 		if ($this->logged_in())
 		{
             // Get the user by ID
 		    $user = $this->CI->simpleauth_model->_get_user($this->user_id(), 'id');
         }
+        // There is no user logged in, they're a guest
 		else
 		{
-            // Empty user variable
+            // Create an empty class, because expected output is always an object
             $user = new stdClass;
 
-            // Guests don't get a user ID because they're fools
+            // Guests don't get a user ID because they're not special enough
             $user->id = 0;
 
-            // Set the user to be a guest
+            // Set the user to have a guest role as defined in the config file
 			$user->role = $this->_config['role.guest'];
+			$user->role_display_name = $this->_config['role.guest.display_name'];
 		}
 
 		// Return the user
