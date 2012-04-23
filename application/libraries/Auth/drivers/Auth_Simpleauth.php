@@ -169,6 +169,25 @@ class Auth_simpleauth extends CI_Driver {
 		return FALSE;
 	}
 
+    /**
+     * Register a new user
+     *
+     * @param $username
+     * @param $email
+     * @param $password
+     * @param int $role
+     * @return mixed
+     */
+    public function register($username, $email, $password, $role = 2)
+    {
+        $data['username'] = $username;
+        $data['email']    = $email;
+        $data['password'] = $password;
+        $data['role_id']  = $role;
+
+        return $this->simpleauth_model->insert_user();
+    }
+
 	/**
 	 * OMG, logging out like it's 1999
 	 *
@@ -317,10 +336,7 @@ class Auth_simpleauth extends CI_Driver {
             $output .= "<p class='error-msg'>".$error."</p>";
         }
 
-        // Set the Flashdata
-        $this->CI->session->set_flashdata('errors', $output);
-
-        return $this->CI->session->flashdata('errors');
+        return $output;
     }
 
 
