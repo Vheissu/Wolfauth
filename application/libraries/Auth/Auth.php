@@ -27,6 +27,9 @@ class Auth extends CI_Driver_Library {
 	public function __construct()
 	{
 		$this->CI =& get_instance();
+
+		// Load the auth language file which has all of our error, success and feedback messages
+		$this->CI->lang->load('auth');
 		
 		// Load needed helpers
 		$this->CI->load->helper('form');
