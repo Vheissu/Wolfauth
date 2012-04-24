@@ -27,6 +27,7 @@ class Auth_simpleauth extends CI_Driver {
 
 		// Load needed Codeigniter Goodness
 		$this->CI->load->database();
+		$this->CI->load->library('email');
 		$this->CI->load->library('session');
 		$this->CI->load->model('simpleauth_model');
 		$this->CI->load->helper('cookie');
@@ -212,6 +213,52 @@ class Auth_simpleauth extends CI_Driver {
 
 		$this->CI->simpleauth_model->update_user($user_data);
 	}
+
+    /**
+     * Activates a user
+     * 
+     * @param mixed $user_id
+     * @param mixed $code
+     */
+    public function activate($user_id = 0, $code = '')
+    {
+        if ($user_id == 0)
+        {
+            $user_id = $this->user_id;
+        }
+        
+        // Get the user via their ID
+        $user = $this->simpleauth_model->_get_user($user_id, 'id');
+        
+        // If the user exists and they aren't already active or banned
+        if ( $user && $user->status !== 'active' && $user->status !== 'banned' )
+        {
+            // If codes match
+            if ($u->activation_code == $code)
+            {
+                // Activate the user
+                $data['id'] = $user_id;
+                $data['activation_code'] = '';
+                $data['status'] = 'active';
+                
+                return $this->simpleauth_model->update_user($data);
+            }
+            else
+            {
+                $this->set_error("The activation code supplied is not correct.");
+                return false;
+            }
+        }
+        elseif (!empty($user))
+        {
+            $this->set_error("Cannot activate a user that does not exist.");
+            return false;
+        }
+        elseif ($user->status !== 'active' && $user->status == 'banned')
+        {
+        	$this->set_error('Banned users cannot be activated');
+        }
+    }
 
 	/**
 	 * Updates the remember me cookie and database information

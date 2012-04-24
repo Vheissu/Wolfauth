@@ -124,6 +124,44 @@ class Auth extends CI_Driver_Library {
 		// Call the child register function
 		return $this->{$this->_driver}->register($fields);
 	}
+
+    /**
+     * Utility function for sending emails
+     * 
+     * @param mixed $to
+     * @param mixed $from_email
+     * @param mixed $from_name
+     * @param mixed $subject
+     * @param mixed $message
+     * @param mixed $template
+     * @param array $data
+     */
+    public function _send_email($to, $from_email, $from_name, $subject, $message = '', $template = '', $data = array())
+    {        
+        // If we have an email template
+        if ($template !== '')
+        {
+        	$message = $this->CI->load->view($template, $data, true);
+        }
+        
+        $this->CI->email->clear();
+        $this->CI->email->set_newline("\r\n");
+        $this->CI->email->from($from_email, $from_name);
+        $this->CI->email->to($to);
+        $this->CI->email->subject($subject);
+        $this->CI->email->message($message);
+        
+        if ( $this->CI->email->send() )
+        {
+            $this->set_message('Email was successfully sent');
+            return TRUE;
+        }
+        else
+        {
+            $this->set_error('There was a problem whilst trying to send email');
+            return FALSE;
+        }  
+    }
 	
 	/**
 	 * Redirect all method calls not in this class to the child class
