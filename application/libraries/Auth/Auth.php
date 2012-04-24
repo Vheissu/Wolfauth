@@ -128,6 +128,26 @@ class Auth extends CI_Driver_Library {
 		return $this->{$this->_driver}->register($fields);
 	}
 
+	/**
+	 * Sends an email message
+	 *
+	 *
+	 */
+	public function send_email_message($to, $from_email, $from_name, $subject, $message)
+	{
+		return $this->_send_email($to, $from_email, $from_name, $subject, $message);
+	}
+
+	/**
+	 * Sends an email using a template
+	 *
+	 *
+	 */
+	public function send_email_template($to, $from_email, $from_name, $subject, $template, $data = array())
+	{
+		return $this->_send_email($to, $from_email, $from_name, $subject, '', $template, $data); 
+	}
+
     /**
      * Utility function for sending emails
      * 
