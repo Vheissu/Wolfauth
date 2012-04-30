@@ -89,7 +89,7 @@ class Auth_simpleauth extends CI_Driver {
 		if ($this->logged_in())
 		{
             // Get the user by ID
-		    $user = $this->CI->simpleauth_model->_get_user($this->user_id(), 'id');
+		    $user = $this->CI->simpleauth_model->get_user_by_id($this->user_id(), 'id');
         }
         // There is no user logged in, they're a guest
 		else

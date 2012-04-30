@@ -90,9 +90,9 @@ class Auth extends CI_Driver_Library {
      *
      * @return bool
      */
-	public function logout()
+	public function logout($redirect = '')
 	{
-		return $this->{$this->_driver}->logout();
+		return $this->{$this->_driver}->logout($redirect);
 	}
 	
 	/**
@@ -131,6 +131,11 @@ class Auth extends CI_Driver_Library {
 	/**
 	 * Sends an email message
 	 *
+	 * @param mixed $to - Who is receiving this email?
+	 * @param mixed $from_email - The email address this email will be from
+	 * @param mixed $from_name - The name this email address will appear from
+	 * @param mixed $subject - The email subject line
+	 * @param mixed $messagee - The textual content of the email
 	 *
 	 */
 	public function send_email_message($to, $from_email, $from_name, $subject, $message)
@@ -141,6 +146,12 @@ class Auth extends CI_Driver_Library {
 	/**
 	 * Sends an email using a template
 	 *
+	 * @param mixed $to - Who is receiving this email?
+	 * @param mixed $from_email - The email address this email be from
+	 * @param mixed $from_name - The name this email address will appear from
+	 * @param mixed $subject - The email subject line
+	 * @param string $template - The template and or location containing your email contents
+	 * @param array $data - Data to supply to the template
 	 *
 	 */
 	public function send_email_template($to, $from_email, $from_name, $subject, $template, $data = array())
