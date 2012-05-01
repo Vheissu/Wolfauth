@@ -55,6 +55,8 @@ class Auth_simpleauth extends CI_Driver {
 		$this->_check_remember_me();
 	}
 
+	// -------------------------------------------------------------------------------------
+
 	/**
 	 * Will return TRUE or FALSE if the user if logged in
 	 *
@@ -66,6 +68,8 @@ class Auth_simpleauth extends CI_Driver {
 		return $this->user_id();
 	}
 
+	// -------------------------------------------------------------------------------------
+
 	/**
 	 * Returns user ID of currently logged in user
 	 *
@@ -76,6 +80,8 @@ class Auth_simpleauth extends CI_Driver {
 	{
 		return $this->CI->session->userdata('user_id');
 	}
+
+	// -------------------------------------------------------------------------------------
 
 	/**
 	 * Return current user info
@@ -125,6 +131,8 @@ class Auth_simpleauth extends CI_Driver {
         }
     }
 
+    // -------------------------------------------------------------------------------------
+
 	/**
 	 * Logs a user in, you guessed it!
 	 *
@@ -173,6 +181,8 @@ class Auth_simpleauth extends CI_Driver {
 		return FALSE;
 	}
 
+	// -------------------------------------------------------------------------------------
+
     /**
      * Register a new user
      *
@@ -191,6 +201,8 @@ class Auth_simpleauth extends CI_Driver {
 
         return $this->simpleauth_model->insert_user($data);
     }
+
+    // -------------------------------------------------------------------------------------
 
 	/**
 	 * OMG, logging out like it's 1999
@@ -213,6 +225,8 @@ class Auth_simpleauth extends CI_Driver {
 
 		$this->CI->simpleauth_model->update_user($user_data);
 	}
+
+	// -------------------------------------------------------------------------------------
 
     /**
      * Activates a user
@@ -260,6 +274,134 @@ class Auth_simpleauth extends CI_Driver {
         }
     }
 
+	// -------------------------------------------------------------------------------------
+
+	/**
+	 * Adds a capability into the capabilities table
+	 *
+	 * @param string $capability - The capability name
+	 *
+	 */
+	public function add_capability($capability)
+	{
+		return $this->simpleauth_model->add_capability(trim($capability));
+	}
+
+	// -------------------------------------------------------------------------------------
+
+	/**
+	 * Deletes a capability from the database
+	 *
+	 * @param	string $name
+	 * @param	bool $delete_relationships - Should all relationships be severed as well?
+	 * @return	bool
+	 */
+	public function delete_capability($name, $delete_relationships = TRUE)
+	{
+		return $this->simpleauth_model->delete_capability($name, $delete_relationships);
+	}
+
+	// -------------------------------------------------------------------------------------
+
+	/**
+	 * Adds a capability to a user role to allow access to thing
+	 *
+	 * @param string $role - The role slug name
+	 * @param string $capability - The name of the capability we're adding
+	 * @return bool TRUE on success and FALSE on failure
+	 */
+	public function add_capability_to_role($role, $capability)
+	{
+		return $this->simpleauth_model->add_capability_to_role($role, $capability);
+	}
+
+	// -------------------------------------------------------------------------------------
+
+	/**
+	 * Deletes role <> capability relationships
+	 *
+	 * @param	string $name
+	 * @return	bool
+	 */
+	public function delete_capability_relationships($name)
+	{
+		return $this->simpleauth_model->delete_capability_relationships($name);
+	}
+
+	// -------------------------------------------------------------------------------------
+
+	/**
+	 * Get a list of capabilities for a particular role
+	 *
+	 * @param string $role - The role name to get capabilities from
+	 * @return array on success and FALSE on failure
+	 */
+	public function get_capabilities($role)
+	{
+		return $this->simpleauth_model->get_capabilities($role);
+	}
+
+	// -------------------------------------------------------------------------------------
+
+	/**
+	 * Get a role based on criteria
+	 *
+	 * @param string|int $needle - The value to find
+	 * @param string $haystack - The type of value we're searching
+	 * @return object on Success or false on Failure
+	 *
+	 */
+	public function get_role($needle, $haystack = 'id')
+	{
+		return $this->simpleauth_model->get_role($needle, $haystack);
+	}
+
+	// -------------------------------------------------------------------------------------
+
+	/**
+	 * Adds a new role to the roles database
+	 *
+	 * @param string $role - The role slug to add
+	 * @param string $display_name - Human readable name of the role
+	 * @return bool - True if the role was added, False if it wasn't
+	 *
+	 */
+	public function add_role($role, $display_name)
+	{
+		return $this->simpleauth_model->add_role($role, $display_name);
+	}
+
+	// -------------------------------------------------------------------------------------
+
+	/**
+	 * Updates an already existent role in the roles table
+	 *
+	 * @param string $role - The role slug to identify by
+	 * @param array $data - The array of new data values to add
+	 * @return bool - Returns True if update was success of False if it wasn't
+	 *
+	 */
+	public function update_role($role, $data = array())
+	{
+		return $this->simpleauth_model->update_role($role, $data);
+	}
+
+	// -------------------------------------------------------------------------------------
+
+	/**
+	 * Deletes a role from the database
+	 *
+	 * @param string $role - The role slug we're removing
+	 * @param bool $delete_relationships - Delete all role > capability relationships too?
+	 *
+	 */
+	public function delete_role($role, $delete_relationships = TRUE)
+	{
+		return $this->simpleauth_model->delete_role($role, $delete_relationships);
+	}
+
+	// -------------------------------------------------------------------------------------
+
 	/**
 	 * Updates the remember me cookie and database information
 	 *
@@ -286,6 +428,8 @@ class Auth_simpleauth extends CI_Driver {
 		set_cookie($cookie);
 		$this->CI->simpleauth_model->update_user(array('id' => $user_id, 'remember_me' => $remember_me));
 	}
+
+	// -------------------------------------------------------------------------------------
 
 	/**
 	 * Checks if a user is logged in and remembered
@@ -342,6 +486,8 @@ class Auth_simpleauth extends CI_Driver {
 		return FALSE;
 	}
 
+	// -------------------------------------------------------------------------------------
+
 	/**
 	 * Perform a hmac hash, using the configured method.
 	 *
@@ -353,6 +499,8 @@ class Auth_simpleauth extends CI_Driver {
 		return hash_hmac($this->_config['hash.method'], $str, $this->_config['hash.key']);
 	}
 
+	// -------------------------------------------------------------------------------------
+
     /**
      * Sets an error message
      *
@@ -363,6 +511,8 @@ class Auth_simpleauth extends CI_Driver {
         $this->_errors[] = $error;
     }
 
+    // -------------------------------------------------------------------------------------
+
     /**
      * Set a message
      *
@@ -372,6 +522,8 @@ class Auth_simpleauth extends CI_Driver {
     {
         $this->_messages[] = $message;
     }
+
+    // -------------------------------------------------------------------------------------
 
     /**
      * Returns the array of auth errors (if any)
@@ -389,5 +541,6 @@ class Auth_simpleauth extends CI_Driver {
         return $output;
     }
 
+    // -------------------------------------------------------------------------------------
 
 }

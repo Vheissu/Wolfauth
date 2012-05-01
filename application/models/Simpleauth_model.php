@@ -13,7 +13,7 @@ class Simpleauth_model extends CI_Model {
 	 */
 	public function get_users($limit = 10, $offset = 0)
 	{
-		$fields = 'users.id, users.username, users.email, users.password, users.role_id, roles.role, roles.display_name AS role_name';
+		$fields = 'users.id, users.username, users.email, users.salt, users.password, users.role_id, roles.role, roles.display_name AS role_name';
 
 		// If we don't have a return all users value, use the limit and offset values
 		if ($limit != '*')
@@ -219,8 +219,7 @@ class Simpleauth_model extends CI_Model {
 	 *
 	 * @param string $role - The role slug name
 	 * @param string $capability - The name of the capability we're adding
-	 *
-	 *
+	 * @return bool TRUE on success and FALSE on failure
 	 */
 	public function add_capability_to_role($role, $capability)
 	{
@@ -267,7 +266,7 @@ class Simpleauth_model extends CI_Model {
 	/**
 	 * Get a list of capabilities for a particular role
 	 *
-	 * @param string $role - The role name to get capabilities from
+	 * @param string $role - The role name to get capabilities from the DB
 	 *
 	 */
 	public function get_capabilities($role)
