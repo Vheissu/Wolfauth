@@ -1,4 +1,17 @@
-<?php
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+/**
+ * WolfAuth
+ *
+ * An open source driver based authentication library for Codeigniter
+ *
+ * @package   WolfAuth
+ * @author    Dwayne Charrington
+ * @copyright Copyright (c) 2012 Dwayne Charrington.
+ * @link      http://ilikekillnerds.com
+ * @license   http://www.apache.org/licenses/LICENSE-2.0.html
+ * @version   2.0
+ */
 
 function logged_in()
 {
@@ -17,7 +30,7 @@ function login($identity, $password, $remember = false)
 
 function logout($redirect = '')
 {
-    return auth_instance()->logout($redirect)
+    return auth_instance()->logout($redirect);
 }
 
 function register($username, $email, $password, $role = 2)
@@ -83,9 +96,4 @@ function delete_role($role, $delete_relationships = TRUE)
 function user_can($capability, $user_id = 0)
 {
     return auth_instance()->user_can($capability, $user_id);
-}
-
-function hash($str)
-{
-    return auth_instance()->hash($str);
 }
