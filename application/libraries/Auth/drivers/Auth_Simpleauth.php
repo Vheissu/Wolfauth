@@ -38,18 +38,18 @@ class Auth_simpleauth extends CI_Driver {
         // Get and store Wolfauth configuration values
         $this->_config = config_item('wolfauth');
 
-        // Get the current user (returns guest if no user is logged in)
-		$user = $this->get_user();
+        // Get the current user as an object (returns guest if no user is logged in)
+		$user = $this->get_user(true);
 
 		// Store the current user role and display name
-		$this->role['role'] = $user->row('role');
-		$this->role['display_name'] = $user->row('role_display_name');
+		$this->role['role'] = $user->role;
+		$this->role['display_name'] = $user->role_display_name;
 
         // Store the user ID
-        $this->user_id = $user->row('id');
+        $this->user_id = $user->id;
 
 		// Get capabilities for this role
-		$this->capabilities = $this->CI->simpleauth_model->get_capabilities($user->row('role'));
+		$this->capabilities = $this->CI->simpleauth_model->get_capabilities($user->role);
 
 		// Check for a rememberme me cookie
 		$this->_check_remember_me();
@@ -105,16 +105,34 @@ class Auth_simpleauth extends CI_Driver {
 	/**
 	 * Return current user info
 	 *
+	 * @param bool $as_object - Should we return user data as an object?
 	 * @return object if user logged in or false if logged out
 	 *
 	 */
-	public function get_user()
+	public function get_user($as_object = FALSE)
 	{
 		// If there is a logged in user, then return their info as an object
 		if ($this->logged_in())
 		{
             // Get the user by ID
 		    $user = $this->CI->simpleauth_model->get_user_by_id($this->user_id(), 'id');
+
+		    // Are we returning the user as an object and we have a valid user
+		    if ($as_object == TRUE && $user !== FALSE)
+		    {
+			    $tmp = new stdClass;
+
+			    foreach ($user->result_array() AS $arr)
+			    {
+			    	foreach ($arr AS $k => $v)
+			    	{
+			    		$tmp->{$k} = $v;
+			    	}
+			    }
+
+			    $user = $tmp;
+		    }
+
         }
         // There is no user logged in, they're a guest
 		else
