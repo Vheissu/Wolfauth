@@ -110,7 +110,7 @@ class Simpleauth_model extends CI_Model {
 	protected function _get_user($needle, $haystack = 'username')
 	{
         $this->db->select('users.*, roles.role, roles.display_name AS role_display_name');
-		$this->db->where($haystack, $needle);
+		$this->db->where('users.'.$haystack, $needle);
         $this->db->join('roles', 'roles.id = users.role_id');
 
 		$user = $this->db->get('users');

@@ -120,7 +120,6 @@ CREATE TABLE `users` (
   `role_id` int(10) NOT NULL DEFAULT '0',
   `username` varchar(120) NOT NULL,
   `email` varchar(150) NOT NULL,
-  `salt` varchar(60) NOT NULL,
   `password` varchar(250) NOT NULL,
   `remember_me` text NOT NULL,
   PRIMARY KEY (`id`,`username`,`email`)
@@ -129,4 +128,4 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO users VALUES ('1', '6', 'admin', 'admin@localhost', 'djsk29dj3', '17ca98a6cdd9ce4bf3d67d3b0b036f82ced7649d', '');
+INSERT INTO `users` VALUES ('1', '6', 'admin', 'admin@localhost', '2beed515fd3c1a7c837c36e40cefa23ffa6cf323a7a769c018021fbfb8df741a', '');

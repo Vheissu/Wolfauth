@@ -42,14 +42,14 @@ class Auth_simpleauth extends CI_Driver {
 		$user = $this->get_user();
 
 		// Store the current user role and display name
-		$this->role['role'] = $user->role;
-		$this->role['display_name'] = $user->role_display_name;
+		$this->role['role'] = $user->row('role');
+		$this->role['display_name'] = $user->row('role_display_name');
 
         // Store the user ID
-        $this->user_id = $user->id;
+        $this->user_id = $user->row('id');
 
 		// Get capabilities for this role
-		$this->capabilities = $this->CI->simpleauth_model->get_capabilities($user->role);
+		$this->capabilities = $this->CI->simpleauth_model->get_capabilities($user->row('role'));
 
 		// Check for a rememberme me cookie
 		$this->_check_remember_me();
@@ -79,6 +79,25 @@ class Auth_simpleauth extends CI_Driver {
 	public function user_id()
 	{
 		return $this->CI->session->userdata('user_id');
+	}
+
+	// -------------------------------------------------------------------------------------
+
+	/**
+	 * Is Role
+	 *
+	 * @return bool (true if a user has this role false if not)
+	 *
+	 */
+	public function is_role($slug)
+	{
+		$slug = trim($slug);
+		if ($slug == $this->role['name'])
+		{
+			return TRUE;
+		}
+
+		return FALSE;
 	}
 
 	// -------------------------------------------------------------------------------------
@@ -491,7 +510,7 @@ class Auth_simpleauth extends CI_Driver {
 	/**
 	 * Perform a hmac hash, using the configured method.
 	 *
-	 * @param   string  string to hash
+	 * @param   string $str  - string  string to hash
 	 * @return  string
 	 */
 	public function hash($str)
