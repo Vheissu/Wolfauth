@@ -1,200 +1,91 @@
 <?php
 
-// ===========================================================
-// Auth core functions (login, etc)
-// ===========================================================
-
 function logged_in()
 {
-    return auth_instance()->logged_in();  
+    return auth_instance()->logged_in();
 }
 
-function get_user_info($user_id = 0)
+function get_user()
 {
-    return auth_instance()->get_user_by_id($user_id)->result();
+    return auth_instance()->get_user();
 }
 
-function get_user_by($identity)
-{
-    return auth_instance()->get_user_by($identity);
-}
-
-function login($identity, $password, $remember = FALSE)
+function login($identity, $password, $remember = false)
 {
     return auth_instance()->login($identity, $password, $remember);
 }
 
 function logout($redirect = '')
 {
-    return auth_instance()->logout($redirect); 
+    return auth_instance()->logout($redirect)
 }
 
-function create_user($login, $password, $fields = array(), $roles = array(), $groups = array())
+function register($username, $email, $password, $role = 2)
 {
-    return auth_instance()->create_user($login, $password, $fields, $roles, $groups);
+    return auth_instance()->register($username, $email, $password, $role);
 }
 
-function update_user($user_id, $fields = array())
+function update()
 {
-    return auth_instance()->update_user($user_id, $fields);
+    return auth_instance()->update_user();
 }
 
-function delete_user($user_id)
+function get_capabilities($role)
 {
-    return auth_instance()->delete_user($user_id);
+    return auth_instance()->get_capabilities($role);
 }
 
-// ===========================================================
-// End auth core functions (login, etc)
-// ===========================================================
-
-
-
-
-// ===========================================================
-// Has permission helper functions
-// ===========================================================
-
-function user_has_permission($user_id, $permission = '')
+function get_role($needle, $haystack = 'id')
 {
-    return auth_instance()->user_has_permission($user_id, $permission);
+    return auth_instance()->get_role($needle, $haystack);
 }
 
-function role_has_permission($role_id, $permission = '')
+function add_capability($capability)
 {
-    return auth_instance()->role_has_permission($role_id, $permission);
+    return auth_instance()->add_capability($capability);
 }
 
-// ===========================================================
-// End has permission helper functions
-// ===========================================================
-
-
-
-
-// ===========================================================
-// Id Functions
-// ===========================================================
-
-function get_user_id($username)
+function delete_capability($name, $delete_relationships = TRUE)
 {
-    return auth_instance()->get_user_id($username); 
+    return auth_instance()->delete_capability($name, $delete_relationships);
 }
 
-function get_role_id($role_name)
+function add_capability_to_role($role, $capability)
 {
-    return auth_instance()->get_role_id($role_name); 
+    return auth_instance()->add_capability_to_role($role, $capability);
 }
 
-function get_permission_id($permission = '')
+function delete_capability_relationships($name)
 {
-    return auth_instance()->get_permission_id($permission = ''); 
+    return auth_instance()->delete_capability_relationships($name);
 }
 
-// ===========================================================
-// End Id Functions
-// ===========================================================
-
-
-
-
-// ===========================================================
-// Exists functions
-// ===========================================================
-
-function role_id_exists($role_id) 
+function is_role($slug)
 {
-    return auth_instance()->role_id_exists($role_id);
+    return auth_instance()->is_role($slug);
 }
 
-function user_id_exists($user_id) 
+function add_role($role, $display_name)
 {
-    return auth_instance()->user_id_exists($user_id);
+    return auth_instance()->add_role($role, $display_name);
 }
 
-function username_exists($username) 
+function update_role($role, $data = array())
 {
-    return auth_instance()->username_exists($username);
+    return auth_instance()->update_role($role, $data);
 }
 
-function email_exists($email) 
+function delete_role($role, $delete_relationships = TRUE)
 {
-    return auth_instance()->email_exists($email);
+    return auth_instance()->delete_role($role, $delete_relationships);
 }
 
-// ===========================================================
-// End exists functions
-// ===========================================================
-
-
-
-
-// ===========================================================
-// Role functions
-// ===========================================================
-
-function get_user_roles($user_id = 0)
+function user_can($capability, $user_id = 0)
 {
-    return auth_instance()->get_user_roles($user_id);
+    return auth_instance()->user_can($capability, $user_id);
 }
 
-// ===========================================================
-// End role functions
-// ===========================================================
-
-
-
-
-// ===========================================================
-// Permission functions
-// ===========================================================
-
-function add_permission($permission)
+function hash($str)
 {
-    return auth_instance()->add_permission($permission);
+    return auth_instance()->hash($str);
 }
-
-function remove_permission($permission)
-{
-    return auth_instance()->remove_permission($permission);
-}
-
-function add_permission_to_role($permission_id, $role_id)
-{
-    return auth_instance()->add_permission_to_role($permission_id, $role_id);
-}
-
-function remove_permission_from_role($permission_id, $role_id)
-{
-    return auth_instance()->remove_permission_from_role($permission_id, $role_id);
-}
-
-// ===========================================================
-// End permission functions
-// ===========================================================
-
-
-
-
-// ===========================================================
-// List functions functions
-// ===========================================================
-
-function list_users($count = 10000, $offset = 0)
-{
-    return auth_instance()->list_users($count, $offset);
-}
-
-function list_roles($count = 10000, $offset = 0)
-{
-    return auth_instance()->list_roles($count, $offset);
-}
-
-function list_permissions($count = 10000, $offset = 0)
-{
-    return auth_instance()->list_permissions($count, $offset);
-}
-
-// ===========================================================
-// End list functions functions
-// ===========================================================
