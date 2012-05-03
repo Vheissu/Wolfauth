@@ -157,10 +157,11 @@ class Auth_simpleauth extends CI_Driver {
 	 *
 	 * @param $identity
 	 * @param $password
+	 * @param $remember
 	 * @return mixed (user ID on success or false on failure)
 	 *
 	 */
-	public function login($identity, $password)
+	public function login($identity, $password, $remember = FALSE)
 	{
 		// Get the user from the database
 		$user = $this->CI->simpleauth_model->get_user($identity);
@@ -183,7 +184,7 @@ class Auth_simpleauth extends CI_Driver {
 				));
 
 				// Do we rememberme them?
-				if ($this->CI->input->post('remember_me') == 'yes')
+				if ($this->CI->input->post('remember_me') == 'yes' OR $remember == TRUE)
 				{
 					$this->_set_remember_me($user_id);
 				}
