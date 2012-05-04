@@ -29,6 +29,9 @@ $config['wolfauth'] = array(
 
 	// The amount of failed login attempts before you're banned for a specified amount of time
 	'login.max_attempts' => 3,
+
+	// What roles are considered admin
+	'roles.admin' => array('admin', 'super_admin'),
 	
 	// How do users login; via a username or email address? Default: 'username'
 	'login.identity' => 'username',

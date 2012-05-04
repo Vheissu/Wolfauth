@@ -92,12 +92,39 @@ class Auth_simpleauth extends CI_Driver {
 	public function is_role($slug)
 	{
 		$slug = trim($slug);
-		if ($slug == $this->role['name'])
+
+		if ($slug === $this->role['role'])
 		{
 			return TRUE;
 		}
 
 		return FALSE;
+	}
+
+	// -------------------------------------------------------------------------------------
+
+	/**
+	 * Returns TRUE or FALSE if the user is an admin
+	 *
+	 * @param  string $role - The role slug to check (optional)
+	 * @return bool TRUE if user is an admin FALSE if not an admin
+	 *
+	 */
+	public function is_admin($role = '')
+	{
+		if ($role == '')
+		{
+			$role = $this->role['role'];
+		}
+
+		if (in_array($role, $this->_config['roles.admin']))
+		{
+			return TRUE;
+		}
+		else
+		{
+			return FALSE;
+		}
 	}
 
 	// -------------------------------------------------------------------------------------
