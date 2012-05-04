@@ -82,7 +82,7 @@ class Auth extends CI_Driver_Library {
 	 */
 	public function force_login($identity)
 	{
-		return $this->{$this->_driver}->force_login();
+		return $this->{$this->_driver}->force_login($identity);
 	}
 	
     /**
@@ -109,11 +109,12 @@ class Auth extends CI_Driver_Library {
     /**
      * Get the currently logged in user info
      *
+     * @param $as_object
      * @return mixed
      */
-    public function get_user()
+    public function get_user($as_object = FALSE)
     {
-        return $this->{$this->_driver}->get_user();
+        return $this->{$this->_driver}->get_user($as_object);
     }
 
     /**

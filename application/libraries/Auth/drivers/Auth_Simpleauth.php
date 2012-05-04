@@ -1,4 +1,18 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+/**
+ * WolfAuth
+ *
+ * An open source driver based authentication library for Codeigniter
+ *
+ * @package    WolfAuth
+ * @subpackage Drivers
+ * @author     Dwayne Charrington
+ * @copyright  Copyright (c) 2012 Dwayne Charrington.
+ * @link       http://ilikekillnerds.com
+ * @license    http://www.apache.org/licenses/LICENSE-2.0.html
+ * @version    2.0
+ */
 
 class Auth_simpleauth extends CI_Driver {
 
@@ -51,7 +65,7 @@ class Auth_simpleauth extends CI_Driver {
 		// Get capabilities for this role
 		$this->capabilities = $this->CI->simpleauth_model->get_capabilities($user->role);
 
-		// Check for a rememberme me cookie
+		// Check for a remember me me cookie
 		$this->_check_remember_me();
 	}
 
@@ -249,6 +263,30 @@ class Auth_simpleauth extends CI_Driver {
 	// -------------------------------------------------------------------------------------
 
     /**
+     * Forces a user to be logged in without supplying a password
+     *
+     * @param $identity
+     */
+    public function force_login($identity)
+    {
+        $user = $this->CI->simpleauth_model->get_user($identity);
+
+        $user_id  = $user->row('id');
+        $username = $user->row('username');
+        $email    = $user->row('email');
+        $role     = $user->row('role');
+
+        $this->CI->session->set_userdata(array(
+            'user_id'  => $user_id,
+            'username' => $username,
+            'email'	   => $email,
+            'role'     => $role
+        ));
+    }
+
+    // -------------------------------------------------------------------------------------
+
+    /**
      * Register a new user
      *
      * @param $username
@@ -272,9 +310,10 @@ class Auth_simpleauth extends CI_Driver {
 	/**
 	 * OMG, logging out like it's 1999
 	 *
+     * @param $redirect
 	 * @return	void
 	 */
-	public function logout()
+	public function logout($redirect = '')
 	{
 		$user_id = $this->CI->session->userdata('user_id');
 
@@ -288,7 +327,14 @@ class Auth_simpleauth extends CI_Driver {
 			'remember_me' => ''
 		);
 
+        // Remove remember me data
 		$this->CI->simpleauth_model->update_user($user_data);
+
+        // If we're redirecting, go ahead and redirect
+        if ($redirect !== '')
+        {
+            redirect($redirect, 'refresh');
+        }
 	}
 
 	// -------------------------------------------------------------------------------------

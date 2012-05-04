@@ -23,6 +23,13 @@ function get_user($as_object = FALSE)
     return auth_instance()->get_user($as_object);
 }
 
+function get_username()
+{
+    $user = get_user(true);
+
+    return $user->username;
+}
+
 function is_admin($role = '')
 {
     return auth_instance()->is_admin($role);

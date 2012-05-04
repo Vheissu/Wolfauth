@@ -65,6 +65,15 @@ class Simpleauth_model extends CI_Model {
 		return $user;
 	}
 
+    /**
+     * Gets the number of login attempts for a particular user
+     * @param $identity
+     */
+    public function get_login_attempts($identity)
+    {
+
+    }
+
 	/**
 	 * Get User By Id
 	 *
