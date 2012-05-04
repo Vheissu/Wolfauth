@@ -18,10 +18,15 @@ function logged_in()
     return auth_instance()->logged_in();
 }
 
-function get_user()
+function get_user($as_object = FALSE)
 {
-    return auth_instance()->get_user();
+    return auth_instance()->get_user($as_object);
 }
+
+function is_admin($role = '')
+{
+    return auth_instance()->is_admin($role);
+} 
 
 function login($identity, $password, $remember = false)
 {
