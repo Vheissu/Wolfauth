@@ -41,8 +41,7 @@ class Auth_simpleauth extends CI_Driver {
 
 		// Load needed Codeigniter Goodness
 		$this->CI->load->database();
-		$this->CI->load->library('email');
-		$this->CI->load->library('session');
+		$this->CI->load->library(array('email', 'session'));
 		$this->CI->load->model('simpleauth_model');
 		$this->CI->load->helper('cookie');
 
@@ -98,9 +97,10 @@ class Auth_simpleauth extends CI_Driver {
 	// -------------------------------------------------------------------------------------
 
 	/**
-	 * Is Role
+	 * Does the the current user have this role?
 	 *
-	 * @return bool (true if a user has this role false if not)
+     * @param  string $slug The role slug 
+	 * @return bool         (true if a user has this role false if not)
 	 *
 	 */
 	public function is_role($slug)
@@ -178,15 +178,21 @@ class Auth_simpleauth extends CI_Driver {
         // There is no user logged in, they're a guest
 		else
 		{
-            // Create an empty class, because expected output is always an object
-            $user = new stdClass;
+            if ($as_object === TRUE)
+            {
+                $user = new stdClass;
 
-            // Guests don't get a user ID because they're not special enough
-            $user->id = 0;
+                $user->id = 0;
 
-            // Set the user to have a guest role as defined in the config file
-			$user->role = $this->_config['role.guest'];
-			$user->role_display_name = $this->_config['role.guest.display_name'];
+                $user->role = NULL;
+                $user->role_display_name = NULL;
+            }
+            else
+            {
+                $user['id']                = 0;
+                $user['role']              = NULL;
+                $user['role_display_name'] = NULL;
+            }
 		}
 
 		// Return the user
@@ -214,9 +220,9 @@ class Auth_simpleauth extends CI_Driver {
 	/**
 	 * Logs a user in, you guessed it!
 	 *
-	 * @param $identity
-	 * @param $password
-	 * @param $remember
+	 * @param string $identity
+	 * @param string $password
+	 * @param string $remember
 	 * @return mixed (user ID on success or false on failure)
 	 *
 	 */

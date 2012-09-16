@@ -18,7 +18,7 @@ class Auth extends CI_Driver_Library {
 	// Codeigniter instance
 	public $CI;
 	
-	// An array of configuration values from config/wolfauth.php
+	// An array of configuration values from config/auth.php
 	public $_config = array();
 	
 	// The currently in use driver
@@ -32,8 +32,7 @@ class Auth extends CI_Driver_Library {
 		$this->CI->lang->load('auth');
 		
 		// Load needed helpers
-		$this->CI->load->helper('form');
-		$this->CI->load->helper('url');
+		$this->CI->load->helper(array('form', 'url'));
 		
 		// Load the auth config file
 		$this->CI->config->load('auth');
@@ -115,6 +114,17 @@ class Auth extends CI_Driver_Library {
     public function get_user($as_object = FALSE)
     {
         return $this->{$this->_driver}->get_user($as_object);
+    }
+
+    /**
+     * Return the current user ID of the logged
+     * in user.
+     * 
+     * @return integer The user ID of the logged in user
+     */
+    public function current_user_id()
+    {
+        return $this->($this->_driver)->current_user_id();
     }
 
     /**
@@ -200,7 +210,7 @@ class Auth extends CI_Driver_Library {
 	
 	/**
 	 * Redirect all method calls not in this class to the child class
-	 * set in the variable _adapter which is the default class.
+	 * set in the variable _driver which is the default class.
 	 *
 	 * @param mixed $child
 	 * @param mixed $arguments
@@ -219,10 +229,10 @@ class Auth extends CI_Driver_Library {
      */
     public static function auth_instance()
     {
-        static $ci;
-        $ci = get_instance();
+        static $CI;
+        $CI = get_instance();
         
-        return $ci->auth;
+        return $CI->auth;
     }
 
 }

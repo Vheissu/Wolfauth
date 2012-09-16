@@ -35,11 +35,5 @@ $config['wolfauth'] = array(
 	
 	// How do users login; via a username or email address? Default: 'username'
 	'login.identity' => 'username',
-
-    // The name of the guest role (the slug not display name)
-    'role.guest' => 'guest',
-
-    // The human readable spelling of the guest role
-    'role.guest.display_name' => 'Guest'
 	
 );
