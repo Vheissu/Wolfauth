@@ -7,7 +7,7 @@
  *
  * @package   WolfAuth
  * @author    Dwayne Charrington
- * @copyright Copyright (c) 2012 Dwayne Charrington.
+ * @copyright Copyright (c) 2013 Dwayne Charrington.
  * @link      http://ilikekillnerds.com
  * @license   http://www.apache.org/licenses/LICENSE-2.0.html
  * @version   2.0

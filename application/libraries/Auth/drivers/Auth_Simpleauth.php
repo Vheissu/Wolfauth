@@ -5,10 +5,13 @@
  *
  * An open source driver based authentication library for Codeigniter
  *
+ * The Simple Auth class gives you basic auth functionality featuring
+ * a roles and permissions system, with all the basics.
+ *
  * @package    WolfAuth
  * @subpackage Drivers
  * @author     Dwayne Charrington
- * @copyright  Copyright (c) 2012 Dwayne Charrington.
+ * @copyright  Copyright (c) 2013 Dwayne Charrington.
  * @link       http://ilikekillnerds.com
  * @license    http://www.apache.org/licenses/LICENSE-2.0.html
  * @version    2.0
@@ -181,10 +184,8 @@ class Auth_simpleauth extends CI_Driver {
             if ($as_object === TRUE)
             {
                 $user = new stdClass;
-
-                $user->id = 0;
-
-                $user->role = NULL;
+                $user->id                = 0;
+                $user->role              = NULL;
                 $user->role_display_name = NULL;
             }
             else
@@ -236,10 +237,10 @@ class Auth_simpleauth extends CI_Driver {
 			// Compare the user and pass
 			if ($this->hash($password) == $user->row('password'))
 			{
-				$user_id  = $user->row('id');
+				$user_id  = $user->row('user_id');
 				$username = $user->row('username');
 				$email    = $user->row('email');
-				$role     = $user->row('role');
+				$role     = $user->row('role_title');
 
 				$this->CI->session->set_userdata(array(
 					'user_id'  => $user_id,
@@ -277,10 +278,10 @@ class Auth_simpleauth extends CI_Driver {
     {
         $user = $this->CI->simpleauth_model->get_user($identity);
 
-        $user_id  = $user->row('id');
+        $user_id  = $user->row('user_id');
         $username = $user->row('username');
         $email    = $user->row('email');
-        $role     = $user->row('role');
+        $role     = $user->row('role_title');
 
         $this->CI->session->set_userdata(array(
             'user_id'  => $user_id,
@@ -359,7 +360,7 @@ class Auth_simpleauth extends CI_Driver {
         }
         
         // Get the user via their ID
-        $user = $this->simpleauth_model->_get_user($user_id, 'id');
+        $user = $this->simpleauth_model->_get_user($user_id, 'user_id');
         
         // If the user exists and they aren't already active or banned
         if ( $user && $user->status !== 'active' && $user->status !== 'banned' )
@@ -368,7 +369,7 @@ class Auth_simpleauth extends CI_Driver {
             if ($u->activation_code == $code)
             {
                 // Activate the user
-                $data['id'] = $user_id;
+                $data['user_id'] = $user_id;
                 $data['activation_code'] = '';
                 $data['status'] = 'active';
                 
@@ -376,18 +377,16 @@ class Auth_simpleauth extends CI_Driver {
             }
             else
             {
-                $this->set_error("The activation code supplied is not correct.");
-                return false;
+                $this->set_error($this->CI->lang->line('incorrect_activation_code'));
             }
         }
         elseif (!empty($user))
         {
-            $this->set_error("Cannot activate a user that does not exist.");
-            return false;
+            $this->set_error($this->CI->lang->line('activate_user_not_exist'));
         }
         elseif ($user->status !== 'active' && $user->status == 'banned')
         {
-        	$this->set_error('Banned users cannot be activated');
+        	$this->set_error($this->CI->lang->line('cannot_activated_banned'));
         }
     }
 
@@ -626,6 +625,7 @@ class Auth_simpleauth extends CI_Driver {
     public function set_error($error)
     {
         $this->_errors[] = $error;
+        return FALSE;
     }
 
     // -------------------------------------------------------------------------------------

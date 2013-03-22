@@ -38,3 +38,7 @@ $lang['standard_redirect'] = "Please wait while you are redirected...";
 
 $lang['access_denied']     = "You are not allowed to access this resource. Your attempt has been logged and will be investigated.";
 
+// Activation
+$lang['incorrect_activation_code'] = "The activation code supplied is not correct.";
+$lang['activate_user_not_exist']   = "Cannot activate a user that does not exist.";
+$lang['cannot_activated_banned']   = "Banned users cannot be activated";

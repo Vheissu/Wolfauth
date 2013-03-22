@@ -13,7 +13,7 @@ class Simpleauth_model extends CI_Model {
 	 */
 	public function get_users($limit = 10, $offset = 0)
 	{
-		$fields = 'users.id, users.username, users.email, users.salt, users.password, users.role_id, roles.role, roles.display_name AS role_name';
+		$fields = 'users.user_id, users.username, users.email, users.salt, users.password, users.role_id, roles.role, roles.display_name AS role_name';
 
 		// If we don't have a return all users value, use the limit and offset values
 		if ($limit != '*')
@@ -22,7 +22,7 @@ class Simpleauth_model extends CI_Model {
 		}
 
 		$this->db->select($fields);
-		$this->db->join('roles', 'users.role_id = roles.id');
+		$this->db->join('roles', 'users.role_id = roles.role_id');
 		return $this->db->get('users');
 	}
 
@@ -84,7 +84,7 @@ class Simpleauth_model extends CI_Model {
 	 */
 	public function get_user_by_id($user_id)
 	{
-		return $this->_get_user($user_id, 'id');
+		return $this->_get_user($user_id, 'user_id');
 	}
 
 	/**
@@ -98,7 +98,7 @@ class Simpleauth_model extends CI_Model {
 	 */
 	public function get_user_password_reset($id = '', $passkey = '')
 	{
-		$this->db->where('id', $id);
+		$this->db->where('user_id', $id);
 		$this->db->where('auth_code', $passkey);
 
 		$user = $this->db->get('users');
@@ -118,9 +118,9 @@ class Simpleauth_model extends CI_Model {
 	 */
 	protected function _get_user($needle, $haystack = 'username')
 	{
-        $this->db->select('users.*, roles.role, roles.display_name AS role_display_name');
+        $this->db->select('users.*, roles.role_title, roles.role_description');
 		$this->db->where('users.'.$haystack, $needle);
-        $this->db->join('roles', 'roles.id = users.role_id');
+        $this->db->join('roles', 'roles.role_id = users.role_id');
 
 		$user = $this->db->get('users');
 		
@@ -155,7 +155,7 @@ class Simpleauth_model extends CI_Model {
 	 */
 	public function update_user($user_data)
 	{
-		$this->db->where('id', $user_data['id']);
+		$this->db->where('user_id', $user_data['user_id']);
 
 		if (isset($user_data['password']))
 		{
@@ -173,8 +173,7 @@ class Simpleauth_model extends CI_Model {
 	 */
 	public function delete_user($user_id)
 	{
-		$this->db->where('id', $user_id);
-
+		$this->db->where('user_id', $user_id);
 		$this->db->delete('users');
 
 		return ($this->db->affected_rows() > 0) ? TRUE : FALSE;
@@ -213,6 +212,7 @@ class Simpleauth_model extends CI_Model {
 		// Delete the capability
 		$this->db->delete('capabilities');
 
+		// Should relationships with roles be deleted
 		if ($delete_relationships === TRUE)
 		{
 			// Delete the relationships
@@ -233,13 +233,13 @@ class Simpleauth_model extends CI_Model {
 	public function add_capability_to_role($role, $capability)
 	{
 		// Get a role by its role slug
-		$role_info = $this->get_role($role, 'role');
+		$role_info = $this->get_role($role, 'role_title');
 
 		// If we have info about this role, it exists and continue
 		if ($role_info)
 		{
 			// The role ID
-			$data['role_id'] = $role_info->id;
+			$data['role_id'] = $role_info->role_id;
 
 			// The capability ID
 			$data['capability_id'] = $this->get_capability_id($capability);
@@ -281,11 +281,11 @@ class Simpleauth_model extends CI_Model {
 	public function get_capabilities($role)
 	{
 		// Get the role meta via the $role slug
-		$role_info = $this->get_role($role, 'role');
+		$role_info = $this->get_role($role, 'role_title');
 
-		$this->db->select('capabilities.id, capabilities.capability');
+		$this->db->select('capabilities.capability_id, capabilities.capability');
 		$this->db->where('role_id', $role_info->id);
-		$this->db->join('capabilities', 'capabilities.id = roles_capabilities.capability_id');
+		$this->db->join('capabilities', 'capabilities.capability_id = roles_capabilities.capability_id');
 
 		// Get the results
 		$result = $this->db->get('roles_capabilities');
@@ -336,16 +336,16 @@ class Simpleauth_model extends CI_Model {
 	/**
 	 * Adds a new role to the roles database
 	 *
-	 * @param string $role - The role slug to add
-	 * @param string $display_name - Human readable name of the role
+	 * @param string $role - The role name (lowercased)
+	 * @param string $description - Human readable name of the role
 	 * @return bool - True if the role was added, False if it wasn't
 	 *
 	 */
-	public function add_role($role, $display_name)
+	public function add_role($role, $description = '')
 	{
 		// Prep the role before inserting into the database
-		$data['role'] = trim($role);
-		$data['display_name'] = trim($display_name);
+		$data['role_title']       = strtolower(trim($role));
+		$data['role_description'] = trim($description);
 
 		// Insert the role into the database
 		$this->db->insert('roles', $data);
@@ -368,7 +368,7 @@ class Simpleauth_model extends CI_Model {
 		if (!empty($data))
 		{
 			// Look for the role we're updating
-			$this->db->where('role', $role);
+			$this->db->where('role_title', $role);
 
 			// Return True if the update was successfull or False if unsuccessful
 			return ( ! $this->db->update('roles', $data)) ? FALSE : TRUE;	
@@ -385,7 +385,7 @@ class Simpleauth_model extends CI_Model {
 	public function delete_role($role, $delete_relationships = TRUE)
 	{
 		// Find this role...
-		$this->db->where('role', $role);
+		$this->db->where('role_title', $role);
 
 		// Delete the role, yeowww
 		$this->db->delete('roles');
@@ -409,10 +409,10 @@ class Simpleauth_model extends CI_Model {
 	public function delete_role_relationships($name)
 	{
 		// Get the role info
-		$role_info = $this->get_role($name, 'role');
+		$role_info = $this->get_role($name, 'role_title');
 
 		// Find the mapping entries in the database
-		$this->db->where('role_id', $role_info->id);
+		$this->db->where('role_id', $role_info->role_id);
 
 		// Delete the capability
 		$this->db->delete('roles_capabilities');
