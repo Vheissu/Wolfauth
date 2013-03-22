@@ -32,7 +32,7 @@ class Auth extends CI_Driver_Library {
 		$this->CI->lang->load('auth');
 		
 		// Load needed helpers
-		$this->CI->load->helper(array('form', 'url'));
+		$this->CI->load->helper(array('form', 'url', 'auth'));
 		
 		// Load the auth config file
 		$this->CI->config->load('auth');
@@ -124,7 +124,7 @@ class Auth extends CI_Driver_Library {
      */
     public function current_user_id()
     {
-        return $this->($this->_driver)->current_user_id();
+        return $this->{$this->_driver}->current_user_id();
     }
 
     /**

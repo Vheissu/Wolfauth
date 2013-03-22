@@ -57,15 +57,14 @@ class Auth_simpleauth extends CI_Driver {
         // Get the current user as an object (returns guest if no user is logged in)
 		$user = $this->get_user(true);
 
-		// Store the current user role and display name
-		$this->role['role'] = $user->role;
-		$this->role['display_name'] = $user->role_display_name;
+		// Store the current user role
+		$this->role['role'] = $user->role_title;
 
         // Store the user ID
-        $this->user_id = $user->id;
+        $this->user_id = $user->user_id;
 
 		// Get capabilities for this role
-		$this->capabilities = $this->CI->simpleauth_model->get_capabilities($user->role);
+		$this->capabilities = $this->CI->simpleauth_model->get_capabilities($user->role_title);
 
 		// Check for a remember me me cookie
 		$this->_check_remember_me();
@@ -108,7 +107,7 @@ class Auth_simpleauth extends CI_Driver {
 	 */
 	public function is_role($slug)
 	{
-		$slug = trim($slug);
+		$slug = strtolower(trim($slug));
 
 		if ($slug === $this->role['role'])
 		{
@@ -159,7 +158,7 @@ class Auth_simpleauth extends CI_Driver {
 		if ($this->logged_in())
 		{
             // Get the user by ID
-		    $user = $this->CI->simpleauth_model->get_user_by_id($this->user_id(), 'id');
+		    $user = $this->CI->simpleauth_model->get_user_by_id($this->user_id(), 'user_id');
 
 		    // Are we returning the user as an object and we have a valid user
 		    if ($as_object == TRUE && $user !== FALSE)
@@ -184,15 +183,13 @@ class Auth_simpleauth extends CI_Driver {
             if ($as_object === TRUE)
             {
                 $user = new stdClass;
-                $user->id                = 0;
-                $user->role              = NULL;
-                $user->role_display_name = NULL;
+                $user->user_id     = 0;
+                $user->role_title  = NULL;
             }
             else
             {
-                $user['id']                = 0;
-                $user['role']              = NULL;
-                $user['role_display_name'] = NULL;
+                $user['user_id']    = 0;
+                $user['role_title'] = NULL;
             }
 		}
 

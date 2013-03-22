@@ -283,15 +283,22 @@ class Simpleauth_model extends CI_Model {
 		// Get the role meta via the $role slug
 		$role_info = $this->get_role($role, 'role_title');
 
-		$this->db->select('capabilities.capability_id, capabilities.capability');
-		$this->db->where('role_id', $role_info->id);
-		$this->db->join('capabilities', 'capabilities.capability_id = roles_capabilities.capability_id');
+		if (isset($role_info->role_id))
+		{
+			$this->db->select('capabilities.capability_id, capabilities.capability');
+			$this->db->where('role_id', $role_info->role_id);
+			$this->db->join('capabilities', 'capabilities.capability_id = roles_capabilities.capability_id');
 
-		// Get the results
-		$result = $this->db->get('roles_capabilities');
+			// Get the results
+			$result = $this->db->get('roles_capabilities');
 
-		// Return the results if capabilities were found
-		return ($result->num_rows() > 0) ? $result->result() : FALSE;
+			// Return the results if capabilities were found
+			return ($result->num_rows() > 0) ? $result->result() : FALSE;
+		}
+		else
+		{
+			return FALSE;
+		}
 	}
 
 	/**

@@ -80,7 +80,7 @@ CREATE TABLE `roles` (
   `role_id` int(6) unsigned NOT NULL AUTO_INCREMENT,
   `role_title` varchar(150) NOT NULL,
   `role_description` text NOT NULL,
-  PRIMARY KEY (`role_id`,`display_name`),
+  PRIMARY KEY (`role_id`,`role_title`),
   UNIQUE KEY `Unique Role ID` (`role_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 
@@ -121,7 +121,7 @@ CREATE TABLE `users` (
   `username` varchar(120) NOT NULL,
   `email` varchar(150) NOT NULL,
   `password` varchar(250) NOT NULL,
-  `status` enum('banned','pending','active') NOT NULL DEFAULT 'pending'
+  `status` enum('banned','pending','active') NOT NULL DEFAULT 'pending',
   `auth_code` varchar(120) NOT NULL,
   `activation_code` varchar(120) NOT NULL,
   `remember_me` text NOT NULL,
@@ -131,4 +131,4 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES ('1', '6', 'admin', 'admin@localhost', '2beed515fd3c1a7c837c36e40cefa23ffa6cf323a7a769c018021fbfb8df741a', '');
+INSERT INTO `users` VALUES ('1', '6', 'admin', 'admin@localhost', '2beed515fd3c1a7c837c36e40cefa23ffa6cf323a7a769c018021fbfb8df741a', 'pending', '', '', '');
