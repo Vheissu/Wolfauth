@@ -134,6 +134,7 @@ class Simpleauth_model extends CI_Model {
         $this->db->select('users.*, roles.role_title, roles.role_description');
 		$this->db->where('users.'.$haystack, $needle);
         $this->db->join('roles', 'roles.role_id = users.role_id');
+        $this->db->limit(1, 0);
 
 		$user = $this->db->get('users');
 		
