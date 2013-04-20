@@ -14,6 +14,8 @@ class Auth {
 		$this->CI->load->library('session');
 		$this->CI->load->library('encrypt');
 
+		$this->CI->load->helper('auth');
+
 		$this->CI->load->model('user_model');
 		$this->CI->load->helper('cookie');
 
@@ -30,7 +32,7 @@ class Auth {
 		return $this->CI->session->userdata('user_id');
 	}
 
-	public function is_role($role = 'admin')
+	public function is_role($role)
 	{
 		$role_name = $this->CI->session->userdata('role_name');
 
