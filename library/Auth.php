@@ -3,6 +3,7 @@
 class Auth {
 
 	protected $CI;
+	protected $_permissions;
 
 	public function __construct()
 	{
@@ -14,12 +15,18 @@ class Auth {
 		$this->CI->load->library('session');
 		$this->CI->load->library('encrypt');
 
+		$this->CI->load->model('user_model');
+		$this->CI->load->model('permission_model');
+
+		$this->CI->load->helper('cookie');
 		$this->CI->load->helper('auth');
 
-		$this->CI->load->model('user_model');
-		$this->CI->load->helper('cookie');
-
 		$this->do_you_remember_me();
+
+		if ($this->is_logged())
+		{
+			$this->_permissions = $this->permission_model->get_role_permissions($this->role_id());
+		}
 	}
 
 	public function is_logged()
@@ -32,11 +39,21 @@ class Auth {
 		return $this->CI->session->userdata('user_id');
 	}
 
+	public function role_id()
+	{
+		return $this->CI->session->userdata('role_id');
+	}
+
 	public function is_role($role)
 	{
 		$role_name = $this->CI->session->userdata('role_name');
 
 		return ($role_name == $role) ? TRUE : FALSE;
+	}
+
+	public function user_can($permission)
+	{
+		return (in_array($permission, $this->_permissions) !== FALSE) ? TRUE : FALSE;
 	}
 
 	public function login($email, $password)
@@ -52,6 +69,7 @@ class Auth {
 
 				$this->CI->session->set_userdata(array(
 					'user_id'	=> $user_id,
+					'role_id'   => $user->role_id,
 					'role_name'	=> $group_id,
 					'email'		=> $user->email
 				));
@@ -132,7 +150,8 @@ class Auth {
 				// Fill the session and renew the remember me cookie
 				$this->CI->session->set_userdata(array(
 					'user_id'	=> $user_id,
-					'role_name'	=> $data->role_name
+					'role_name'	=> $data->role_name,
+					'role_id'   => $data->role_id,
 					'email'     => $data->email
 				));
 
