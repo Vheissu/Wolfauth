@@ -6,11 +6,11 @@
  * An open source driver based authentication library for Codeigniter
  *
  * @package   WolfAuth
- * @author    Dwayne Charrington
- * @copyright Copyright (c) 2012 Dwayne Charrington.
- * @link      http://ilikekillnerds.com
- * @license   http://www.apache.org/licenses/LICENSE-2.0.html
- * @version   2.0
+ * @author      Dwayne Charrington
+ * @copyright Copyright (c) 2014 Dwayne Charrington.
+ * @link          http://ilikekillnerds.com
+ * @license     Licenced under MIT
+ * @version     2.1
  */
 
 function logged_in()
@@ -33,7 +33,7 @@ function get_username()
 function is_admin($role = '')
 {
     return auth_instance()->is_admin($role);
-} 
+}
 
 function login($identity, $password, $remember = false)
 {

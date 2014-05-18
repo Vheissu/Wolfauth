@@ -6,11 +6,11 @@
  * An open source driver based authentication library for Codeigniter
  *
  * @package   WolfAuth
- * @author    Dwayne Charrington
- * @copyright Copyright (c) 2013 Dwayne Charrington.
- * @link      http://ilikekillnerds.com
- * @license   http://www.apache.org/licenses/LICENSE-2.0.html
- * @version   2.0
+ * @author      Dwayne Charrington
+ * @copyright Copyright (c) 2014 Dwayne Charrington.
+ * @link          http://ilikekillnerds.com
+ * @license     Licenced under MIT
+ * @version     2.1
  */
 
 // The config for Wolfauth
@@ -27,13 +27,13 @@ $config['wolfauth'] = array(
 
 	// Hash key
 	'hash.key' => 'kjldf983jj0284378383@#',
-	
+
 	// The name of the site (used for emails, etc)
 	'site.name' => 'Wolfauth Test',
-	
+
 	// Which email address should all auth emails come from
 	'site.admin_email' => 'do-not-reply@localhost',
-	
+
 	// Site status (0 site is down for maintenance mode, 1 site is active)
 	'site.status' => 1,
 
@@ -45,8 +45,8 @@ $config['wolfauth'] = array(
 
 	// What roles are considered admin
 	'roles.admin' => array('admin', 'super_admin'),
-	
+
 	// How do users login; via a username or email address? Default: 'username'
 	'login.identity' => 'username',
-	
+
 );

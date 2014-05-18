@@ -33,10 +33,11 @@ $lang['error_password_update']         = "The password was not changed, somethin
 $lang['error_login']                   = "There was an error logging you in, I don't know what else to say really.";
 $lang['error_banned']                  = "Epic fail, your account was banned. You probably know the reason. If this was a mistake, accept our apologies and contact us.";
 $lang['error_inactive']                = "Your account is inactive. Probably because you didn't sign in for a while or something.";
-$lang['error_validating']              = "You must activate your account before you can use it. Check your email inbox, dude or dudette.";
+$lang['error_validating']              = "You must activate your account before you can use it.";
 $lang['error_user_not_added']          = "Looks like there was a problem whilst trying to add a new user, oops.";
 $lang['error_user_not_updated']        = "Looks like there was a problem whilst trying to update that user account, oops.";
 $lang['error_user_not_deleted']        = "Looks like there was a problem whilst trying to delete that user account, oops.";
+$lang['error_max_login_attempts']    = "You've tried to login too many times. Please wait 15 minutes and try again."
 
 // Empty messages
 $lang['empty_username']        = "Please enter a username";
